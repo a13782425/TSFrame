@@ -31,11 +31,11 @@ public class GameObjectEntity : MonoBehaviour
 
     public void Load()
     {
-        CurrentEntity.Load();
+        //CurrentEntity.Load();
     }
 
     public void UnLoad()
     {
-        CurrentEntity.UnLoad();
+        //CurrentEntity.UnLoad();
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
-public class ComponentIds
+public static class ComponentIds
 {
     /// <summary>
     /// 低位标签
@@ -14,8 +15,6 @@ public class ComponentIds
     /// </summary>
     public const Int64 HIGH_FLAG = 1 << 31;
 
-    public const Int64 PREFAB_NAME = (1 << 0) | LOW_FLAG;
-    public const Int64 INSTABTIATE_NAME = 1 << 1;
 
     /// <summary>
     /// 字符串
@@ -45,15 +44,39 @@ public class ComponentIds
     /// <summary>
     /// 测试
     /// </summary>
-    public const Int64 Test1 = (1 << 3) | HIGH_FLAG;
-    /// <summary>
-    /// 测试
-    /// </summary>
-    public const Int64 Test2 = (1 << 1) | HIGH_FLAG;
-
+    public const Int64 TEST = (1 << 0) | HIGH_FLAG;
     private static readonly Dictionary<Int64, Type> _componentTypeDic = new Dictionary<long, Type>();
     /// <summary>
     /// 组件字典
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
+
+    #region 构造函数
+
+    static ComponentIds()
+    {
+        Type type = typeof(IComponent);
+        PropertyInfo propertyInfo = type.GetProperty("CurrentId");
+        Assembly assembly = type.Assembly;
+        Type[] types = assembly.GetTypes();
+        for (int i = 0; i < types.Length; i++)
+        {
+            if (type.IsAssignableFrom(types[i]) && !types[i].IsAbstract)
+            {
+                object obj = Activator.CreateInstance(types[i]);
+                Int64 num = (Int64)propertyInfo.GetValue(obj, null);
+                //Debug.LogError(types[i].Name);
+                if (ComponentTypeDic.ContainsKey(num))
+                {
+                    Debug.LogError("Id : " + num + ",的组件已经存在！！！Type ：" + types[i].Name);
+                }
+                else
+                {
+                    ComponentTypeDic.Add(num, types[i]);
+                }
+            }
+        }
+    }
+
+    #endregion
 }

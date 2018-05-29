@@ -52,17 +52,41 @@ public class GameStart : MonoBehaviour
         //    .SetResourcesTime(180)
         //    .SetIsTest(true)
         //    .AddSystem(new InstantiateSystem());
-        q1 = new Queue<int>();
+        //q1 = new Queue<int>();
         //q1.Dequeue();
-        th1 = new Thread(new ThreadStart(Test1));
-        th1.IsBackground = true;
-        th1.Start();
-        th2 = new Thread(new ThreadStart(Test2));
-        th2.IsBackground = true;
-        th2.Start();
+        //th1 = new Thread(new ThreadStart(Test1));
+        //th1.IsBackground = true;
+        //th1.Start();
+        //th2 = new Thread(new ThreadStart(Test2));
+        //th2.IsBackground = true;
+        //th2.Start();
         //th3 = new Thread(new ThreadStart(Test3));
         //th3.IsBackground = true;
         //th3.Start();
+
+        //TestComponent test = new TestComponent();
+        //test["value"] = "10";
+        //Debug.LogError(test["value"]);
+        Entity entity = new Entity();
+        entity.SetChangeComponent(Test123)
+            .AddComponent(ComponentIds.TEST)
+            .SetValueChange(Test1231)
+            .AddComponent(ComponentIds.STRING)
+            .SetValue("value", "dasdas")
+            .SetValue(ComponentIds.TEST,"value","poiy")
+            .SetValue("test1", "qweqwe");
+        Debug.LogError(entity.GetValue<string>("value"));
+        entity.RemoveComponent(ComponentIds.TEST).SetValue("VALUE", "2EWA");
+    }
+
+    private void Test123(Entity entity)
+    {
+        Debug.LogError(entity.GetId());
+    }
+
+    private void Test1231(Entity entity, Int64 id)
+    {
+        Debug.LogError(id);
     }
     private void OnApplicationPause(bool pause)
     {
@@ -74,9 +98,9 @@ public class GameStart : MonoBehaviour
     }
     private void OnApplicationQuit()
     {
-        th1.Abort();
+        //th1.Abort();
 
-        th2.Abort();
+        //th2.Abort();
 
         //th3.Abort();
     }

@@ -5,5 +5,5 @@ using System.Text;
 
 public delegate void ComponentCallBack(Entity entity);
 
-public delegate void ValueChangeCallBack(Int64 componentId);
+public delegate void ValueChangeCallBack(Entity entity, Int64 componentId);
 

@@ -18,10 +18,13 @@ public sealed partial class Observer : MonoBehaviour
     {
         CreateEntity()
             .SetChangeComponent(MatchEntity)
-            .AddComponent(new InstantiateComponent() { Parent = this._uiGameObject.transform, PrefabName = prefabName, InstabtiateName = instantName })
-            .AddComponent(new StringComponent() { Value = rootName })
-            .AddComponent(new GameObjectComponent())
-            .AddComponent(new AdditiveComponent() { AdditiveComponentIds = new List<Int64>() { ComponentIds.FIND_GAMEOBJECT } });
+            .AddComponent(ComponentIds.INSTANTIATE);
+        //CreateEntity()
+        //    .SetChangeComponent(MatchEntity)
+        //    .AddComponent(new InstantiateComponent() { Parent = this._uiGameObject.transform, PrefabName = prefabName, InstabtiateName = instantName })
+        //    .AddComponent(new StringComponent() { Value = rootName })
+        //    .AddComponent(new GameObjectComponent())
+        //    .AddComponent(new AdditiveComponent() { AdditiveComponentIds = new List<Int64>() { ComponentIds.FIND_GAMEOBJECT } });
         return this;
     }
 

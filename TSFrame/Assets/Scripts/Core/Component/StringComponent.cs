@@ -26,7 +26,6 @@ public class StringComponent : IComponent
             this.value = value;
         }
     }
-
     private string value = "";
 }
 

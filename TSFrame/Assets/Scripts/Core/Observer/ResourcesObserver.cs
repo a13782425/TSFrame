@@ -8,7 +8,12 @@ public sealed partial class Observer
 {
 
     #region Public Method
-    public Observer SetResourcesTime(int time)
+    /// <summary>
+    /// 设置资源回收时间
+    /// </summary>
+    /// <param name="time">秒</param>
+    /// <returns></returns>
+    public Observer SetResourcesTime(int time = 180)
     {
         this._resourcesTime = time;
         return this;
@@ -72,7 +77,7 @@ public sealed partial class Observer
     {
         _resourcesGameObject = new GameObject("ResourcesGameObject");
         _resourcesGameObject.transform.SetParent(this.transform);
-      
+
     }
 
     partial void ResourcesUpdate()

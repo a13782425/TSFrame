@@ -51,7 +51,11 @@ public sealed partial class Observer : MonoBehaviour
         }
         return flag;
     }
-
+    [Obsolete("外界不要调用")]
+    public void DataDrivenMethod(Entity entity, IComponent com)
+    {
+        Debug.LogError("dsadasdas");
+    }
     #endregion
 
 
@@ -59,6 +63,7 @@ public sealed partial class Observer : MonoBehaviour
     {
         _matchGameObject = new GameObject("MatchGameObject");
         _matchGameObject.transform.SetParent(this.transform);
+        ILHelper.SetChangeCallBack("DataDrivenMethod");
     }
 
     partial void MatchUpdate()

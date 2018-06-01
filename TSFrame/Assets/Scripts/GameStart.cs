@@ -13,6 +13,10 @@ public class GameStart : MonoBehaviour
     Queue<int> q2;
     int num = 0;
     int getCount = 0;
+    private void Awake()
+    {
+        //Observer.Instance.SetIsTest(true);
+    }
     private void Start()
     {
         //ComponentFlag f1 = new ComponentFlag();
@@ -67,16 +71,27 @@ public class GameStart : MonoBehaviour
         //TestComponent test = new TestComponent();
         //test["value"] = "10";
         //Debug.LogError(test["value"]);
-        Entity entity = new Entity();
-        entity.SetChangeComponent(Test123)
+
+        //Entity entity = new Entity();
+        //entity.SetChangeComponent(Test123)
+        //    .AddComponent(ComponentIds.TEST)
+        //    .SetValueChange(Test1231)
+        //    .AddComponent(ComponentIds.STRING)
+        //    .SetValue("value", "dasdas")
+        //    .SetValue(ComponentIds.TEST,"value","poiy")
+        //    .SetValue("test1", "qweqwe");
+        //Debug.LogError(entity.GetValue<string>("value"));
+        //entity.RemoveComponent(ComponentIds.TEST).SetValue("VALUE", "2EWA");
+        Entity entity = Observer.Instance.SetIsTest(true)
+            .Run()
+            .CreateEntity()
             .AddComponent(ComponentIds.TEST)
-            .SetValueChange(Test1231)
+            .SetValue("value", "坑爹")
+            .SetValue("test1", "component")
             .AddComponent(ComponentIds.STRING)
-            .SetValue("value", "dasdas")
-            .SetValue(ComponentIds.TEST,"value","poiy")
-            .SetValue("test1", "qweqwe");
+            .SetValue("value", "string测试");
         Debug.LogError(entity.GetValue<string>("value"));
-        entity.RemoveComponent(ComponentIds.TEST).SetValue("VALUE", "2EWA");
+        
     }
 
     private void Test123(Entity entity)

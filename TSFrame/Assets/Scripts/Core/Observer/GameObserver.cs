@@ -7,16 +7,29 @@ public sealed partial class Observer : MonoBehaviour
 {
     #region Public
 
-    public Observer SetCheckTime(int time)
-    {
-        this._checkTime = time;
-        return this;
-    }
-
     public Observer SetIsTest(bool isTest)
     {
         this._isTest = isTest;
         this.gameObject.hideFlags = this._isTest ? HideFlags.None : HideFlags.HideInHierarchy;
+        return this;
+    }
+    /// <summary>
+    /// 启动观察着
+    /// </summary>
+    /// <returns></returns>
+    public Observer Run()
+    {
+        ILHelper.SetChangeCallBack("Call");
+        VariableLoad();
+        ResourcesLoad();
+        CameraLoad();
+        MatchLoad();
+        GameLoad();
+        UILoad();
+        NetLoad();
+        SystemLoad();
+        EntityLoad();
+        _isRun = true;
         return this;
     }
 

@@ -31,14 +31,13 @@ public sealed partial class Observer : MonoBehaviour
     /// </summary>
     private Dictionary<int, Entity> _entityDic;
     /// <summary>
-    /// 观察者多少针跑一次
-    /// </summary>
-    private int _checkTime = 1;
-
-    /// <summary>
     /// 测试工程
     /// </summary>
     private bool _isTest = false;
+    /// <summary>
+    /// 启动观察者
+    /// </summary>
+    private bool _isRun = false;
 
     #region Variable Var
 
@@ -154,7 +153,7 @@ public sealed partial class Observer : MonoBehaviour
     private Dictionary<string, ResourcesDto> _resourcesDtoDic;
 
     /// <summary>
-    /// 资源GC的时间
+    /// 资源GC的时间(秒)
     /// </summary>
     private int _resourcesTime = 180;
 

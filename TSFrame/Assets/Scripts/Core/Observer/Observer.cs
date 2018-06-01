@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 观察者
+/// </summary>
 public sealed partial class Observer : MonoBehaviour
 {
 
@@ -84,22 +87,28 @@ public sealed partial class Observer : MonoBehaviour
     #region Implement Method
     partial void Awake()
     {
-        VariableLoad();
+
+        //ILHelper.SetChangeCallBack("Call");
     }
     partial void Start()
     {
-        ResourcesLoad();
-        CameraLoad();
-        MatchLoad();
-        GameLoad();
-        UILoad();
-        NetLoad();
-        SystemLoad();
-        EntityLoad();
+        //VariableLoad();
+        //ResourcesLoad();
+        //CameraLoad();
+        //MatchLoad();
+        //GameLoad();
+        //UILoad();
+        //NetLoad();
+        //SystemLoad();
+        //EntityLoad();
     }
 
     partial void Update()
     {
+        if (!_isRun)
+        {
+            return;
+        }
         VariableUpdate();
         ResourcesUpdate();
         CameraUpdate();

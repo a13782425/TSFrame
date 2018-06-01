@@ -4,23 +4,13 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-public class Entity<T> : Entity where T : Entity<T>
-{
-    protected T _instance = null;
-
-    public T Instance { get { return _instance; } }
-
-}
-
-
-
 public class Entity
 {
     class ComponentDto
     {
         public IComponent CurrentComponent { get; set; }
-        private Dictionary<string, FieldInfoDto> _fieldInfoDic = new Dictionary<string, FieldInfoDto>();
-        public Dictionary<string, FieldInfoDto> FieldInfoDic { get { return _fieldInfoDic; } }
+        private Dictionary<string, TSProperty> _propertyDic = new Dictionary<string, TSProperty>();
+        public Dictionary<string, TSProperty> PropertyDic { get { return _propertyDic; } set { _propertyDic = value; } }
     }
     class FieldInfoDto
     {
@@ -59,11 +49,6 @@ public class Entity
     /// 组件列表发生改变时候的回调
     /// </summary>
     private ComponentCallBack _changeComponentCallBack = null;
-
-    /// <summary>
-    /// 组件值发生改变时候的回调
-    /// </summary>
-    private ValueChangeCallBack _valueChangeCallBack = null;
 
     private List<Group> _allGroup;
 
@@ -120,17 +105,6 @@ public class Entity
     }
 
     /// <summary>
-    /// 设置组件改变时候的回调
-    /// </summary>
-    /// <param name="callBack"></param>
-    /// <returns></returns>
-    public Entity SetValueChange(ValueChangeCallBack callBack)
-    {
-        _valueChangeCallBack = callBack;
-        return this;
-    }
-
-    /// <summary>
     /// 增加组件，会保留最后增加的组件
     /// </summary>
     /// <param name="componentId"></param>
@@ -146,9 +120,13 @@ public class Entity
             throw new Exception("增加组件失败,组件ID查询失败,组件类型:" + componentId.ToString());
         }
         IComponent component = Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
-        RegisteComponent(component);
+        ComponentDto dto = new ComponentDto();
+        dto.CurrentComponent = component;
+        dto.PropertyDic = ILHelper.RegisteComponent(component);
+        this._allComponenDtoDic.Add(component.CurrentId, dto);
         this._componentDic.Add(componentId, component);
-        _currentFlag.SetFlag(componentId);
+        this._currentFlag.SetFlag(componentId);
+        this._lastOperateComponent = dto;
         if (_changeComponentCallBack != null)
         {
             _changeComponentCallBack.Invoke(this);
@@ -197,17 +175,6 @@ public class Entity
         {
             Debug.LogError("请先添加组件!");
         }
-        //foreach (KeyValuePair<Int64, ComponentDto> item in _allComponenDtoDic)
-        //{
-        //    if (_lastOperateComponent != null)
-        //    {
-        //        if (item.Key == _lastOperateComponent.CurrentComponent.CurrentId)
-        //        {
-        //            continue;
-        //        }
-        //    }
-        //    SetValue(item.Key, fieldName, value);
-        //}
         return this;
     }
 
@@ -224,28 +191,11 @@ public class Entity
         if (this._allComponenDtoDic.ContainsKey(componentId))
         {
             ComponentDto componentDto = this._allComponenDtoDic[componentId];
-            if (componentDto.FieldInfoDic.ContainsKey(name))
+            if (componentDto.PropertyDic.ContainsKey(name))
             {
                 try
                 {
-                    FieldInfoDto dto = this._allComponenDtoDic[componentId].FieldInfoDic[name];
-                    if (dto.IsReactive)
-                    {
-                        object lastValue = dto.CurrentFieldInfo.GetValue(componentDto.CurrentComponent);
-                        dto.CurrentFieldInfo.SetValue(componentDto.CurrentComponent, value);
-                        if (!value.Equals(lastValue))
-                        {
-                            //todo 数据驱动回调
-                            if (_valueChangeCallBack != null)
-                            {
-                                _valueChangeCallBack.Invoke(this, componentId);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        dto.CurrentFieldInfo.SetValue(componentDto.CurrentComponent, value);
-                    }
+                    componentDto.PropertyDic[name].Setter(this, componentDto.CurrentComponent, value);
                     _lastOperateComponent = componentDto;
                 }
                 catch (Exception ex)
@@ -281,17 +231,6 @@ public class Entity
         {
             Debug.LogError("请先添加组件!");
         }
-        //foreach (KeyValuePair<Int64, ComponentDto> item in _allComponenDtoDic)
-        //{
-        //    if (_lastOperateComponent != null)
-        //    {
-        //        if (item.Key == _lastOperateComponent.CurrentComponent.CurrentId)
-        //        {
-        //            continue;
-        //        }
-        //    }
-        //    SetValue(item.Key, fieldName, value);
-        //}
         return default(T);
     }
     /// <summary>
@@ -308,12 +247,11 @@ public class Entity
         if (this._allComponenDtoDic.ContainsKey(componentId))
         {
             ComponentDto componentDto = this._allComponenDtoDic[componentId];
-            if (componentDto.FieldInfoDic.ContainsKey(name))
+            if (componentDto.PropertyDic.ContainsKey(name))
             {
                 try
                 {
-                    FieldInfoDto dto = this._allComponenDtoDic[componentId].FieldInfoDic[name];
-                    object value = dto.CurrentFieldInfo.GetValue(componentDto.CurrentComponent);
+                    object value = componentDto.PropertyDic[name].Getter(componentDto.CurrentComponent); ;
                     t = (T)value;
                     _lastOperateComponent = componentDto;
                 }
@@ -333,39 +271,6 @@ public class Entity
 
     #region 私有方法
 
-    private void RegisteComponent(IComponent component)
-    {
-        ComponentDto componentDto = new ComponentDto();
-        componentDto.CurrentComponent = component;
-        Type type = component.GetType();
-        bool isNeedReactive = false;
-        if (_interfaceType.IsAssignableFrom(type))
-        {
-            isNeedReactive = true;
-        }
-        FieldInfo[] fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        for (int i = 0; i < fields.Length; i++)
-        {
-            FieldInfoDto fieldInfoDto = new FieldInfoDto();
-            FieldInfo field = fields[i];
-            if (isNeedReactive)
-            {
-                object[] objs = field.GetCustomAttributes(_dataDrivenType, false);
-                fieldInfoDto.IsReactive = objs != null && objs.Length > 0;
-            }
-            fieldInfoDto.CurrentFieldInfo = field;
-            if (componentDto.FieldInfoDic.ContainsKey(field.Name.ToLower()))
-            {
-                Debug.LogError("字段不区分大小写，请检查" + type.Name + "类中的字段：" + field.Name.ToLower());
-            }
-            else
-            {
-                componentDto.FieldInfoDic.Add(field.Name.ToLower(), fieldInfoDto);
-            }
-        }
-        _lastOperateComponent = componentDto;
-        _allComponenDtoDic.Add(component.CurrentId, componentDto);
-    }
 
     #endregion
 

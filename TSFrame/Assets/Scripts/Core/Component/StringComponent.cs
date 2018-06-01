@@ -14,18 +14,6 @@ public class StringComponent : IComponent
         }
     }
 
-    public string Value
-    {
-        get
-        {
-            return value;
-        }
-
-        set
-        {
-            this.value = value;
-        }
-    }
-    private string value = "";
+    public string Value { get; set; }
 }
 

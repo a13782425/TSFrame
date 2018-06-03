@@ -11,14 +11,20 @@ public class Group
 
     public ComponentFlag ComponentFlag { get { return _componentFlag; } }
 
-    private List<Entity> entityList;
+    private List<Entity> _entityList;
+    /// <summary>
+    /// 实体数组
+    /// </summary>
+    public List<Entity> EntityList { get { return _entityList; } }
+
+    public int Count { get { return EntityList.Count; } }
 
 
     public Group(ComponentFlag flag)
     {
         _componentFlag = flag;
 
-        entityList = new List<Entity>();
+        _entityList = new List<Entity>();
     }
     public Group(params Int64[] array)
     {
@@ -30,7 +36,7 @@ public class Group
                 ComponentFlag.SetFlag(array[i]);
             }
         }
-        entityList = new List<Entity>();
+        _entityList = new List<Entity>();
     }
     public bool HasComponent(Int32 flag)
     {
@@ -43,18 +49,18 @@ public class Group
         {
             throw new Exception("该组件不属于这个组!");
         }
-        if (this.entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
+        if (this._entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
         {
             return this;
         }
-        this.entityList.Add(entity);
+        this._entityList.Add(entity);
         return this;
     }
     public Group RemoveEntity(Entity entity)
     {
-        if (this.entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
+        if (this._entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
         {
-            this.entityList.Remove(entity);
+            this._entityList.Remove(entity);
         }
         return this;
     }

@@ -41,67 +41,75 @@ public static class ILHelper
 
     public static Dictionary<string, TSProperty> RegisteComponent(IComponent instance)
     {
-        if (_ilCache.ContainsKey(instance.CurrentId))
+        try
         {
-            return _ilCache[instance.CurrentId];
-        }
-        Dictionary<string, TSProperty> tempReturnDic = new Dictionary<string, TSProperty>();
-        Type instanceType = instance.GetType();
-        bool isNeedReactive = false;
-        if (_interfaceType.IsAssignableFrom(instanceType))
-        {
-            isNeedReactive = true;
-        }
-
-        #region Property
-
-        PropertyInfo[] props = instanceType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        if (props != null && props.Length > 0)
-        {
-            for (int i = 0; i < props.Length; i++)
+            if (_ilCache.ContainsKey(instance.CurrentId))
             {
-                bool isDataDriven = false;
-                PropertyInfo property = props[i];
-                if (property.GetSetMethod() == null || property.GetGetMethod() == null)
-                {
-                    continue;
-                }
-                object[] objs = property.GetCustomAttributes(typeof(DataDrivenAttribute), false);
-                //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
-                if (objs.Length > 0)
-                {
-                    isDataDriven = isNeedReactive;
-                }
-                TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
-                tempReturnDic.Add(property.Name.ToLower(), tsProperty);
+                return _ilCache[instance.CurrentId];
             }
-        }
-
-        #endregion
-
-        #region FieldInfo
-
-        FieldInfo[] fieldInfos = instanceType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        if (fieldInfos != null && fieldInfos.Length > 0)
-        {
-            for (int i = 0; i < fieldInfos.Length; i++)
+            Dictionary<string, TSProperty> tempReturnDic = new Dictionary<string, TSProperty>();
+            Type instanceType = instance.GetType();
+            bool isNeedReactive = false;
+            if (_interfaceType.IsAssignableFrom(instanceType))
             {
-                bool isDataDriven = false;
-                FieldInfo fieldInfo = fieldInfos[i];
-                object[] objs = fieldInfo.GetCustomAttributes(typeof(DataDrivenAttribute), false);
-                //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
-                if (objs.Length > 0)
-                {
-                    isDataDriven = isNeedReactive;
-                }
-                TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
-                tempReturnDic.Add(fieldInfo.Name.ToLower(), tsProperty);
+                isNeedReactive = true;
             }
-        }
 
-        #endregion
-        _ilCache.Add(instance.CurrentId, tempReturnDic);
-        return tempReturnDic;
+            #region Property
+
+            PropertyInfo[] props = instanceType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (props != null && props.Length > 0)
+            {
+                for (int i = 0; i < props.Length; i++)
+                {
+                    bool isDataDriven = false;
+                    PropertyInfo property = props[i];
+                    if (property.GetSetMethod() == null || property.GetGetMethod() == null)
+                    {
+                        continue;
+                    }
+                    object[] objs = property.GetCustomAttributes(typeof(DataDrivenAttribute), false);
+                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+                    if (objs.Length > 0)
+                    {
+                        isDataDriven = isNeedReactive;
+                    }
+                    TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
+                    tempReturnDic.Add(property.Name.ToLower(), tsProperty);
+                }
+            }
+
+            #endregion
+
+            #region FieldInfo
+
+            FieldInfo[] fieldInfos = instanceType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (fieldInfos != null && fieldInfos.Length > 0)
+            {
+                for (int i = 0; i < fieldInfos.Length; i++)
+                {
+                    bool isDataDriven = false;
+                    FieldInfo fieldInfo = fieldInfos[i];
+                    object[] objs = fieldInfo.GetCustomAttributes(typeof(DataDrivenAttribute), false);
+                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+                    if (objs.Length > 0)
+                    {
+                        isDataDriven = isNeedReactive;
+                    }
+                    TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
+                    tempReturnDic.Add(fieldInfo.Name.ToLower(), tsProperty);
+                }
+            }
+
+            #endregion
+            _ilCache.Add(instance.CurrentId, tempReturnDic);
+            return tempReturnDic;
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+        
     }
 
     private static TSProperty CreateProperty(object instance, FieldInfo fieldInfo, bool isDataDriven)
@@ -138,6 +146,7 @@ public static class ILHelper
         var il = dm.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Callvirt, property.GetGetMethod());
+        il.Emit(OpCodes.Box, property.PropertyType);
         il.Emit(OpCodes.Ret);
         return (PropertyGetter)dm.CreateDelegate(typeof(PropertyGetter));
     }
@@ -150,6 +159,7 @@ public static class ILHelper
         var il = dm.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldfld, fieldInfo);
+        il.Emit(OpCodes.Box, fieldInfo.FieldType);
         il.Emit(OpCodes.Ret);
         return (PropertyGetter)dm.CreateDelegate(typeof(PropertyGetter));
     }

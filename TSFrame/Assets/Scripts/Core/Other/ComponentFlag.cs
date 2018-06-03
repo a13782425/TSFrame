@@ -14,7 +14,10 @@ public struct ComponentFlag
     public Int64 LowFlag { get { return _lowFlag; } private set { _lowFlag = value; } }
 
     public Int64 HighFlag { get { return _highFlag; } private set { _highFlag = value; } }
-
+    public bool HasFlag(ComponentFlag flag)
+    {
+        return (LowFlag & flag.LowFlag) == flag.LowFlag && (HighFlag & flag.HighFlag) == flag.HighFlag;
+    }
     public Boolean HasFlag(Int64 flag)
     {
         if ((flag & ComponentIds.LOW_FLAG) == ComponentIds.LOW_FLAG)
@@ -68,6 +71,9 @@ public struct ComponentFlag
         temp.HighFlag = cf1.LowFlag & cf2.HighFlag;
         return temp;
     }
+
+
+
     public static bool operator !=(ComponentFlag cf1, ComponentFlag cf2)
     {
         return !(cf1 == cf2);

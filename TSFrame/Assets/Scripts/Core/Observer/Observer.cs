@@ -87,20 +87,10 @@ public sealed partial class Observer : MonoBehaviour
     #region Implement Method
     partial void Awake()
     {
-
-        //ILHelper.SetChangeCallBack("Call");
     }
     partial void Start()
     {
-        //VariableLoad();
-        //ResourcesLoad();
-        //CameraLoad();
-        //MatchLoad();
-        //GameLoad();
-        //UILoad();
-        //NetLoad();
-        //SystemLoad();
-        //EntityLoad();
+
     }
 
     partial void Update()

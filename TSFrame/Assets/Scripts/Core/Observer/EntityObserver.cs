@@ -11,6 +11,7 @@ public sealed partial class Observer
     public Entity CreateEntity()
     {
         Entity entity = new Entity();
+        entity.SetChangeComponent(MatchEntity);
         _entityDic.Add(entity.GetId(), entity);
         MatchEntity(entity);
         return entity;

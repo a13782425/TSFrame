@@ -130,7 +130,7 @@ public sealed partial class Observer : MonoBehaviour
     /// <summary>
     /// 触发执行的系统
     /// </summary>
-    private List<ISystem> _systemReactiveList;
+    private Dictionary<ISystem, List<Entity>> _systemReactiveDic;
     /// <summary>
     /// 循环执行的系统
     /// </summary>
@@ -166,7 +166,7 @@ public sealed partial class Observer : MonoBehaviour
         _entityDic = new Dictionary<int, Entity>();
         _uiRootDic = new Dictionary<string, GameObject>();
         _systemInitList = new List<ISystem>();
-        _systemReactiveList = new List<ISystem>();
+        _systemReactiveDic = new Dictionary<ISystem, List<Entity>>();
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();

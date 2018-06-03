@@ -6,23 +6,33 @@ using UnityEngine;
 
 public sealed partial class Observer
 {
-    public void AddSystem(ISystem system)
+    public Observer AddSystem(ISystem system)
     {
         if (system != null)
         {
             if (system is IInitSystem)
             {
-                _systemInitList.Add(system);
+                if (!_systemInitList.Contains(system))
+                {
+                    _systemInitList.Add(system);
+                }
             }
             if (system is IReactiveSystem)
             {
-                _systemReactiveList.Add(system);
+                if (!_systemReactiveDic.ContainsKey(system))
+                {
+                    _systemReactiveDic.Add(system, new List<Entity>());
+                }
             }
             if (system is IExecuteSystem)
             {
-                _systemExecuteList.Add(system);
+                if (!_systemExecuteList.Contains(system))
+                {
+                    _systemExecuteList.Add(system);
+                }
             }
         }
+        return this;
     }
 
 
@@ -44,6 +54,14 @@ public sealed partial class Observer
             foreach (IExecuteSystem item in _systemExecuteList)
             {
                 item.Execute();
+            }
+        }
+        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        {
+            if (item.Value.Count > 0)
+            {
+                (item.Key as IReactiveSystem).Execute(item.Value);
+                item.Value.Clear();
             }
         }
     }

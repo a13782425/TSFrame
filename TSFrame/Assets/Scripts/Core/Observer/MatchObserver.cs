@@ -54,7 +54,17 @@ public sealed partial class Observer : MonoBehaviour
     [Obsolete("外界不要调用")]
     public void DataDrivenMethod(Entity entity, IComponent com)
     {
-        Debug.LogError("dsadasdas");
+        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        {
+            ComponentFlag flag = (item.Key as IReactiveSystem).ReactiveCondition;
+            if (flag.HasFlag(com.CurrentId)&&entity.GetComponentFlag().HasFlag(flag))
+            {
+                if (!item.Value.Contains(entity))
+                {
+                    item.Value.Add(entity);
+                }
+            }
+        }
     }
     #endregion
 
@@ -68,7 +78,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void MatchUpdate()
     {
-        
+
     }
 
     partial void MatchEntity(Entity entity)

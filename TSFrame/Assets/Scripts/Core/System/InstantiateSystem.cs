@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InstantiateSystem : IInitSystem, IReactiveSystem
+public class InstantiateSystem : IReactiveSystem
 {
-    private Group _currentGroup;
 
     public ComponentFlag ReactiveCondition
     {
@@ -17,11 +16,24 @@ public class InstantiateSystem : IInitSystem, IReactiveSystem
 
     public void Execute(List<Entity> entitys)
     {
-        Debug.LogError("InstantiateSystem");
-    }
+        foreach (var item in entitys)
+        {
+            string prefabName = item.GetValue<string>(ComponentIds.INSTANTIATE, "prefabname");
+            GameObject obj = Observer.Instance.ResourcesLoad(prefabName) as GameObject;
+            if (obj != null)
+            {
+                GameObject instant = GameObject.Instantiate<GameObject>(obj);
+                instant.transform.SetParent(item.GetValue<Transform>("parent"));
+                instant.transform.position = item.GetValue<Vector3>("pos");
+                instant.transform.rotation = item.GetValue<Quaternion>("rot");
+                instant.hideFlags = item.GetValue<HideFlags>("hideflags");
+                item.SetValue(ComponentIds.GAME_OBJECT, "value", instant);
+            }
+            else
+            {
+                Debug.LogError("实例化游戏物体失败！！！");
+            }
 
-    public void Init()
-    {
-        _currentGroup = Observer.Instance.MatchGetGroup(ReactiveCondition);
+        }
     }
 }

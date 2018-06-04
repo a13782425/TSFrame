@@ -14,20 +14,7 @@ public class GameObjectComponent : IComponent
         }
     }
 
-    public GameObject Value
-    {
-        get
-        {
-            return _value;
-        }
-
-        set
-        {
-            _value = value;
-        }
-    }
-
-    private GameObject _value = null;
+    private GameObject value = null;
 
 }
 

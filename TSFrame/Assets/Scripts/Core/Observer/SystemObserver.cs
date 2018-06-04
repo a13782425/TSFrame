@@ -15,6 +15,7 @@ public sealed partial class Observer
                 if (!_systemInitList.Contains(system))
                 {
                     _systemInitList.Add(system);
+                    (system as IInitSystem).Init();
                 }
             }
             if (system is IReactiveSystem)
@@ -41,10 +42,6 @@ public sealed partial class Observer
     {
         _systemGameObject = new GameObject("SystemGameObject");
         _systemGameObject.transform.SetParent(this.transform);
-        foreach (IInitSystem item in _systemInitList)
-        {
-            item.Init();
-        }
     }
 
     partial void SystemUpdate()
@@ -60,8 +57,10 @@ public sealed partial class Observer
         {
             if (item.Value.Count > 0)
             {
-                (item.Key as IReactiveSystem).Execute(item.Value);
+                List<Entity> temp = new List<Entity>();
+                temp.AddRange(item.Value);
                 item.Value.Clear();
+                (item.Key as IReactiveSystem).Execute(temp);
             }
         }
     }

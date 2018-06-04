@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class InstantiateComponent : IComponent,IReactiveComponent
+public class InstantiateComponent : IComponent, IReactiveComponent
 {
     public Int64 CurrentId
     {
@@ -15,10 +15,9 @@ public class InstantiateComponent : IComponent,IReactiveComponent
     }
     [DataDriven]
     private string prefabName = "";
-    [DataDriven]
-    private string instabtiateName = "";
-    [DataDriven]
     private Transform parent = null;
-
+    private Vector3 pos;
+    private Quaternion rot;
+    private HideFlags hideFlags = HideFlags.None;
 }
 

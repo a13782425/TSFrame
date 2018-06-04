@@ -11,13 +11,22 @@ public class MoveSystem : IInitSystem, IExecuteSystem
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT);
+            return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT, ComponentIds.INPUT);
         }
     }
 
     public void Execute()
     {
-        Debug.LogError(_currentGroup.Count);
+        foreach (var item in _currentGroup.EntityList)
+        {
+            GameObject obj = item.GetValue<GameObject>(ComponentIds.GAME_OBJECT, "value");
+            if (obj != null)
+            {
+                float x = item.GetValue<float>(ComponentIds.INPUT, "x");
+                float y = item.GetValue<float>("y");
+                obj.transform.Translate(new Vector3(x, y, 0));
+            }
+        }
     }
 
     public void Init()

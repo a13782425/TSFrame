@@ -232,11 +232,13 @@ public sealed partial class Observer : MonoBehaviour
 
         public static bool operator ==(ResourcesDto res1, ResourcesDto res2)
         {
-            if (res1.Equals(null) && res2.Equals(null))
+            object o1 = res1;
+            object o2 = res2;
+            if (o1 == null && o2 == null)
             {
                 return true;
             }
-            if (res1.Equals(null) || res2.Equals(null))
+            if (o1 == null || o2 == null)
             {
                 return false;
             }
@@ -249,11 +251,12 @@ public sealed partial class Observer : MonoBehaviour
 
         public static bool operator ==(ResourcesDto res1, string res2)
         {
-            if (res1.Equals(null) && string.IsNullOrEmpty(res2))
+            object o1 = res1;
+            if (o1 == null && res2 == null)
             {
                 return true;
             }
-            if (res1.Equals(null) || res2 == null)
+            if (o1 == null || res2 == null)
             {
                 return false;
             }

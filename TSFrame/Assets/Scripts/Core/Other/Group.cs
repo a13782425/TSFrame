@@ -67,11 +67,13 @@ public class Group
 
     public static bool operator ==(Group g1, Group g2)
     {
-        if (g1 == null && g2 == null)
+        object o1 = g1;
+        object o2 = g2;
+        if (o1 == null && o2 == null)
         {
             return true;
         }
-        if (g1 == null || g2 == null)
+        if (o1 == null || o2 == null)
         {
             return false;
         }

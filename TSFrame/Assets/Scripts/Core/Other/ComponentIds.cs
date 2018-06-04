@@ -33,23 +33,30 @@ public static class ComponentIds
     /// </summary>
     public const Int64 INSTANTIATE = (1 << 3) | LOW_FLAG;
     /// <summary>
-    /// 查找游戏物体
-    /// </summary>
-    public const Int64 FIND_GAMEOBJECT = (1 << 4) | LOW_FLAG;
-    /// <summary>
     /// 关联场景物体
     /// </summary>
-    public const Int64 LINK = (1 << 5) | LOW_FLAG;
-
+    public const Int64 LINK = (1 << 4) | LOW_FLAG;
+    /// <summary>
+    /// 输入
+    /// </summary>
+    public const Int64 INPUT = (1 << 5) | LOW_FLAG;
+    /// <summary>
+    /// 游戏物品的名字
+    /// </summary>
+    public const Int64 GAME_OBJECT_NAME = (1 << 6) | LOW_FLAG;
     /// <summary>
     /// 测试
     /// </summary>
     public const Int64 TEST = (1 << 0) | HIGH_FLAG;
     private static readonly Dictionary<Int64, Type> _componentTypeDic = new Dictionary<long, Type>();
+
+
     /// <summary>
     /// 组件字典
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
+
+   
 
     #region 构造函数
 

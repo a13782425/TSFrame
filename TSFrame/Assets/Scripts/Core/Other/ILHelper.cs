@@ -27,6 +27,7 @@ public static class ILHelper
     private static string _methodName = null;
 
     private static Type _interfaceType = typeof(IReactiveComponent);
+
     private static Type _dataDrivenType = typeof(DataDrivenAttribute);
 
     private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
@@ -109,7 +110,6 @@ public static class ILHelper
         {
             throw ex;
         }
-        
     }
 
     private static TSProperty CreateProperty(object instance, FieldInfo fieldInfo, bool isDataDriven)
@@ -121,6 +121,7 @@ public static class ILHelper
         tsProperty.Getter = CreateGetter(fieldInfo);
         return tsProperty;
     }
+
     /// <summary>
     /// 
     /// </summary>

@@ -19,11 +19,15 @@ public class SetObjectNameSystem : IReactiveSystem
         foreach (var item in entitys)
         {
             GameObject obj = item.GetValue<GameObject>(ComponentIds.GAME_OBJECT, "value");
+            string name = item.GetValue<string>(ComponentIds.GAME_OBJECT_NAME, "name");
             if (obj != null)
             {
-                obj.name = item.GetValue<string>(ComponentIds.GAME_OBJECT_NAME, "name");
+                obj.name = name;
             }
-
+            else
+            {
+                item.SetValue(ComponentIds.GAME_OBJECT_NAME, "name", name);
+            }
         }
     }
 }

@@ -6,49 +6,68 @@ using UnityEngine;
 
 public static class ComponentIds
 {
+    #region 标签位
+
     /// <summary>
-    /// 低位标签
+    /// 用户低位标签
     /// </summary>
-    public const Int64 LOW_FLAG = 0;
+    public const Int64 PLAYER_LOW_FLAG = 0;
     /// <summary>
-    /// 高位标签
+    /// 用户高位标签
     /// </summary>
-    public const Int64 HIGH_FLAG = 1 << 31;
+    public const Int64 PLAYER_HIGH_FLAG = 1 << 01;
+    /// <summary>
+    /// 系统低位标签
+    /// </summary>
+    public const Int64 SYSTEM_LOW_FLAG = 2 << 30;
+    /// <summary>
+    /// 系统高位标签
+    /// </summary>
+    public const Int64 SYSTEM_HIGH_FLAG = 3 << 30;
+
+    #endregion
 
 
     /// <summary>
     /// 字符串
     /// </summary>
-    public const Int64 STRING = (1 << 0) | LOW_FLAG;
+    public const Int64 STRING = (1 << 0) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 在某个系统执行完毕添加新的组件
     /// </summary>
-    public const Int64 ADDITIVE = (1 << 1) | LOW_FLAG;
+    public const Int64 ADDITIVE = (1 << 1) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 游戏物体
     /// </summary>
-    public const Int64 GAME_OBJECT = (1 << 2) | LOW_FLAG;
+    public const Int64 GAME_OBJECT = (1 << 2) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 实例化物体
     /// </summary>
-    public const Int64 INSTANTIATE = (1 << 3) | LOW_FLAG;
+    public const Int64 INSTANTIATE = (1 << 3) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 关联场景物体
     /// </summary>
-    public const Int64 LINK = (1 << 4) | LOW_FLAG;
+    public const Int64 LINK = (1 << 4) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 输入
     /// </summary>
-    public const Int64 INPUT = (1 << 5) | LOW_FLAG;
+    public const Int64 INPUT = (1 << 5) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 游戏物品的名字
     /// </summary>
-    public const Int64 GAME_OBJECT_NAME = (1 << 6) | LOW_FLAG;
+    public const Int64 GAME_OBJECT_NAME = (1 << 6) | SYSTEM_LOW_FLAG;
+    /// <summary>
+    /// 生命周期
+    /// </summary>
+    public const Int64 LIFE_CYCLE = (1 << 7) | SYSTEM_LOW_FLAG;
+
+
     /// <summary>
     /// 测试
     /// </summary>
-    public const Int64 TEST = (1 << 0) | HIGH_FLAG;
+    public const Int64 TEST = (1 << 0) | SYSTEM_HIGH_FLAG;
     private static readonly Dictionary<Int64, Type> _componentTypeDic = new Dictionary<long, Type>();
+
 
 
     /// <summary>
@@ -56,7 +75,7 @@ public static class ComponentIds
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
 
-   
+
 
     #region 构造函数
 

@@ -45,7 +45,7 @@ public class Group
 
     public Group AddEntity(Entity entity)
     {
-        if ((entity.GetComponentFlag().LowFlag & this.ComponentFlag.LowFlag) != this.ComponentFlag.LowFlag || (entity.GetComponentFlag().HighFlag & this.ComponentFlag.HighFlag) != this.ComponentFlag.HighFlag)
+        if (!this.ComponentFlag.HasFlag(entity.GetComponentFlag()))
         {
             throw new Exception("该组件不属于这个组!");
         }

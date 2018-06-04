@@ -10,12 +10,25 @@ public sealed partial class Observer
 
     public Entity CreateEntity()
     {
+        return CreateEntity(null);
+    }
+
+    public Entity CreateEntity(Entity parent)
+    {
         Entity entity = new Entity();
         entity.SetChangeComponent(MatchEntity);
         _entityDic.Add(entity.GetId(), entity);
         MatchEntity(entity);
+        if (parent != null)
+        {
+            parent.ChildList.Add(entity);
+            entity.Parent = parent;
+        }
         return entity;
     }
+
+
+
     #endregion
 
     partial void EntityLoad()

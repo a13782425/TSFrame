@@ -12,12 +12,6 @@ public class Entity
         private Dictionary<string, TSProperty> _propertyDic = new Dictionary<string, TSProperty>();
         public Dictionary<string, TSProperty> PropertyDic { get { return _propertyDic; } set { _propertyDic = value; } }
     }
-    class FieldInfoDto
-    {
-        public FieldInfo CurrentFieldInfo { get; set; }
-        public bool IsReactive { get; set; }
-    }
-
     #region 静态字段
     private static Type _interfaceType = typeof(IReactiveComponent);
     private static Type _dataDrivenType = typeof(DataDrivenAttribute);
@@ -49,8 +43,22 @@ public class Entity
     /// 组件列表发生改变时候的回调
     /// </summary>
     private ComponentCallBack _changeComponentCallBack = null;
-
-    private List<Group> _allGroup;
+    /// <summary>
+    /// 父亲
+    /// </summary>
+    private Entity _parent = null;
+    /// <summary>
+    /// 父亲
+    /// </summary>
+    public Entity Parent { get { return _parent; } set { _parent = value; } }
+    /// <summary>
+    /// 儿子们
+    /// </summary>
+    private List<Entity> _childList = null;
+    /// <summary>
+    /// 儿子们
+    /// </summary>
+    public List<Entity> ChildList { get { return _childList; } private set { _childList = value; } }
 
     #endregion
 
@@ -60,6 +68,7 @@ public class Entity
     {
         _guid = Guid.NewGuid().ToString();
         _id = _guid.GetHashCode();
+        ChildList = new List<Entity>();
     }
 
     #endregion
@@ -267,6 +276,21 @@ public class Entity
         }
         return t;
     }
+    /// <summary>
+    /// 创建后代
+    /// </summary>
+    public Entity CreatePosterity()
+    {
+        Entity entity = Observer.Instance.CreateEntity();
+        if (this.ChildList == null)
+        {
+            this.ChildList = new List<Entity>();
+        }
+        this.ChildList.Add(entity);
+        entity.Parent = this;
+        return entity;
+    }
+
     #endregion
 
     #region 私有方法

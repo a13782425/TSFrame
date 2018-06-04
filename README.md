@@ -10,8 +10,9 @@
 1. 完成Component数据驱动
 2. System模块第一版完成
 ## 下一步工作
-1. 优化System模块
-2. 更改Observer初始化流程
+1. 增加场景切换Entity的销毁
+2. 优化System模块
+3. 更改Observer初始化流程
 
 ## 目前使用方法
 + 文字描述

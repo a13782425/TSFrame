@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public sealed partial class Observer : MonoBehaviour
+public sealed partial class Observer
 {
     #region Public
 

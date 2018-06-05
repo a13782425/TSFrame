@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public sealed partial class Observer : MonoBehaviour
+public sealed partial class Observer
 {
     /// <summary>
     /// rootName只会访问prefab下一层的物体

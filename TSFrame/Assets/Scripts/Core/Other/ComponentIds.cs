@@ -60,7 +60,10 @@ public static class ComponentIds
     /// 生命周期
     /// </summary>
     public const Int64 LIFE_CYCLE = (1 << 7) | SYSTEM_LOW_FLAG;
-
+    /// <summary>
+    /// 碰撞组件
+    /// </summary>
+    public const Int64 COLLISION = (1 << 8) | SYSTEM_LOW_FLAG;
 
     /// <summary>
     /// 测试

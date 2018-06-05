@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class Observer : MonoBehaviour
+public sealed partial class Observer
 {
     partial void NetLoad()
     {
@@ -13,6 +13,6 @@ public partial class Observer : MonoBehaviour
 
     partial void NetUpdate()
     {
-        
+
     }
 }

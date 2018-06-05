@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public sealed partial class Observer : MonoBehaviour
+public sealed partial class Observer
 {
 
     #region Public
@@ -57,7 +57,7 @@ public sealed partial class Observer : MonoBehaviour
         foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
         {
             ComponentFlag flag = (item.Key as IReactiveSystem).ReactiveCondition;
-            if (flag.HasFlag(com.CurrentId)&&entity.GetComponentFlag().HasFlag(flag))
+            if (flag.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(flag))
             {
                 if (!item.Value.Contains(entity))
                 {

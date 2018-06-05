@@ -21,7 +21,7 @@ public class Entity
     /// <summary>
     /// 组件字典
     /// </summary>
-    private Dictionary<Int64, IComponent> _componentDic = new Dictionary<Int64, IComponent>();
+    //private Dictionary<Int64, IComponent> _componentDic = new Dictionary<Int64, IComponent>();
 
     private Dictionary<Int64, ComponentDto> _allComponenDtoDic = new Dictionary<Int64, ComponentDto>();
 
@@ -120,7 +120,8 @@ public class Entity
     /// <returns></returns>
     public Entity AddComponent(Int64 componentId)
     {
-        if (_componentDic.ContainsKey(componentId) || _allComponenDtoDic.ContainsKey(componentId))
+        //_componentDic.ContainsKey(componentId) ||
+        if (_allComponenDtoDic.ContainsKey(componentId))
         {
             throw new Exception("增加组件失败,组件已存在,组件类型:" + componentId.ToString());
         }
@@ -132,8 +133,9 @@ public class Entity
         ComponentDto dto = new ComponentDto();
         dto.CurrentComponent = component;
         dto.PropertyDic = ILHelper.RegisteComponent(component);
+        SetDefaultValue(dto);
         this._allComponenDtoDic.Add(component.CurrentId, dto);
-        this._componentDic.Add(componentId, component);
+        //this._componentDic.Add(componentId, component);
         this._currentFlag.SetFlag(componentId);
         this._lastOperateComponent = dto;
         if (_changeComponentCallBack != null)
@@ -150,12 +152,13 @@ public class Entity
     /// <returns></returns>
     public Entity RemoveComponent(Int64 componentId)
     {
-        if (!_componentDic.ContainsKey(componentId) || !_allComponenDtoDic.ContainsKey(componentId))
+        //!_componentDic.ContainsKey(componentId) || 
+        if (!_allComponenDtoDic.ContainsKey(componentId))
         {
             throw new Exception("删除组件失败,组件不存在,组件类型:" + componentId.ToString());
         }
         _allComponenDtoDic.Remove(componentId);
-        _componentDic.Remove(componentId);
+        //_componentDic.Remove(componentId);
         _currentFlag.RemoveFlag(componentId);
         if (_lastOperateComponent.CurrentComponent.CurrentId == componentId)
         {
@@ -276,24 +279,18 @@ public class Entity
         }
         return t;
     }
-    /// <summary>
-    /// 创建后代
-    /// </summary>
-    public Entity CreatePosterity()
-    {
-        Entity entity = Observer.Instance.CreateEntity();
-        if (this.ChildList == null)
-        {
-            this.ChildList = new List<Entity>();
-        }
-        this.ChildList.Add(entity);
-        entity.Parent = this;
-        return entity;
-    }
 
     #endregion
 
     #region 私有方法
+
+    private void SetDefaultValue(ComponentDto dto)
+    {
+        foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
+        {
+            item.Value.Setter(this, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
+        }
+    }
 
 
     #endregion

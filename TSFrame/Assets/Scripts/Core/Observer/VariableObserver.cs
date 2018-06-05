@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-public sealed partial class Observer : MonoBehaviour
+public sealed partial class Observer
 {
     private static Observer _instance = null;
     /// <summary>

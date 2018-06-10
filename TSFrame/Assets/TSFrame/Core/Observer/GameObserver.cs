@@ -49,10 +49,10 @@ public sealed partial class Observer
     /// 执行一帧
     /// </summary>
     /// <returns></returns>
-    public Observer GameOneStep()
+    public Observer OneStep()
     {
         if (_isRun && _pause)
-            SystemOneStep();
+            GameOneStep();
         return this;
     }
     /// <summary>
@@ -68,10 +68,10 @@ public sealed partial class Observer
     }
 
     /// <summary>
-    /// 启动观察着
+    /// 游戏启动
     /// </summary>
     /// <returns></returns>
-    public Observer Run()
+    public Observer GameLaunch()
     {
         ILHelper.SetChangeCallBack("Call");
         VariableLoad();
@@ -83,6 +83,8 @@ public sealed partial class Observer
         NetLoad();
         SystemLoad();
         EntityLoad();
+        PoolLoad();
+        SceneLoad();
         _isRun = true;
         return this;
     }
@@ -97,5 +99,20 @@ public sealed partial class Observer
 
     partial void GameUpdate()
     {
+    }
+
+    partial void GameOneStep()
+    {
+        VariableUpdate();
+        ResourcesUpdate();
+        CameraUpdate();
+        MatchUpdate();
+        GameUpdate();
+        UIUpdate();
+        NetUpdate();
+        SystemUpdate();
+        EntityUpdate();
+        PoolUpdate();
+        SceneUpdate();
     }
 }

@@ -163,6 +163,22 @@ public sealed partial class Observer
 
     #endregion
 
+    #region Pool Var
+    /// <summary>
+    /// 对象池实体
+    /// </summary>
+    private GameObject _poolGameObject;
+
+    #endregion
+
+    #region Scene Var
+    /// <summary>
+    /// 对象池实体
+    /// </summary>
+    private GameObject _sceneGameObject;
+
+    #endregion
+
     #region Implement Method
 
     partial void VariableLoad()

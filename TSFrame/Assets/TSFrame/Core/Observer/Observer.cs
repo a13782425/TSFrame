@@ -23,6 +23,8 @@ public sealed partial class Observer : MonoBehaviour
     partial void GameLoad();
     partial void GameUpdate();
 
+    partial void GameOneStep();
+
     #endregion
 
     #region UIObserver Method
@@ -72,7 +74,6 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void SystemLoad();
     partial void SystemUpdate();
-    partial void SystemOneStep();
 
     #endregion
 
@@ -80,6 +81,22 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void EntityLoad();
     partial void EntityUpdate();
+
+    #endregion
+
+    #region PoolObserver Method
+
+    partial void PoolLoad();
+
+    partial void PoolUpdate();
+
+    #endregion
+
+    #region SceneObserver Method
+
+    partial void SceneLoad();
+
+    partial void SceneUpdate();
 
     #endregion
 
@@ -96,19 +113,11 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void Update()
     {
-        if (!_isRun)
+        if (!_isRun||_pause)
         {
             return;
         }
-        VariableUpdate();
-        ResourcesUpdate();
-        CameraUpdate();
-        MatchUpdate();
-        GameUpdate();
-        UIUpdate();
-        NetUpdate();
-        SystemUpdate();
-        EntityUpdate();
+        GameOneStep();
     }
 
     #endregion

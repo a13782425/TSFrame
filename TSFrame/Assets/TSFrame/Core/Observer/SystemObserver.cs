@@ -53,12 +53,6 @@ public sealed partial class Observer
 
     partial void SystemUpdate()
     {
-        if (!_pause)
-            SystemOneStep();
-    }
-
-    partial void SystemOneStep()
-    {
         if (_systemExecuteList.Count > 0)
         {
             foreach (IExecuteSystem item in _systemExecuteList)

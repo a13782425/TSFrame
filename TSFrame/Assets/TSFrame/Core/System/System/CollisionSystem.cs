@@ -37,25 +37,30 @@ public class CollisionSystem : IReactiveSystem
                     case CollisionEnum.Enter:
                         if (enter != null)
                         {
-                            enter.Invoke(entity, item.CurrentCollision);
+                            Invoke(enter, entity, item.CurrentCollision);
                         }
                         if (stay != null)
                         {
                             item.CollisionState = CollisionEnum.Stay;
                             isChange = true;
                         }
+                        if (item.CollisionState == CollisionEnum.Enter)
+                        {
+                            item.CollisionState = CollisionEnum.None;
+                            isRemove = true;
+                        }
                         break;
                     case CollisionEnum.Stay:
                         if (stay != null)
                         {
-                            stay.Invoke(entity, item.CurrentCollision);
+                            Invoke(stay, entity, item.CurrentCollision);
                             isChange = true;
                         }
                         break;
                     case CollisionEnum.Exit:
                         if (exit != null)
                         {
-                            exit.Invoke(entity, item.CurrentCollision);
+                            Invoke(exit, entity, item.CurrentCollision);
                             item.CollisionState = CollisionEnum.None;
                             isRemove = true;
                         }
@@ -74,6 +79,17 @@ public class CollisionSystem : IReactiveSystem
                 collisionList.RemoveAll(a => a.CollisionState == CollisionEnum.None);
             }
         }
+    }
+
+
+    private void Invoke(CollisionCallBack callback, Entity entity, Collision collision)
+    {
+        callback.Invoke(entity, collision);
+        if (entity.Parent != null)
+        {
+            Invoke(callback, entity.Parent, collision);
+        }
+        return;
     }
 }
 

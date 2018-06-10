@@ -36,25 +36,30 @@ public class Trigger2DSystem : IReactiveSystem
                     case TriggerEnum.Enter:
                         if (enter != null)
                         {
-                            enter.Invoke(entity, item.CurrentCollider);
+                            Invoke(enter, entity, item.CurrentCollider);
                         }
                         if (stay != null)
                         {
                             item.TriggerState = TriggerEnum.Stay;
                             isChange = true;
                         }
+                        if (item.TriggerState == TriggerEnum.Enter)
+                        {
+                            item.TriggerState = TriggerEnum.None;
+                            isRemove = true;
+                        }
                         break;
                     case TriggerEnum.Stay:
                         if (stay != null)
                         {
-                            stay.Invoke(entity, item.CurrentCollider);
+                            Invoke(stay, entity, item.CurrentCollider);
                             isChange = true;
                         }
                         break;
                     case TriggerEnum.Exit:
                         if (exit != null)
                         {
-                            exit.Invoke(entity, item.CurrentCollider);
+                            Invoke(exit, entity, item.CurrentCollider);
                             item.TriggerState = TriggerEnum.None;
                             isRemove = true;
                         }
@@ -73,6 +78,15 @@ public class Trigger2DSystem : IReactiveSystem
                 triggerList.RemoveAll(a => a.TriggerState == TriggerEnum.None);
             }
         }
+    }
+    private void Invoke(Trigger2DCallBack callback, Entity entity, Collider2D collider)
+    {
+        callback.Invoke(entity, collider);
+        if (entity.Parent != null)
+        {
+            Invoke(callback, entity.Parent, collider);
+        }
+        return;
     }
 }
 

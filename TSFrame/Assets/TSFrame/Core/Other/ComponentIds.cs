@@ -39,7 +39,7 @@ public static class ComponentIds
     /// <summary>
     /// 游戏物体
     /// </summary>
-    public const Int64 GAME_OBJECT = (1 << 2) | SYSTEM_LOW_FLAG;
+    public const Int64 GAME_OBJECT = (1 << 2) | PLAYER_HIGH_FLAG;
     /// <summary>
     /// 实例化物体
     /// </summary>
@@ -80,11 +80,19 @@ public static class ComponentIds
     /// 是否存在物理
     /// </summary>
     public const Int64 HAS_PHYSICAL = (1 << 12) | SYSTEM_LOW_FLAG;
-
+    /// <summary>
+    /// 是否可视
+    /// </summary>
+    public const Int64 ACTIVE = (1 << 13) | SYSTEM_LOW_FLAG;
+    /// <summary>
+    /// 对象池
+    /// </summary>
+    public const Int64 POOL = (1 << 14) | SYSTEM_LOW_FLAG;
     /// <summary>
     /// 测试
     /// </summary>
     public const Int64 TEST = (1 << 0) | SYSTEM_HIGH_FLAG;
+
     private static readonly Dictionary<Int64, Type> _componentTypeDic = new Dictionary<long, Type>();
 
 
@@ -93,6 +101,8 @@ public static class ComponentIds
     /// 组件字典
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
+
+
 
 
 

@@ -9,6 +9,7 @@ using System.Text;
 
 public delegate void PropertySetter(Entity entity, IComponent instance, object value);
 public delegate object PropertyGetter(object instance);
+
 /// <summary>
 /// 框架中component属性
 /// </summary>
@@ -18,6 +19,7 @@ public class TSProperty
     public Type PropertyType { get; set; }
     public PropertySetter Setter { get; set; }
     public PropertyGetter Getter { get; set; }
+    public bool DontCopy { get; set; }
 }
 /// <summary>
 /// 生成方法，仅限ecs中component属性
@@ -30,6 +32,8 @@ public static class ILHelper
 
     private static Type _dataDrivenType = typeof(DataDrivenAttribute);
 
+    private static Type _dontCopyType = typeof(DontCopyAttribute);
+
     private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
 
     public static void SetChangeCallBack(string methodName)
@@ -38,6 +42,13 @@ public static class ILHelper
         {
             _methodName = methodName;
         }
+    }
+
+    public static object DeepCopyComponent(IComponent instance)
+    {
+
+
+        return null;
     }
 
     public static Dictionary<string, TSProperty> RegisteComponent(IComponent instance)
@@ -76,6 +87,7 @@ public static class ILHelper
                         isDataDriven = isNeedReactive;
                     }
                     TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
+                    tsProperty.DontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
                     tempReturnDic.Add(property.Name.ToLower(), tsProperty);
                 }
             }
@@ -98,6 +110,7 @@ public static class ILHelper
                         isDataDriven = isNeedReactive;
                     }
                     TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
+                    tsProperty.DontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
                     tempReturnDic.Add(fieldInfo.Name.ToLower(), tsProperty);
                 }
             }

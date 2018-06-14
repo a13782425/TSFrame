@@ -40,6 +40,12 @@ public class Entity
     /// </summary>
     private ComponentCallBack _changeComponentCallBack = null;
     /// <summary>
+    /// 获取组件方法
+    /// </summary>
+    private GetComponentFunc _getComponentFunc = null;
+
+
+    /// <summary>
     /// 父亲
     /// </summary>
     private Entity _parent = null;
@@ -60,11 +66,13 @@ public class Entity
 
     #region 构造
 
-    public Entity()
+    public Entity(ComponentCallBack componentCallBack, GetComponentFunc getFunc)
     {
         _guid = Guid.NewGuid().ToString();
         _id = _guid.GetHashCode();
         ChildList = new List<Entity>();
+        _changeComponentCallBack = componentCallBack;
+        _getComponentFunc = getFunc;
     }
 
     #endregion
@@ -98,16 +106,16 @@ public class Entity
         return _currentFlag;
     }
 
-    /// <summary>
-    /// 设置组件改变时候的回调
-    /// </summary>
-    /// <param name="callBack"></param>
-    /// <returns></returns>
-    public Entity SetChangeComponent(ComponentCallBack callBack)
-    {
-        _changeComponentCallBack = callBack;
-        return this;
-    }
+    ///// <summary>
+    ///// 设置组件改变时候的回调
+    ///// </summary>
+    ///// <param name="callBack"></param>
+    ///// <returns></returns>
+    //public Entity SetChangeComponent(ComponentCallBack callBack)
+    //{
+    //    _changeComponentCallBack = callBack;
+    //    return this;
+    //}
 
     /// <summary>
     /// 增加组件，会保留最后增加的组件
@@ -125,7 +133,12 @@ public class Entity
         {
             throw new Exception("增加组件失败,组件ID查询失败,组件类型:" + componentId.ToString());
         }
-        IComponent component = Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
+        if (_getComponentFunc == null)
+        {
+            throw new Exception("无法获取组件!!!");
+        }
+        //IComponent component = Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
+        IComponent component = _getComponentFunc(componentId);
         ComponentDto dto = new ComponentDto();
         dto.CurrentComponent = component;
         dto.PropertyDic = ILHelper.RegisteComponent(component);
@@ -136,7 +149,7 @@ public class Entity
         this._lastOperateComponent = dto;
         if (_changeComponentCallBack != null)
         {
-            _changeComponentCallBack.Invoke(this);
+            _changeComponentCallBack.Invoke(this, component);
         }
         return this;
     }
@@ -153,20 +166,41 @@ public class Entity
         {
             throw new Exception("删除组件失败,组件不存在,组件类型:" + componentId.ToString());
         }
+        ComponentDto dto = _allComponenDtoDic[componentId];
         _allComponenDtoDic.Remove(componentId);
         //_componentDic.Remove(componentId);
         _currentFlag.RemoveFlag(componentId);
-        if (_lastOperateComponent.CurrentComponent.CurrentId == componentId)
+        if (_lastOperateComponent != null)
         {
-            _lastOperateComponent = null;
+            if (_lastOperateComponent.CurrentComponent.CurrentId == componentId)
+            {
+                _lastOperateComponent = null;
+            }
         }
         if (_changeComponentCallBack != null)
         {
-            _changeComponentCallBack.Invoke(this);
+            _changeComponentCallBack.Invoke(this, dto.CurrentComponent);
         }
         return this;
     }
-
+    /// <summary>
+    /// 删除组件
+    /// </summary>
+    /// <returns></returns>
+    public Entity RemoveComponentAll()
+    {
+        foreach (KeyValuePair<Int64, ComponentDto> dto in this._allComponenDtoDic)
+        {
+            _allComponenDtoDic.Remove(dto.Key);
+            _currentFlag.RemoveFlag(dto.Key);
+            if (_changeComponentCallBack != null)
+            {
+                _changeComponentCallBack.Invoke(this, dto.Value.CurrentComponent);
+            }
+        }
+        _lastOperateComponent = null;
+        return this;
+    }
     /// <summary>
     /// 设置组件值，对最后一个添加的组件操作
     /// </summary>
@@ -314,6 +348,38 @@ public class Entity
         return t;
     }
 
+    /// <summary>
+    /// 从目标实体拷贝到实体
+    /// </summary>
+    /// <returns></returns>
+    public Entity CopyComponent(Entity entity)
+    {
+        foreach (KeyValuePair<Int64, ComponentDto> componentDto in entity._allComponenDtoDic)
+        {
+            if (this.GetComponentFlag().HasFlag(componentDto.Key))
+            {
+                continue;
+            }
+            else
+            {
+                this.AddComponent(componentDto.Key);
+            }
+        }
+        foreach (KeyValuePair<Int64, ComponentDto> componentDto in entity._allComponenDtoDic)
+        {
+            ComponentDto dto = componentDto.Value;
+            foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
+            {
+                if (item.Value.DontCopy)
+                {
+                    continue;
+                }
+                this.SetValue(componentDto.Key, item.Key, item.Value.Getter(dto.CurrentComponent));
+            }
+        }
+        return this;
+    }
+
     #endregion
 
     #region 私有方法
@@ -322,7 +388,7 @@ public class Entity
     {
         foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
         {
-            item.Value.Setter(this, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
+            item.Value.Setter(null, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
         }
     }
 

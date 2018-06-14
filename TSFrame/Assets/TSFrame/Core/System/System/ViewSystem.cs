@@ -10,7 +10,14 @@ public class ViewSystem : IReactiveSystem
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.VIEW, ComponentIds.GAME_OBJECT);
+            return Observer.Instance.GetFlag(ComponentIds.VIEW);
+        }
+    }
+    public ComponentFlag ReactiveIgnoreCondition
+    {
+        get
+        {
+            return ComponentFlag.None;
         }
     }
 

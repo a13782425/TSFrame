@@ -8,5 +8,10 @@ public interface IReactiveSystem : ISystem
     /// 触发条件
     /// </summary>
     ComponentFlag ReactiveCondition { get; }
+    /// <summary>
+    /// 触发忽略条件
+    /// </summary>
+    ComponentFlag ReactiveIgnoreCondition { get; }
+
     void Execute(List<Entity> entitys);
 }

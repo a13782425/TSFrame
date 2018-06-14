@@ -13,7 +13,13 @@ public class TriggerSystem : IReactiveSystem
             return Observer.Instance.GetFlag(ComponentIds.TRIGGER, ComponentIds.GAME_OBJECT);
         }
     }
-
+    public ComponentFlag ReactiveIgnoreCondition
+    {
+        get
+        {
+            return ComponentFlag.None;
+        }
+    }
     public void Execute(List<Entity> entitys)
     {
         foreach (Entity entity in entitys)

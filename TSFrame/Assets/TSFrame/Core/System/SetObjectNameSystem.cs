@@ -13,6 +13,13 @@ public class SetObjectNameSystem : IReactiveSystem
             return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT_NAME, ComponentIds.GAME_OBJECT);
         }
     }
+    public ComponentFlag ReactiveIgnoreCondition
+    {
+        get
+        {
+            return Observer.Instance.GetFlag(0);
+        }
+    }
 
     public void Execute(List<Entity> entitys)
     {

@@ -11,7 +11,13 @@ public class CollisionSystem : IReactiveSystem
             return Observer.Instance.GetFlag(ComponentIds.COLLISION, ComponentIds.GAME_OBJECT);
         }
     }
-
+    public ComponentFlag ReactiveIgnoreCondition
+    {
+        get
+        {
+            return ComponentFlag.None;
+        }
+    }
     public void Execute(List<Entity> entitys)
     {
         foreach (Entity entity in entitys)

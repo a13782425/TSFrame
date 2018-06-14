@@ -5,8 +5,6 @@ using System.Text;
 
 public class Group
 {
-    private List<Int64> _componentList = null;
-
     private ComponentFlag _componentFlag;
 
     public ComponentFlag ComponentFlag { get { return _componentFlag; } }

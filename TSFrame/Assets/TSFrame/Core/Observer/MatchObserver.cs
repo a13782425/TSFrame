@@ -54,10 +54,19 @@ public sealed partial class Observer
     [Obsolete("外界不要调用")]
     public void DataDrivenMethod(Entity entity, IComponent com)
     {
+        if (entity == null)
+        {
+            return;
+        }
         foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
         {
-            ComponentFlag flag = (item.Key as IReactiveSystem).ReactiveCondition;
-            if (flag.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(flag))
+            ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
+            ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+            if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+            {
+                continue;
+            }
+            if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
             {
                 if (!item.Value.Contains(entity))
                 {
@@ -81,17 +90,46 @@ public sealed partial class Observer
 
     }
 
-    partial void MatchEntity(Entity entity)
+    partial void MatchEntity(Entity entity, bool isActive)
     {
         foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
         {
-            if ((entity.GetComponentFlag() & item.Key) == item.Key)
+            if (isActive)
             {
-                item.Value.AddEntity(entity);
+                if (entity.GetComponentFlag().HasFlag(item.Key))
+                {
+                    item.Value.AddEntity(entity);
+                }
             }
             else
             {
                 item.Value.RemoveEntity(entity);
+            }
+        }
+    }
+
+    partial void MatchEntity(Entity entity, IComponent component)
+    {
+
+        if (!entity.GetComponentFlag().HasFlag(component.CurrentId))
+        {
+            foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            {
+                if (item.Key.HasFlag(component.CurrentId))
+                {
+                    item.Value.RemoveEntity(entity);
+                }
+            }
+            RecoverComponent(component);
+        }
+        else
+        {
+            foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            {
+                if (entity.GetComponentFlag().HasFlag(item.Key))
+                {
+                    item.Value.AddEntity(entity);
+                }
             }
         }
     }

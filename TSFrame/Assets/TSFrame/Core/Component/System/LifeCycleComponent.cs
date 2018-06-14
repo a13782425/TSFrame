@@ -16,7 +16,7 @@ public class LifeCycleComponent : IComponent
     /// <summary>
     /// 生命周期
     /// </summary>
-    private LifeCycleEnum lifeCycle = LifeCycleEnum.None;
+    private LifeCycleEnum lifeCycle;
 
 }
 

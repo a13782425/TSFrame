@@ -168,6 +168,10 @@ public sealed partial class Observer
     /// 对象池实体
     /// </summary>
     private GameObject _poolGameObject;
+    /// <summary>
+    /// 组件对象池
+    /// </summary>
+    private Dictionary<Int64, Stack<IComponent>> _componentPoolDic;
 
     #endregion
 
@@ -190,8 +194,23 @@ public sealed partial class Observer
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
+        _componentPoolDic = new Dictionary<Int64, Stack<IComponent>>();
+        CreateComponentPool();
         _variableGameObject = new GameObject("VariableGameObject");
         _variableGameObject.transform.SetParent(this.transform);
+    }
+
+    partial void CreateComponentPool()
+    {
+        foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
+        {
+            _componentPoolDic.Add(item.Key, new Stack<IComponent>());
+            for (int i = 0; i < 10; i++)
+            {
+                IComponent component = Activator.CreateInstance(item.Value) as IComponent;
+                _componentPoolDic[item.Key].Push(component);
+            }
+        }
     }
 
     partial void VariableUpdate()
@@ -306,6 +325,44 @@ public sealed partial class Observer
         }
 
 
+    }
+
+    class EntityPoolDto
+    {
+        private Entity _origin = null;
+        private Stack<Entity> _entityStack;
+        public EntityPoolDto(Entity origin)
+        {
+            if (origin == null)
+            {
+                throw new Exception("实体对象池源为空");
+            }
+            _origin = origin;
+            _origin.SetValue(ActiveComponentVariable.active, false);
+            _entityStack = new Stack<Entity>();
+        }
+
+        public Entity Pop()
+        {
+            if (_entityStack.Count > 0)
+            {
+                return _entityStack.Pop();
+            }
+            Entity entity = Instance.GetEntity();
+
+            entity.CopyComponent(_origin).Parent = _origin.Parent;
+
+            return entity;
+        }
+        public bool Contains(Entity entity)
+        {
+            return _entityStack.Contains(entity);
+        }
+
+        public void Puse(Entity entity)
+        {
+            _entityStack.Push(entity);
+        }
     }
 
     #endregion

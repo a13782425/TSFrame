@@ -10,7 +10,13 @@ public class HasPhysicalSystem : IReactiveSystem
             return Observer.Instance.GetFlag(ComponentIds.HAS_PHYSICAL, ComponentIds.GAME_OBJECT);
         }
     }
-
+    public ComponentFlag ReactiveIgnoreCondition
+    {
+        get
+        {
+            return ComponentFlag.None;
+        }
+    }
     public void Execute(List<Entity> entitys)
     {
         foreach (Entity item in entitys)

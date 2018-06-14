@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UnityEngine;
 
-public class GameObjectComponent : IComponent
+
+public class ActiveComponent : IComponent, IReactiveComponent
 {
     public Int64 CurrentId
     {
         get
         {
-            return ComponentIds.GAME_OBJECT;
+            return ComponentIds.ACTIVE;
         }
     }
-
-    [DontCopy]
-    private GameObject value;
-
+    [DataDriven]
+    public bool active = false;
 }
 

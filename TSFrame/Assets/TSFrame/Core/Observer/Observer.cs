@@ -38,6 +38,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void VariableLoad();
     partial void VariableUpdate();
+    partial void CreateComponentPool();
 
     #endregion
 
@@ -59,7 +60,8 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void MatchLoad();
     partial void MatchUpdate();
-    partial void MatchEntity(Entity entity);
+    partial void MatchEntity(Entity entity, IComponent component);
+    partial void MatchEntity(Entity entity, bool isActive);
 
     #endregion
 
@@ -87,8 +89,8 @@ public sealed partial class Observer : MonoBehaviour
     #region PoolObserver Method
 
     partial void PoolLoad();
-
     partial void PoolUpdate();
+    partial void RecoverComponent(IComponent component);
 
     #endregion
 
@@ -113,7 +115,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void Update()
     {
-        if (!_isRun||_pause)
+        if (!_isRun || _pause)
         {
             return;
         }

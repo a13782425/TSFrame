@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------------------
-//-----------------------------------generate file 2018-06-10 19:16:20----------------------------------------
+//-----------------------------------generate file 2018-06-14 23:23:44----------------------------------------
 //------------------------------------------------------------------------------------------------------------
 
 public class AdditiveComponentVariable
@@ -26,6 +26,11 @@ public class LinkComponentVariable
 public class StringComponentVariable
 {
     public static ComponentValue Value = new ComponentValue() { ComponentId = -2147483647, TSPropertyName = "Value" };
+}
+
+public class ActiveComponentVariable
+{
+    public static ComponentValue active = new ComponentValue() { ComponentId = -2147475456, TSPropertyName = "active" };
 }
 
 public class Collision2DComponentVariable
@@ -59,6 +64,12 @@ public class HasPhysicalComponentVariable
 public class LifeCycleComponentVariable
 {
     public static ComponentValue lifeCycle = new ComponentValue() { ComponentId = -2147483520, TSPropertyName = "lifeCycle" };
+}
+
+public class PoolComponentVariable
+{
+    public static ComponentValue poolName = new ComponentValue() { ComponentId = -2147467264, TSPropertyName = "poolName" };
+    public static ComponentValue recover = new ComponentValue() { ComponentId = -2147467264, TSPropertyName = "recover" };
 }
 
 public class Trigger2DComponentVariable

@@ -8,6 +8,10 @@ using System.Text;
 /// </summary>
 public struct ComponentFlag
 {
+    private static ComponentFlag _none = new ComponentFlag();
+    public static ComponentFlag None { get { return _none; } }
+
+
     private Int64 _systemLowFlag;
     private Int64 _systemHighFlag;
     private Int64 _playerlowFlag;
@@ -20,12 +24,21 @@ public struct ComponentFlag
     public Int64 SystemLowFlag { get { return _systemLowFlag; } private set { _systemLowFlag = value; } }
 
     public Int64 SystemHighFlag { get { return _systemHighFlag; } private set { _systemHighFlag = value; } }
+
     public bool HasFlag(ComponentFlag flag)
     {
+        if (flag.GetHashCode() == 0)
+        {
+            return false;
+        }
         return (this.SystemLowFlag & flag.SystemLowFlag) == flag.SystemLowFlag && (this.SystemHighFlag & flag.SystemHighFlag) == flag.SystemHighFlag && (this.PlayerLowFlag & flag.PlayerLowFlag) == flag.PlayerLowFlag && (this.PlayerHighFlag & flag.PlayerHighFlag) == flag.PlayerHighFlag;
     }
     public Boolean HasFlag(Int64 flag)
     {
+        if (flag == 0)
+        {
+            return false;
+        }
         if ((flag & ComponentIds.SYSTEM_LOW_FLAG) == ComponentIds.SYSTEM_LOW_FLAG)
         {
             //系统低位
@@ -36,15 +49,15 @@ public struct ComponentFlag
             //系统高位
             return (flag & SystemHighFlag) == flag;
         }
-        else if ((flag & ComponentIds.PLAYER_LOW_FLAG) == ComponentIds.PLAYER_LOW_FLAG)
-        {
-            //用户低位
-            return (flag & PlayerLowFlag) == flag;
-        }
-        else
+        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             return (flag & PlayerHighFlag) == flag;
+        }
+        else
+        {
+            //用户低位
+            return (flag & PlayerLowFlag) == flag;
         }
     }
 
@@ -60,15 +73,15 @@ public struct ComponentFlag
             //系统高位
             SystemHighFlag = flag | SystemHighFlag;
         }
-        else if ((flag & ComponentIds.PLAYER_LOW_FLAG) == ComponentIds.PLAYER_LOW_FLAG)
-        {
-            //用户低位
-            PlayerLowFlag = flag | PlayerLowFlag;
-        }
-        else
+        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             PlayerHighFlag = flag | PlayerHighFlag;
+        }
+        else
+        {
+            //用户低位
+            PlayerLowFlag = flag | PlayerLowFlag;
         }
         return this;
     }
@@ -84,15 +97,15 @@ public struct ComponentFlag
             //系统高位
             SystemHighFlag = flag ^ SystemHighFlag;
         }
-        else if ((flag & ComponentIds.PLAYER_LOW_FLAG) == ComponentIds.PLAYER_LOW_FLAG)
-        {
-            //用户低位
-            PlayerLowFlag = flag ^ PlayerLowFlag;
-        }
-        else
+        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             PlayerHighFlag = flag ^ PlayerHighFlag;
+        }
+        else
+        {
+            //用户低位
+            PlayerLowFlag = flag ^ PlayerLowFlag;
         }
         return this;
     }

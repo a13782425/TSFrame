@@ -42,13 +42,14 @@ public sealed partial class Observer
     {
         _systemGameObject = new GameObject("SystemGameObject");
         _systemGameObject.transform.SetParent(this.transform);
+        AddSystem(new ActiveSystem());
+        AddSystem(new ViewSystem());
         AddSystem(new LifeCycleSystem());
         AddSystem(new HasPhysicalSystem());
         AddSystem(new Collision2DSystem());
         AddSystem(new CollisionSystem());
         AddSystem(new TriggerSystem());
         AddSystem(new Trigger2DSystem());
-        AddSystem(new ViewSystem());
     }
 
     partial void SystemUpdate()

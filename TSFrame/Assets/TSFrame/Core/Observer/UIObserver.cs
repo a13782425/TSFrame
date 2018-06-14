@@ -17,7 +17,6 @@ public sealed partial class Observer
     public Observer UILoadRootUI(string prefabName, string rootName = "root", string instantName = null)
     {
         CreateEntity()
-            .SetChangeComponent(MatchEntity)
             .AddComponent(ComponentIds.VIEW);
         //CreateEntity()
         //    .SetChangeComponent(MatchEntity)

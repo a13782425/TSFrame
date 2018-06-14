@@ -15,18 +15,55 @@ public sealed partial class Observer
 
     public Entity CreateEntity(Entity parent)
     {
-        Entity entity = new Entity();
-        entity.SetChangeComponent(MatchEntity);
-        _entityDic.Add(entity.GetId(), entity);
-        MatchEntity(entity);
+        Entity entity = GetEntity();
         if (parent != null)
         {
             parent.ChildList.Add(entity);
             entity.Parent = parent;
         }
+        entity.SetValue(ActiveComponentVariable.active, true);
+        return entity;
+    }
+    public Entity CreateEntityToPool(string poolName)
+    {
+        if (string.IsNullOrEmpty(poolName))
+        {
+            return CreateEntity();
+        }
+        return CreateEntityToPool(poolName, null);
+    }
+    public Entity CreateEntityToPool(string poolName, Entity parent)
+    {
+        if (string.IsNullOrEmpty(poolName))
+        {
+            return CreateEntity();
+        }
+        Entity entity = GetEntity(poolName);
+        if (parent != null)
+        {
+            if (entity.Parent != null)
+            {
+                entity.Parent.ChildList.Remove(entity);
+            }
+            parent.ChildList.Add(entity);
+            entity.Parent = parent;
+        }
+        entity.SetValue(ActiveComponentVariable.active, true);
         return entity;
     }
 
+
+    public void SetActive(Entity entity, bool isActive)
+    {
+        if (entity.ChildList.Count > 0)
+        {
+            for (int i = 0; i < entity.ChildList.Count; i++)
+            {
+                SetActive(entity.ChildList[i], isActive);
+            }
+        }
+        MatchEntity(entity, isActive);
+    }
 
 
     #endregion

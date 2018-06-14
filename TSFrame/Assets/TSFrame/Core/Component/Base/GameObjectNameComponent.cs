@@ -14,6 +14,6 @@ public class GameObjectNameComponent : IComponent, IReactiveComponent
         }
     }
     [DataDriven]
-    private string name = "";
+    private string name;
 }
 

@@ -11,20 +11,21 @@ public class GameStart : MonoBehaviour
     {
         //Observer.Instance.SetIsTest(true);
     }
+    Entity entity1;
     private void Start()
     {
         //初始化观察者
         Observer.Instance
             .SetIsTest(true)//设置是否是测试版
             .SetResourcesTime(100)//设置资源监测时间
-            .Run();//启动观察者
+            .GameLaunch();//启动观察者
         //增加系统
         Observer.Instance
             .AddSystem(new MoveSystem())
             .AddSystem(new InputSystem());
 
-        //创建实体
-        Entity entity1 = Observer.Instance
+        //创建移动的实体
+        entity1 = Observer.Instance
             .CreateEntity()
             .AddComponent(ComponentIds.STRING)//增加string组件
             .AddComponent(ComponentIds.INPUT)
@@ -33,29 +34,44 @@ public class GameStart : MonoBehaviour
             .SetValue(ComponentIds.STRING, "value", "string测试")//设置string组件的参数
             .SetValue(ComponentIds.VIEW, "pos", new Vector3(0, 0, 15))//设置实例化组件坐标
             .SetValue("prefabname", "Test");//设置预制物体名称
-        Debug.LogError(entity1.GetValue<GameObject>(ComponentIds.GAME_OBJECT, "value"));//获取游戏物体组件的游戏物体
-        
-        //创建带有碰撞的对象
-        Entity entity2 = Observer.Instance
-            .CreateEntity()
-            .AddComponent(ComponentIds.INPUT)
-            .AddComponent(ComponentIds.VIEW)
-            .AddComponent(ComponentIds.GAME_OBJECT)
-            .AddComponent(ComponentIds.HAS_PHYSICAL)
-            .AddComponent(ComponentIds.COLLISION)
-            .SetValue(ViewComponentVariable.prefabName, "Test")
-            .SetValue(ViewComponentVariable.pos, new Vector3(0, 0, 15))
-            .SetValue(CollisionComponentVariable.enterCallBack, new CollisionCallBack(enterCallBack))
-            .SetValue(CollisionComponentVariable.exitCallBack, new CollisionCallBack(exitCallBack))
-            .SetValue(CollisionComponentVariable.stayCallBack, new CollisionCallBack(stayCallBack))
-            .SetValue(HasPhysicalComponentVariable.isHas, true);
-        Entity entity3 = Observer.Instance
-            .CreateEntity()
-            .AddComponent(ComponentIds.VIEW)
-            .AddComponent(ComponentIds.GAME_OBJECT)
-            .SetValue(ViewComponentVariable.prefabName, "Test")
-            .SetValue(ViewComponentVariable.pos, new Vector3(10, 0, 15));
+        Invoke("Stop", 10);
 
+        ////创建带有碰撞的对象
+        //Entity entity2 = Observer.Instance
+        //    .CreateEntity()
+        //    .AddComponent(ComponentIds.INPUT)
+        //    .AddComponent(ComponentIds.VIEW)
+        //    .AddComponent(ComponentIds.GAME_OBJECT)
+        //    .AddComponent(ComponentIds.HAS_PHYSICAL)
+        //    .AddComponent(ComponentIds.COLLISION)
+        //    .SetValue(ViewComponentVariable.prefabName, "Test")
+        //    .SetValue(ViewComponentVariable.pos, new Vector3(0, 0, 15))
+        //    .SetValue(CollisionComponentVariable.enterCallBack, new CollisionCallBack(enterCallBack))
+        //    .SetValue(CollisionComponentVariable.exitCallBack, new CollisionCallBack(exitCallBack))
+        //    .SetValue(CollisionComponentVariable.stayCallBack, new CollisionCallBack(stayCallBack))
+        //    .SetValue(HasPhysicalComponentVariable.isHas, true);
+        //Entity entity3 = Observer.Instance
+        //    .CreateEntity()
+        //    .AddComponent(ComponentIds.VIEW)
+        //    .AddComponent(ComponentIds.GAME_OBJECT)
+        //    .SetValue(ViewComponentVariable.prefabName, "Test")
+        //    .SetValue(ViewComponentVariable.pos, new Vector3(10, 0, 15));
+
+        ////拷贝一个实体的所有组件
+        //Entity entity4 = Observer.Instance
+        // .CreateEntity().CopyComponent(entity3);
+    }
+    private void Stop()
+    {
+        Debug.LogError("Stop");
+        entity1.SetValue(ActiveComponentVariable.active, false);
+        Invoke("Begin", 5);
+    }
+    private void Begin()
+    {
+        Debug.LogError("Begin");
+        entity1.SetValue(ActiveComponentVariable.active, true);
+        Invoke("Stop", 10);
     }
 
     private void stayCallBack(Entity self, Collision target)

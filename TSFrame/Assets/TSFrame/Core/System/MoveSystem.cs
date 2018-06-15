@@ -17,13 +17,13 @@ public class MoveSystem : IInitSystem, IExecuteSystem
 
     public void Execute()
     {
-        foreach (var item in _currentGroup.EntityList)
+        foreach (KeyValuePair<int, Entity> item in _currentGroup.EntityDic)
         {
-            GameObject obj = item.GetValue<GameObject>(ComponentIds.GAME_OBJECT, "value");
+            GameObject obj = item.Value.GetValue<GameObject>(ComponentIds.GAME_OBJECT, "value");
             if (obj != null)
             {
-                float x = item.GetValue<float>(ComponentIds.INPUT, "x");
-                float y = item.GetValue<float>("y");
+                float x = item.Value.GetValue<float>(InputComponentVariable.x);
+                float y = item.Value.GetValue<float>(InputComponentVariable.y);
                 obj.transform.Translate(new Vector3(x, y, 0));
             }
         }

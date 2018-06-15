@@ -64,6 +64,7 @@ public sealed partial class Observer
             ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
             if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
             {
+                Debug.LogError(com.GetType().Name);
                 continue;
             }
             if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))

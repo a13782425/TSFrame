@@ -6,10 +6,6 @@ using UnityEngine;
 
 public sealed partial class Observer
 {
-    private Dictionary<string, EntityPoolDto> _entityPoolDic = new Dictionary<string, EntityPoolDto>();
-
-    private Stack<Entity> _entityDefaultPool = new Stack<Entity>();
-
     public Observer CreatePool(string poolName, Entity origin)
     {
         if (string.IsNullOrEmpty(poolName))
@@ -18,7 +14,7 @@ public sealed partial class Observer
         {
             return this;
         }
-        EntityPoolDto pool = new EntityPoolDto(origin);
+        EntityPoolDto pool = new EntityPoolDto(poolName, origin);
         _entityPoolDic.Add(poolName, pool);
         return this;
     }
@@ -35,16 +31,13 @@ public sealed partial class Observer
             if (!_entityDefaultPool.Contains(entity))
             {
                 entity.RemoveComponentAll();
-                _entityDefaultPool.Push(entity);
+                _entityDefaultPool.Enqueue(entity);
                 return this;
             }
             return this;
         }
-        if (!_entityPoolDic[poolName].Contains(entity))
-        {
-            entity.SetValue(ActiveComponentVariable.active, false);
-            _entityPoolDic[poolName].Puse(entity);
-        }
+        entity.SetValue(ActiveComponentVariable.active, false);
+        _entityPoolDic[poolName].Enqueue(entity);
         return this;
     }
 
@@ -64,7 +57,7 @@ public sealed partial class Observer
     {
         if (!_componentPoolDic[component.CurrentId].Contains(component))
         {
-            _componentPoolDic[component.CurrentId].Push(component);
+            _componentPoolDic[component.CurrentId].Enqueue(component);
         }
 
     }
@@ -73,7 +66,7 @@ public sealed partial class Observer
     {
         if (_componentPoolDic[currentId].Count > 0)
         {
-            return _componentPoolDic[currentId].Pop();
+            return _componentPoolDic[currentId].Dequeue();
         }
         return Activator.CreateInstance(ComponentIds.ComponentTypeDic[currentId]) as IComponent;
     }
@@ -85,12 +78,13 @@ public sealed partial class Observer
             Entity entity = new Entity(MatchEntity, GetComponent);
             entity.AddComponent(ComponentIds.ACTIVE);
             entity.AddComponent(ComponentIds.LIFE_CYCLE);
+            entity.AddComponent(ComponentIds.POOL);
             _entityDic.Add(entity.GetId(), entity);
             return entity;
         }
         else
         {
-            return _entityDefaultPool.Pop();
+            return _entityDefaultPool.Dequeue();
         }
     }
     Entity GetEntity(string poolName)
@@ -100,7 +94,7 @@ public sealed partial class Observer
             return GetEntity();
         }
 
-        return _entityPoolDic[poolName].Pop();
+        return _entityPoolDic[poolName].Dequeue();
     }
     #endregion
 

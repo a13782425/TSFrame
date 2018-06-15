@@ -171,8 +171,15 @@ public sealed partial class Observer
     /// <summary>
     /// 组件对象池
     /// </summary>
-    private Dictionary<Int64, Stack<IComponent>> _componentPoolDic;
-
+    private Dictionary<Int64, Queue<IComponent>> _componentPoolDic;
+    /// <summary>
+    /// 用户自定义实体对象池
+    /// </summary>
+    private Dictionary<string, EntityPoolDto> _entityPoolDic;
+    /// <summary>
+    /// 默认的对象池
+    /// </summary>
+    private Queue<Entity> _entityDefaultPool = new Queue<Entity>();
     #endregion
 
     #region Scene Var
@@ -194,7 +201,9 @@ public sealed partial class Observer
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        _componentPoolDic = new Dictionary<Int64, Stack<IComponent>>();
+        _componentPoolDic = new Dictionary<Int64, Queue<IComponent>>();
+        _entityDefaultPool = new Queue<Entity>();
+        _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         CreateComponentPool();
         _variableGameObject = new GameObject("VariableGameObject");
         _variableGameObject.transform.SetParent(this.transform);
@@ -204,11 +213,11 @@ public sealed partial class Observer
     {
         foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
         {
-            _componentPoolDic.Add(item.Key, new Stack<IComponent>());
+            _componentPoolDic.Add(item.Key, new Queue<IComponent>());
             for (int i = 0; i < 10; i++)
             {
                 IComponent component = Activator.CreateInstance(item.Value) as IComponent;
-                _componentPoolDic[item.Key].Push(component);
+                _componentPoolDic[item.Key].Enqueue(component);
             }
         }
     }
@@ -329,39 +338,41 @@ public sealed partial class Observer
 
     class EntityPoolDto
     {
+        private string _name;
+
         private Entity _origin = null;
-        private Stack<Entity> _entityStack;
-        public EntityPoolDto(Entity origin)
+        private Queue<Entity> _entityQueue;
+        public EntityPoolDto(string name, Entity origin)
         {
-            if (origin == null)
+            if (origin == null || string.IsNullOrEmpty(name))
             {
                 throw new Exception("实体对象池源为空");
             }
+            _name = name;
             _origin = origin;
             _origin.SetValue(ActiveComponentVariable.active, false);
-            _entityStack = new Stack<Entity>();
+            _origin.SetValue(PoolComponentVariable.poolName, _name);
+            _entityQueue = new Queue<Entity>();
         }
 
-        public Entity Pop()
+        public Entity Dequeue()
         {
-            if (_entityStack.Count > 0)
+            if (_entityQueue.Count > 0)
             {
-                return _entityStack.Pop();
+                return _entityQueue.Dequeue();
             }
             Entity entity = Instance.GetEntity();
-
             entity.CopyComponent(_origin).Parent = _origin.Parent;
-
             return entity;
         }
         public bool Contains(Entity entity)
         {
-            return _entityStack.Contains(entity);
+            return _entityQueue.Contains(entity);
         }
 
-        public void Puse(Entity entity)
+        public void Enqueue(Entity entity)
         {
-            _entityStack.Push(entity);
+            _entityQueue.Enqueue(entity);
         }
     }
 

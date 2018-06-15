@@ -32,10 +32,6 @@ public class Entity
 
     private Int32 _id = 0;
     /// <summary>
-    /// 实例的GUID
-    /// </summary>
-    private String _guid = "";
-    /// <summary>
     /// 组件列表发生改变时候的回调
     /// </summary>
     private ComponentCallBack _changeComponentCallBack = null;
@@ -68,8 +64,7 @@ public class Entity
 
     public Entity(ComponentCallBack componentCallBack, GetComponentFunc getFunc)
     {
-        _guid = Guid.NewGuid().ToString();
-        _id = _guid.GetHashCode();
+        _id = Utils.GetId();
         ChildList = new List<Entity>();
         _changeComponentCallBack = componentCallBack;
         _getComponentFunc = getFunc;
@@ -78,15 +73,6 @@ public class Entity
     #endregion
 
     #region 公共方法
-
-    /// <summary>
-    /// 获取该组件的GUID
-    /// </summary>
-    /// <returns></returns>
-    public String GetGUID()
-    {
-        return _guid;
-    }
 
     /// <summary>
     /// 获取该组件的ID
@@ -191,13 +177,14 @@ public class Entity
     {
         foreach (KeyValuePair<Int64, ComponentDto> dto in this._allComponenDtoDic)
         {
-            _allComponenDtoDic.Remove(dto.Key);
+            //_allComponenDtoDic.Remove(dto.Key);
             _currentFlag.RemoveFlag(dto.Key);
             if (_changeComponentCallBack != null)
             {
                 _changeComponentCallBack.Invoke(this, dto.Value.CurrentComponent);
             }
         }
+        _allComponenDtoDic.Clear();
         _lastOperateComponent = null;
         return this;
     }
@@ -228,14 +215,7 @@ public class Entity
     /// <returns></returns>
     public Entity SetValue(ComponentValue component, object value)
     {
-        if (_lastOperateComponent != null)
-        {
-            SetValue(component.ComponentId, component.TSPropertyName, value);
-        }
-        else
-        {
-            Debug.LogError("请先添加组件!");
-        }
+        SetValue(component.ComponentId, component.TSPropertyName, value);
         return this;
     }
 
@@ -303,15 +283,7 @@ public class Entity
     /// <returns></returns>
     public T GetValue<T>(ComponentValue component)
     {
-        if (_lastOperateComponent != null)
-        {
-            return GetValue<T>(component.ComponentId, component.TSPropertyName);
-        }
-        else
-        {
-            Debug.LogError("请先添加组件!");
-        }
-        return default(T);
+        return GetValue<T>(component.ComponentId, component.TSPropertyName);
     }
     /// <summary>
     /// 获取值
@@ -409,7 +381,7 @@ public class Entity
         {
             return false;
         }
-        return e1.GetId() == e2.GetId() && e1.GetGUID() == e2.GetGUID();
+        return e1.GetId() == e2.GetId();
     }
     public static bool operator !=(Entity e1, Entity e2)
     {

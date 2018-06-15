@@ -33,8 +33,10 @@ public class GameStart : MonoBehaviour
             .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
             .SetValue(ComponentIds.STRING, "value", "string测试")//设置string组件的参数
             .SetValue(ComponentIds.VIEW, "pos", new Vector3(0, 0, 15))//设置实例化组件坐标
-            .SetValue("prefabname", "Test");//设置预制物体名称
-        Invoke("Stop", 10);
+            .SetValue("prefabname", "Test")
+            .SetValue(ActiveComponentVariable.active, false);//设置预制物体名称
+        Observer.Instance.CreatePool("Test", entity1);
+
 
         ////创建带有碰撞的对象
         //Entity entity2 = Observer.Instance
@@ -61,19 +63,24 @@ public class GameStart : MonoBehaviour
         //Entity entity4 = Observer.Instance
         // .CreateEntity().CopyComponent(entity3);
     }
-    private void Stop()
-    {
-        Debug.LogError("Stop");
-        entity1.SetValue(ActiveComponentVariable.active, false);
-        Invoke("Begin", 5);
-    }
-    private void Begin()
-    {
-        Debug.LogError("Begin");
-        entity1.SetValue(ActiveComponentVariable.active, true);
-        Invoke("Stop", 10);
-    }
+    List<Entity> entities = new List<Entity>();
+    float time = 0;
 
+    void Update()
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            entities.Add(Observer.Instance.CreateEntityToPool("Test"));
+        }
+        if (time > 5)
+        {
+            time = 0;
+            Entity entity = entities[0];
+            entities.RemoveAt(0);
+            entity.SetValue(PoolComponentVariable.recover, true);
+        }
+        time += Time.deltaTime;
+    }
     private void stayCallBack(Entity self, Collision target)
     {
         Debug.LogError("Stay");

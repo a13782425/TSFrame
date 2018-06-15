@@ -45,6 +45,8 @@ public sealed partial class Observer
         AddSystem(new ActiveSystem());
         AddSystem(new ViewSystem());
         AddSystem(new LifeCycleSystem());
+        AddSystem(new GameActiveSystem());
+        AddSystem(new PoolSystem());
         AddSystem(new HasPhysicalSystem());
         AddSystem(new Collision2DSystem());
         AddSystem(new CollisionSystem());

@@ -9,20 +9,22 @@ public class Group
 
     public ComponentFlag ComponentFlag { get { return _componentFlag; } }
 
-    private List<Entity> _entityList;
+    private Dictionary<Int32, Entity> _entityDic;
     /// <summary>
-    /// 实体数组
+    /// 实体字典
     /// </summary>
-    public List<Entity> EntityList { get { return _entityList; } }
-
-    public int Count { get { return EntityList.Count; } }
+    public Dictionary<Int32, Entity> EntityDic { get { return _entityDic; } }
+    /// <summary>
+    /// 实体数量
+    /// </summary>
+    public int Count { get { return EntityDic.Count; } }
 
 
     public Group(ComponentFlag flag)
     {
         _componentFlag = flag;
 
-        _entityList = new List<Entity>();
+        _entityDic = new Dictionary<int, Entity>();
     }
     public Group(params Int64[] array)
     {
@@ -34,7 +36,7 @@ public class Group
                 ComponentFlag.SetFlag(array[i]);
             }
         }
-        _entityList = new List<Entity>();
+        _entityDic = new Dictionary<int, Entity>();
     }
     public bool HasComponent(Int32 flag)
     {
@@ -43,22 +45,18 @@ public class Group
 
     public Group AddEntity(Entity entity)
     {
-        //if (!this.ComponentFlag.HasFlag(entity.GetComponentFlag()))
-        //{
-        //    throw new Exception("该组件不属于这个组!");
-        //}
-        if (this._entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
+        if (this._entityDic.ContainsKey(entity.GetId()))
         {
             return this;
         }
-        this._entityList.Add(entity);
+        this._entityDic.Add(entity.GetId(), entity);
         return this;
     }
     public Group RemoveEntity(Entity entity)
     {
-        if (this._entityList.Exists(a => a.GetHashCode() == entity.GetHashCode()))
+        if (this._entityDic.ContainsKey(entity.GetId()))
         {
-            this._entityList.Remove(entity);
+            this._entityDic.Remove(entity.GetId());
         }
         return this;
     }

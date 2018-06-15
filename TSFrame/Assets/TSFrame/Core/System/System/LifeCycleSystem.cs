@@ -19,10 +19,6 @@ public class LifeCycleSystem : IInitSystem, IExecuteSystem
 
     public void Execute()
     {
-        for (int i = 0; i < _currentGroup.EntityList.Count; i++)
-        {
-
-        }
     }
 
     public void Init()

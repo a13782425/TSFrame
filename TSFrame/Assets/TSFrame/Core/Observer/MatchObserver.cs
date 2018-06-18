@@ -51,6 +51,33 @@ public sealed partial class Observer
         }
         return flag;
     }
+    //[Obsolete("外界不要调用")]
+    //public void DataDrivenMethod(Entity entity, IComponent com)
+    //{
+    //    if (entity == null)
+    //    {
+    //        return;
+    //    }
+    //    int sharedId = entity.GetSharedId(com.CurrentId);
+    //    if (sharedId > 0)
+    //    {
+    //        if (_sharedComponentDic.ContainsKey(sharedId))
+    //        {
+    //            foreach (KeyValuePair<Int64, Entity> item in _sharedComponentDic[sharedId].SharedEntityDic)
+    //            {
+    //                DataDrivenMethod(item.Value, com.CurrentId);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            DataDrivenMethod(entity, com.CurrentId);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        DataDrivenMethod(entity, com.CurrentId);
+    //    }
+    //}
     [Obsolete("外界不要调用")]
     public void DataDrivenMethod(Entity entity, IComponent com)
     {
@@ -58,16 +85,80 @@ public sealed partial class Observer
         {
             return;
         }
+        int sharedId = entity.GetSharedId(com.CurrentId);
+        SharedComponent sharedComponent = null;
+        if (sharedId > 0)
+        {
+            sharedComponent = _sharedComponentDic[sharedId];
+        }
+
+        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        {
+            ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
+            ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+            if (sharedId > 0)
+            {
+                foreach (KeyValuePair<Int64, Entity> entityDic in sharedComponent.SharedEntityDic)
+                {
+                    if (entityDic.Value.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                    {
+                        continue;
+                    }
+                    if (reactiveCondition.HasFlag(com.CurrentId) && entityDic.Value.GetComponentFlag().HasFlag(reactiveCondition))
+                    {
+                        if (!item.Value.Contains(entityDic.Value))
+                        {
+                            item.Value.Add(entityDic.Value);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                {
+                    continue;
+                }
+                if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+                {
+                    if (!item.Value.Contains(entity))
+                    {
+                        item.Value.Add(entity);
+                    }
+                }
+            }
+        }
+        //if (sharedId > 0)
+        //{
+        //    if (_sharedComponentDic.ContainsKey(sharedId))
+        //    {
+        //        foreach (KeyValuePair<Int64, Entity> item in _sharedComponentDic[sharedId].SharedEntityDic)
+        //        {
+        //            DataDrivenMethod(item.Value, com.CurrentId);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        DataDrivenMethod(entity, com.CurrentId);
+        //    }
+        //}
+        //else
+        //{
+        //    DataDrivenMethod(entity, com.CurrentId);
+        //}
+    }
+    #endregion
+    partial void DataDrivenMethod(Entity entity, Int64 componentId)
+    {
         foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
         {
             ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
             ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
             if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
             {
-                Debug.LogError(com.GetType().Name);
                 continue;
             }
-            if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+            if (reactiveCondition.HasFlag(componentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
             {
                 if (!item.Value.Contains(entity))
                 {
@@ -76,7 +167,25 @@ public sealed partial class Observer
             }
         }
     }
-    #endregion
+    //partial void DataDrivenMethod(Entity entity, Int64 componentId)
+    //{
+    //    foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+    //    {
+    //        ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
+    //        ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+    //        if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+    //        {
+    //            continue;
+    //        }
+    //        if (reactiveCondition.HasFlag(componentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+    //        {
+    //            if (!item.Value.Contains(entity))
+    //            {
+    //                item.Value.Add(entity);
+    //            }
+    //        }
+    //    }
+    //}
 
 
     partial void MatchLoad()
@@ -111,9 +220,19 @@ public sealed partial class Observer
 
     partial void MatchEntity(Entity entity, IComponent component)
     {
-
+        int sharedId = entity.GetSharedId(component.CurrentId);
         if (!entity.GetComponentFlag().HasFlag(component.CurrentId))
         {
+            if (sharedId > 0)
+            {
+                if (_sharedComponentDic.ContainsKey(sharedId))
+                {
+                    if (_sharedComponentDic[sharedId].SharedEntityDic.ContainsKey(entity.GetId()))
+                    {
+                        _sharedComponentDic[sharedId].SharedEntityDic.Remove(entity.GetId());
+                    }
+                }
+            }
             foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
             {
                 if (item.Key.HasFlag(component.CurrentId))
@@ -125,6 +244,16 @@ public sealed partial class Observer
         }
         else
         {
+            if (sharedId > 0)
+            {
+                if (_sharedComponentDic.ContainsKey(sharedId))
+                {
+                    if (!_sharedComponentDic[sharedId].SharedEntityDic.ContainsKey(entity.GetId()))
+                    {
+                        _sharedComponentDic[sharedId].SharedEntityDic.Add(entity.GetId(), entity);
+                    }
+                }
+            }
             foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
             {
                 if (entity.GetComponentFlag().HasFlag(item.Key))

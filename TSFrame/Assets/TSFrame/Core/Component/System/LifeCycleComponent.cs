@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 
-public class LifeCycleComponent : IComponent
+public class LifeCycleComponent : IComponent,IReactiveComponent
 {
     public Int64 CurrentId
     {
@@ -16,7 +16,11 @@ public class LifeCycleComponent : IComponent
     /// <summary>
     /// 生命周期
     /// </summary>
+    [DataDriven]
     private LifeCycleEnum lifeCycle;
-
+    /// <summary>
+    /// 延时时间
+    /// </summary>
+    private float dealyTime;
 }
 

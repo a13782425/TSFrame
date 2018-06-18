@@ -36,6 +36,48 @@ public sealed partial class Observer
         return this;
     }
 
+    /// <summary>
+    /// 删除系统
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public Observer RemoveSystem<T>()
+    {
+        IInitSystem initSystem = null;
+        foreach (IInitSystem item in _systemInitList)
+        {
+            if (item.GetType() == typeof(T))
+            {
+                initSystem = item;
+                break;
+            }
+        }
+        if (initSystem != null)
+            _systemInitList.Remove(initSystem);
+        ISystem reactiveSystem = null;
+        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        {
+            if (item.Key.GetType() == typeof(T))
+            {
+                reactiveSystem = item.Key;
+                break;
+            }
+        }
+        if (reactiveSystem != null)
+            _systemReactiveDic.Remove(reactiveSystem);
+        IExecuteSystem executeSystem = null;
+        foreach (IExecuteSystem item in _systemExecuteList)
+        {
+            if (item.GetType() == typeof(T))
+            {
+                executeSystem = item;
+                break;
+            }
+        }
+        if (executeSystem != null)
+            _systemExecuteList.Remove(executeSystem);
+        return this;
+    }
 
 
     partial void SystemLoad()
@@ -45,13 +87,16 @@ public sealed partial class Observer
         AddSystem(new ActiveSystem());
         AddSystem(new ViewSystem());
         AddSystem(new LifeCycleSystem());
-        AddSystem(new GameActiveSystem());
+        AddSystem(new GameObjectLifeCycleSystem());
+        AddSystem(new GameObjectActiveSystem());
         AddSystem(new PoolSystem());
         AddSystem(new HasPhysicalSystem());
         AddSystem(new Collision2DSystem());
         AddSystem(new CollisionSystem());
         AddSystem(new TriggerSystem());
         AddSystem(new Trigger2DSystem());
+        AddSystem(new PositionSystem());
+        AddSystem(new RoationSystem());
     }
 
     partial void SystemUpdate()

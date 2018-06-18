@@ -89,6 +89,14 @@ public static class ComponentIds
     /// </summary>
     public const Int64 POOL = (1L << 14) | SYSTEM_LOW_FLAG;
     /// <summary>
+    /// 位置
+    /// </summary>
+    public const Int64 POSITION = (1L << 15) | SYSTEM_LOW_FLAG;
+    /// <summary>
+    /// 旋转
+    /// </summary>
+    public const Int64 ROATION = (1L << 16) | SYSTEM_LOW_FLAG;
+    /// <summary>
     /// 测试
     /// </summary>
     public const Int64 TEST = (1L << 0) | SYSTEM_HIGH_FLAG;
@@ -101,6 +109,8 @@ public static class ComponentIds
     /// 组件字典
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
+
+
 
 
 

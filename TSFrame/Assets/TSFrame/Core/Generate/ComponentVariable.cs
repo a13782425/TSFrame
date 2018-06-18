@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------------------
-//-----------------------------------generate file 2018-06-15 11:55:29----------------------------------------
+//-----------------------------------generate file 2018-06-18 11:09:04----------------------------------------
 //------------------------------------------------------------------------------------------------------------
 
 public class AdditiveComponentVariable
@@ -64,12 +64,23 @@ public class HasPhysicalComponentVariable
 public class LifeCycleComponentVariable
 {
     public static ComponentValue lifeCycle = new ComponentValue() { ComponentId = 4611686018427388032, TSPropertyName = "lifeCycle" };
+    public static ComponentValue dealyTime = new ComponentValue() { ComponentId = 4611686018427388032, TSPropertyName = "dealyTime" };
 }
 
 public class PoolComponentVariable
 {
     public static ComponentValue poolName = new ComponentValue() { ComponentId = 4611686018427404288, TSPropertyName = "poolName" };
     public static ComponentValue recover = new ComponentValue() { ComponentId = 4611686018427404288, TSPropertyName = "recover" };
+}
+
+public class PositionComponentVariable
+{
+    public static ComponentValue position = new ComponentValue() { ComponentId = 4611686018427420672, TSPropertyName = "position" };
+}
+
+public class RoationComponentVariable
+{
+    public static ComponentValue roation = new ComponentValue() { ComponentId = 4611686018427420672, TSPropertyName = "roation" };
 }
 
 public class Trigger2DComponentVariable

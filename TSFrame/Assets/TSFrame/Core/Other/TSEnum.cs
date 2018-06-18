@@ -10,13 +10,21 @@ public enum LifeCycleEnum
     /// </summary>
     None = 0,
     /// <summary>
+    /// 立刻销毁
+    /// </summary>
+    Destory = 1,
+    /// <summary>
+    /// 延时销毁
+    /// </summary>
+    DelayDestory = 2,
+    /// <summary>
     /// 从不销毁
     /// </summary>
-    DontDestory = 1,
-    /// <summary>
-    /// 立即销毁
-    /// </summary>
-    Immediately = 2
+    DontDestory = 3,
+    ///// <summary>
+    ///// 立即销毁
+    ///// </summary>
+    //Immediately = 4
 }
 
 public enum CollisionEnum

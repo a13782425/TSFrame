@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class GameActiveSystem : IReactiveSystem
+public class GameObjectActiveSystem : IReactiveSystem
 {
     public ComponentFlag ReactiveCondition
     {

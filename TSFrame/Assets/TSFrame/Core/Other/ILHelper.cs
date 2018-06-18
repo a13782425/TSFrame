@@ -88,7 +88,7 @@ public static class ILHelper
                     }
                     TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
                     tsProperty.DontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
-                    tempReturnDic.Add(property.Name.ToLower(), tsProperty);
+                    tempReturnDic.Add(property.Name, tsProperty);
                 }
             }
 
@@ -111,7 +111,7 @@ public static class ILHelper
                     }
                     TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
                     tsProperty.DontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
-                    tempReturnDic.Add(fieldInfo.Name.ToLower(), tsProperty);
+                    tempReturnDic.Add(fieldInfo.Name, tsProperty);
                 }
             }
 

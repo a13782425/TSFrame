@@ -179,7 +179,11 @@ public sealed partial class Observer
     /// <summary>
     /// 默认的对象池
     /// </summary>
-    private Queue<Entity> _entityDefaultPool = new Queue<Entity>();
+    private Queue<Entity> _entityDefaultPool;
+    /// <summary>
+    /// 共享组件管理
+    /// </summary>
+    private Dictionary<int, SharedComponent> _sharedComponentDic;
     #endregion
 
     #region Scene Var
@@ -204,6 +208,7 @@ public sealed partial class Observer
         _componentPoolDic = new Dictionary<Int64, Queue<IComponent>>();
         _entityDefaultPool = new Queue<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
+        _sharedComponentDic = new Dictionary<int, SharedComponent>();
         CreateComponentPool();
         _variableGameObject = new GameObject("VariableGameObject");
         _variableGameObject.transform.SetParent(this.transform);

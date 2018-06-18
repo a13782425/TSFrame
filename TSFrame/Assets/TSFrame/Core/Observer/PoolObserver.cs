@@ -6,6 +6,14 @@ using UnityEngine;
 
 public sealed partial class Observer
 {
+
+
+    /// <summary>
+    /// 创建一个对象池
+    /// </summary>
+    /// <param name="poolName"></param>
+    /// <param name="origin"></param>
+    /// <returns></returns>
     public Observer CreatePool(string poolName, Entity origin)
     {
         if (string.IsNullOrEmpty(poolName))
@@ -24,7 +32,7 @@ public sealed partial class Observer
     /// </summary>
     /// <param name="entity"></param>
     /// <param name="poolName"></param>
-    public Observer RecoverEntity(Entity entity, string poolName)
+    public Observer RecoverEntity(Entity entity, string poolName = null)
     {
         if (string.IsNullOrEmpty(poolName) || !_entityPoolDic.ContainsKey(poolName))
         {
@@ -41,6 +49,41 @@ public sealed partial class Observer
         return this;
     }
 
+    /// <summary>
+    /// 创建共享组件
+    /// </summary>
+    /// <param name="componentId"></param>Int64 componentId
+    /// <returns></returns>
+    public SharedComponent CreateSharedComponent(Int64 componentId)
+    {
+        IComponent component = GetComponent(componentId);
+        if ((component as ISharedComponent) != null)
+        {
+            SharedComponent shared = new SharedComponent(component, Utils.GetSharedId());
+            _sharedComponentDic.Add(shared.SharedId, shared);
+            return shared;
+        }
+        else
+        {
+            throw new Exception("创建共享组件失败,这不是共享组件!!!");
+        }
+    }
+    /// <summary>
+    /// 获取或创建共享组件
+    /// </summary>
+    /// <param name="sharedId"></param>
+    /// <param name="componentId"></param>Int64 componentId
+    /// <returns></returns>
+    public SharedComponent GetOrCreateSharedComponent(int sharedId, Int64 componentId)
+    {
+        if (_sharedComponentDic.ContainsKey(sharedId))
+        {
+            return _sharedComponentDic[sharedId];
+        }
+        return CreateSharedComponent(componentId);
+    }
+
+
     #region Implement Method
 
     partial void PoolLoad()
@@ -52,25 +95,43 @@ public sealed partial class Observer
     partial void PoolUpdate()
     {
     }
-
+    /// <summary>
+    /// 回收一个组件
+    /// </summary>
+    /// <param name="component"></param>
     partial void RecoverComponent(IComponent component)
     {
+        if (component == null || !_componentPoolDic.ContainsKey(component.CurrentId))
+        {
+            throw new Exception("回收的组件有误!!!");
+        }
         if (!_componentPoolDic[component.CurrentId].Contains(component))
         {
             _componentPoolDic[component.CurrentId].Enqueue(component);
         }
 
     }
-
-    IComponent GetComponent(Int64 currentId)
+    /// <summary>
+    /// 获取一个组件
+    /// </summary>
+    /// <param name="currentId"></param>
+    /// <returns></returns>
+    IComponent GetComponent(Int64 componentId)
     {
-        if (_componentPoolDic[currentId].Count > 0)
+        if (!_componentPoolDic.ContainsKey(componentId) || !ComponentIds.ComponentTypeDic.ContainsKey(componentId))
         {
-            return _componentPoolDic[currentId].Dequeue();
+            throw new Exception("需要获取的组件不存在");
         }
-        return Activator.CreateInstance(ComponentIds.ComponentTypeDic[currentId]) as IComponent;
+        if (_componentPoolDic[componentId].Count > 0)
+        {
+            return _componentPoolDic[componentId].Dequeue();
+        }
+        return Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
     }
-
+    /// <summary>
+    /// 获取一个实体
+    /// </summary>
+    /// <returns></returns>
     Entity GetEntity()
     {
         if (_entityDefaultPool.Count < 1)
@@ -87,6 +148,11 @@ public sealed partial class Observer
             return _entityDefaultPool.Dequeue();
         }
     }
+    /// <summary>
+    /// 获取一个实体从对象池
+    /// </summary>
+    /// <param name="poolName"></param>
+    /// <returns></returns>
     Entity GetEntity(string poolName)
     {
         if (!_entityPoolDic.ContainsKey(poolName))

@@ -63,6 +63,8 @@ public sealed partial class Observer : MonoBehaviour
     partial void MatchEntity(Entity entity, IComponent component);
     partial void MatchEntity(Entity entity, bool isActive);
 
+    partial void DataDrivenMethod(Entity entity, Int64 componentId);
+
     #endregion
 
     #region ResourcesObserver Method

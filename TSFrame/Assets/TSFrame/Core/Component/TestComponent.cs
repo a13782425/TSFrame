@@ -5,7 +5,7 @@ using UnityEngine;
 using System.Text;
 
 
-public class TestComponent : IComponent, IReactiveComponent
+public class TestComponent : ISharedComponent, IComponent, IReactiveComponent
 {
     public Int64 CurrentId { get { return ComponentIds.TEST; } }
 
@@ -13,7 +13,7 @@ public class TestComponent : IComponent, IReactiveComponent
     public string VALUE;
     [DataDriven]
     private string Test1;
-    
+
     private Vector3 pos;
 
     private GameObject gameObj;

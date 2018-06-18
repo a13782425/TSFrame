@@ -9,26 +9,25 @@ public class Entity
     class ComponentDto
     {
         public IComponent CurrentComponent { get; set; }
+
         private Dictionary<string, TSProperty> _propertyDic = new Dictionary<string, TSProperty>();
         public Dictionary<string, TSProperty> PropertyDic { get { return _propertyDic; } set { _propertyDic = value; } }
     }
 
     #region 字段和属性
     /// <summary>
-    /// 组件字典
+    /// 所有组件字典
     /// </summary>
-    //private Dictionary<Int64, IComponent> _componentDic = new Dictionary<Int64, IComponent>();
-
     private Dictionary<Int64, ComponentDto> _allComponenDtoDic = new Dictionary<Int64, ComponentDto>();
+    /// <summary>
+    /// 共享关联
+    /// </summary>
+    private Dictionary<Int64, int> _sharedRelationDic = new Dictionary<Int64, int>();
 
     /// <summary>
     /// 组件标签
     /// </summary>
     private ComponentFlag _currentFlag;
-    /// <summary>
-    /// 最后操作的component
-    /// </summary>
-    private ComponentDto _lastOperateComponent = null;
 
     private Int32 _id = 0;
     /// <summary>
@@ -128,14 +127,38 @@ public class Entity
         ComponentDto dto = new ComponentDto();
         dto.CurrentComponent = component;
         dto.PropertyDic = ILHelper.RegisteComponent(component);
-        SetDefaultValue(dto);
+        //SetDefaultValue(dto);
         this._allComponenDtoDic.Add(component.CurrentId, dto);
         //this._componentDic.Add(componentId, component);
         this._currentFlag.SetFlag(componentId);
-        this._lastOperateComponent = dto;
         if (_changeComponentCallBack != null)
         {
             _changeComponentCallBack.Invoke(this, component);
+        }
+        return this;
+    }
+
+    /// <summary>
+    /// 添加共享组件
+    /// </summary>
+    /// <param name="component"></param>
+    /// <returns></returns>
+    public Entity AddSharedCompoennt(SharedComponent shared)
+    {
+        if (_allComponenDtoDic.ContainsKey(shared.CurrentId))
+        {
+            throw new Exception("增加组件失败,组件已存在,组件类型:" + shared.CurrentId.ToString());
+        }
+        ComponentDto dto = new ComponentDto();
+        dto.CurrentComponent = shared.CurrentComponent;
+        dto.PropertyDic = ILHelper.RegisteComponent(shared.CurrentComponent);
+
+        this._allComponenDtoDic.Add(shared.CurrentId, dto);
+        this._sharedRelationDic.Add(shared.CurrentId, shared.SharedId);
+        this._currentFlag.SetFlag(shared.CurrentId);
+        if (_changeComponentCallBack != null)
+        {
+            _changeComponentCallBack.Invoke(this, shared.CurrentComponent);
         }
         return this;
     }
@@ -156,16 +179,13 @@ public class Entity
         _allComponenDtoDic.Remove(componentId);
         //_componentDic.Remove(componentId);
         _currentFlag.RemoveFlag(componentId);
-        if (_lastOperateComponent != null)
-        {
-            if (_lastOperateComponent.CurrentComponent.CurrentId == componentId)
-            {
-                _lastOperateComponent = null;
-            }
-        }
         if (_changeComponentCallBack != null)
         {
             _changeComponentCallBack.Invoke(this, dto.CurrentComponent);
+        }
+        if (_sharedRelationDic.ContainsKey(componentId))
+        {
+            _sharedRelationDic.Remove(componentId);
         }
         return this;
     }
@@ -185,25 +205,7 @@ public class Entity
             }
         }
         _allComponenDtoDic.Clear();
-        _lastOperateComponent = null;
-        return this;
-    }
-    /// <summary>
-    /// 设置组件值，对最后一个添加的组件操作
-    /// </summary>
-    /// <param name="fieldName"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public Entity SetValue(string fieldName, object value)
-    {
-        if (_lastOperateComponent != null)
-        {
-            SetValue(_lastOperateComponent.CurrentComponent.CurrentId, fieldName, value);
-        }
-        else
-        {
-            Debug.LogError("请先添加组件!");
-        }
+        _sharedRelationDic.Clear();
         return this;
     }
 
@@ -228,20 +230,19 @@ public class Entity
     /// <returns></returns>
     public Entity SetValue(Int64 componentId, string fieldName, object value)
     {
-        string name = fieldName.ToLower();
+        //string name = fieldName.ToLower();
         if (this._allComponenDtoDic.ContainsKey(componentId))
         {
             ComponentDto componentDto = this._allComponenDtoDic[componentId];
-            if (componentDto.PropertyDic.ContainsKey(name))
+            if (componentDto.PropertyDic.ContainsKey(fieldName))
             {
                 try
                 {
-                    componentDto.PropertyDic[name].Setter(this, componentDto.CurrentComponent, value);
-                    _lastOperateComponent = componentDto;
+                    componentDto.PropertyDic[fieldName].Setter(this, componentDto.CurrentComponent, value);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", name, ex.Message);
+                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", fieldName, ex.Message);
                     //Debug.LogError(ex.Message);
                 }
             }
@@ -255,24 +256,6 @@ public class Entity
             Debug.LogErrorFormat("组件ID:{0}不存在!!!", componentId);
         }
         return this;
-    }
-    /// <summary>
-    /// 获取值,对最后一个添加的组件操作
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="fieldName"></param>
-    /// <returns></returns>
-    public T GetValue<T>(string fieldName)
-    {
-        if (_lastOperateComponent != null)
-        {
-            return GetValue<T>(_lastOperateComponent.CurrentComponent.CurrentId, fieldName);
-        }
-        else
-        {
-            Debug.LogError("请先添加组件!");
-        }
-        return default(T);
     }
 
     /// <summary>
@@ -294,18 +277,17 @@ public class Entity
     /// <returns></returns>
     public T GetValue<T>(Int64 componentId, string fieldName)
     {
-        string name = fieldName.ToLower();
+        //string name = fieldName.ToLower(); 
         T t = default(T);
         if (this._allComponenDtoDic.ContainsKey(componentId))
         {
             ComponentDto componentDto = this._allComponenDtoDic[componentId];
-            if (componentDto.PropertyDic.ContainsKey(name))
+            if (componentDto.PropertyDic.ContainsKey(fieldName))
             {
                 try
                 {
-                    object value = componentDto.PropertyDic[name].Getter(componentDto.CurrentComponent); ;
+                    object value = componentDto.PropertyDic[fieldName].Getter(componentDto.CurrentComponent); ;
                     t = (T)value;
-                    _lastOperateComponent = componentDto;
                 }
                 catch (Exception ex)
                 {
@@ -321,6 +303,20 @@ public class Entity
     }
 
     /// <summary>
+    /// 获取共享Id
+    /// </summary>
+    /// <param name="componentId"></param>
+    /// <returns></returns>
+    public int GetSharedId(Int64 componentId)
+    {
+        if (_sharedRelationDic.ContainsKey(componentId))
+        {
+            return _sharedRelationDic[componentId];
+        }
+        return -1;
+    }
+
+    /// <summary>
     /// 从目标实体拷贝到实体
     /// </summary>
     /// <returns></returns>
@@ -328,6 +324,10 @@ public class Entity
     {
         foreach (KeyValuePair<Int64, ComponentDto> componentDto in entity._allComponenDtoDic)
         {
+            if (entity.GetSharedId(componentDto.Key) > 0)
+            {
+                continue;
+            }
             if (this.GetComponentFlag().HasFlag(componentDto.Key))
             {
                 continue;
@@ -339,6 +339,10 @@ public class Entity
         }
         foreach (KeyValuePair<Int64, ComponentDto> componentDto in entity._allComponenDtoDic)
         {
+            if (entity.GetSharedId(componentDto.Key) > 0)
+            {
+                continue;
+            }
             ComponentDto dto = componentDto.Value;
             foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
             {
@@ -348,6 +352,46 @@ public class Entity
                 }
                 this.SetValue(componentDto.Key, item.Key, item.Value.Getter(dto.CurrentComponent));
             }
+        }
+        return this;
+    }
+
+    /// <summary>
+    /// 拷贝共享组件
+    /// 从目标实体拷贝到实体
+    /// </summary>
+    /// <returns></returns>
+    public Entity CopySharedComponent(Entity entity)
+    {
+        foreach (KeyValuePair<Int64, ComponentDto> componentDto in entity._allComponenDtoDic)
+        {
+            int sharedId = entity.GetSharedId(componentDto.Key);
+            if (sharedId > 0)
+            {
+                if (this.GetComponentFlag().HasFlag(componentDto.Key))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (_allComponenDtoDic.ContainsKey(componentDto.Key))
+                    {
+                        throw new Exception("增加组件失败,组件已存在,组件类型:" + componentDto.Key.ToString());
+                    }
+                    ComponentDto dto = new ComponentDto();
+                    dto.CurrentComponent = componentDto.Value.CurrentComponent;
+                    dto.PropertyDic = ILHelper.RegisteComponent(componentDto.Value.CurrentComponent);
+
+                    this._allComponenDtoDic.Add(componentDto.Key, dto);
+                    this._sharedRelationDic.Add(componentDto.Key, sharedId);
+                    this._currentFlag.SetFlag(componentDto.Key);
+                    if (_changeComponentCallBack != null)
+                    {
+                        _changeComponentCallBack.Invoke(this, componentDto.Value.CurrentComponent);
+                    }
+                }
+            }
+
         }
         return this;
     }

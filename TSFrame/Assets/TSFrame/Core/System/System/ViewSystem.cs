@@ -25,15 +25,13 @@ public class ViewSystem : IReactiveSystem
     {
         foreach (var item in entitys)
         {
-            string prefabName = item.GetValue<string>(ComponentIds.VIEW, "prefabname");
+            string prefabName = item.GetValue<string>(ViewComponentVariable.prefabName);
             GameObject obj = Observer.Instance.ResourcesLoad(prefabName) as GameObject;
             if (obj != null)
             {
                 GameObject instant = GameObject.Instantiate<GameObject>(obj);
-                instant.transform.SetParent(item.GetValue<Transform>("parent"));
-                instant.transform.position = item.GetValue<Vector3>("pos");
-                instant.transform.rotation = item.GetValue<Quaternion>("rot");
-                instant.hideFlags = item.GetValue<HideFlags>("hideflags");
+                instant.transform.SetParent(item.GetValue<Transform>(ViewComponentVariable.parent));
+                instant.hideFlags = item.GetValue<HideFlags>(ViewComponentVariable.hideFlags);
                 item.SetValue(ComponentIds.GAME_OBJECT, "value", instant);
             }
             else

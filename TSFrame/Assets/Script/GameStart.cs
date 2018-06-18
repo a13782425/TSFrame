@@ -17,25 +17,43 @@ public class GameStart : MonoBehaviour
         //初始化观察者
         Observer.Instance
             .SetIsTest(true)//设置是否是测试版
-            .SetResourcesTime(100)//设置资源监测时间
+            .SetResourcesTime(100)
             .GameLaunch();//启动观察者
+
         //增加系统
         Observer.Instance
             .AddSystem(new MoveSystem())
-            .AddSystem(new InputSystem());
-
-        //创建移动的实体
+            .AddSystem(new InputSystem())
+            .AddSystem(new TestSystem());
         entity1 = Observer.Instance
-            .CreateEntity()
-            .AddComponent(ComponentIds.STRING)//增加string组件
-            .AddComponent(ComponentIds.INPUT)
-            .AddComponent(ComponentIds.VIEW)//增加实例化组件
-            .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
-            .SetValue(ComponentIds.STRING, "value", "string测试")//设置string组件的参数
-            .SetValue(ComponentIds.VIEW, "pos", new Vector3(0, 0, 15))//设置实例化组件坐标
-            .SetValue("prefabname", "Test")
-            .SetValue(ActiveComponentVariable.active, false);//设置预制物体名称
-        Observer.Instance.CreatePool("Test", entity1);
+           .CreateEntity()
+           .AddComponent(ComponentIds.INPUT)
+           .AddComponent(ComponentIds.VIEW)//增加实例化组件
+           .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
+           .AddComponent(ComponentIds.POSITION)
+           .SetValue(ViewComponentVariable.prefabName, "Test");
+
+
+        //Entity entity1 = Observer.Instance
+        //    .CreateEntity();
+        //Entity entity2 = Observer.Instance
+        //    .CreateEntity();
+        //SharedComponent com = Observer.Instance.CreateSharedComponent(ComponentIds.TEST);
+        //entity1.AddSharedCompoennt(com);
+        //entity2.AddSharedCompoennt(com);
+        //entity1.SetValue(TestComponentVariable.Test1, "SharedEntity1");
+        ////创建移动的实体
+        //entity1 = Observer.Instance
+        //    .CreateEntity()
+        //    .AddComponent(ComponentIds.STRING)//增加string组件
+        //    .AddComponent(ComponentIds.INPUT)
+        //    .AddComponent(ComponentIds.VIEW)//增加实例化组件
+        //    .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
+        //    .SetValue(ComponentIds.STRING, "value", "string测试")//设置string组件的参数
+        //    .SetValue(ComponentIds.VIEW, "pos", new Vector3(0, 0, 15))//设置实例化组件坐标
+        //    .SetValue(ViewComponentVariable.prefabName, "Test")
+        //    .SetValue(ActiveComponentVariable.active, false);//设置预制物体名称
+        //Observer.Instance.CreatePool("Test", entity1);
 
 
         ////创建带有碰撞的对象
@@ -63,23 +81,31 @@ public class GameStart : MonoBehaviour
         //Entity entity4 = Observer.Instance
         // .CreateEntity().CopyComponent(entity3);
     }
-    List<Entity> entities = new List<Entity>();
-    float time = 0;
+    //List<Entity> entities = new List<Entity>();
+    //float time = 0;
 
-    void Update()
+    //void Update()
+    //{
+    //    if (Input.GetMouseButtonUp(0))
+    //    {
+    //        entities.Add(Observer.Instance.CreateEntityToPool("Test"));
+    //    }
+    //    if (time > 5)
+    //    {
+    //        time = 0;
+    //        Entity entity = entities[0];
+    //        entities.RemoveAt(0);
+    //        entity.SetValue(PoolComponentVariable.recover, true);
+    //    }
+    //    time += Time.deltaTime;
+    //}
+
+    float speed = 5;
+    private void Update()
     {
-        if (Input.GetMouseButtonUp(0))
-        {
-            entities.Add(Observer.Instance.CreateEntityToPool("Test"));
-        }
-        if (time > 5)
-        {
-            time = 0;
-            Entity entity = entities[0];
-            entities.RemoveAt(0);
-            entity.SetValue(PoolComponentVariable.recover, true);
-        }
-        time += Time.deltaTime;
+        Vector3 vec = entity1.GetValue<Vector3>(PositionComponentVariable.position);
+        vec.x += speed * Time.deltaTime;
+        entity1.SetValue(PositionComponentVariable.position, vec);
     }
     private void stayCallBack(Entity self, Collision target)
     {

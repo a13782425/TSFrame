@@ -7,12 +7,19 @@ using UnityEngine;
 public sealed partial class Observer
 {
     #region Public
-
+    /// <summary>
+    /// 创建一个实体
+    /// </summary>
+    /// <returns></returns>
     public Entity CreateEntity()
     {
         return CreateEntity(null);
     }
-
+    /// <summary>
+    /// 创建一个实体
+    /// </summary>
+    /// <param name="parent"></param>
+    /// <returns></returns>
     public Entity CreateEntity(Entity parent)
     {
         Entity entity = GetEntity();
@@ -24,6 +31,11 @@ public sealed partial class Observer
         entity.SetValue(ActiveComponentVariable.active, true);
         return entity;
     }
+    /// <summary>
+    /// 从对象池创建一个实体
+    /// </summary>
+    /// <param name="poolName"></param>
+    /// <returns></returns>
     public Entity CreateEntityToPool(string poolName)
     {
         if (string.IsNullOrEmpty(poolName))
@@ -32,6 +44,12 @@ public sealed partial class Observer
         }
         return CreateEntityToPool(poolName, null);
     }
+    /// <summary>
+    /// 从对象池创建一个实体
+    /// </summary>
+    /// <param name="poolName"></param>
+    /// <param name="parent"></param>
+    /// <returns></returns>
     public Entity CreateEntityToPool(string poolName, Entity parent)
     {
         if (string.IsNullOrEmpty(poolName))
@@ -51,8 +69,12 @@ public sealed partial class Observer
         entity.SetValue(ActiveComponentVariable.active, true);
         return entity;
     }
-
-
+    
+    /// <summary>
+    /// 设置一个实体是否可见
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="isActive"></param>
     public void SetActive(Entity entity, bool isActive)
     {
         if (entity.ChildList.Count > 0)

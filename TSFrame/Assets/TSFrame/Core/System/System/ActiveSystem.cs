@@ -25,14 +25,14 @@ public class ActiveSystem : IReactiveSystem
         foreach (Entity item in entitys)
         {
             bool isActive = item.GetValue<bool>(ActiveComponentVariable.active);
-            if (item.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
-            {
-                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-                if (obj != null)
-                {
-                    obj.SetActive(isActive);
-                }
-            }
+            //if (item.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+            //{
+            //    GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+            //    if (obj != null)
+            //    {
+            //        obj.SetActive(isActive);
+            //    }
+            //}
             Observer.Instance.SetActive(item, isActive);
         }
     }

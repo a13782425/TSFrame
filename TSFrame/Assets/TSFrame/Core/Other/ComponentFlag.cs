@@ -11,7 +11,6 @@ public struct ComponentFlag
     private static ComponentFlag _none = new ComponentFlag();
     public static ComponentFlag None { get { return _none; } }
 
-
     private Int64 _systemLowFlag;
     private Int64 _systemHighFlag;
     private Int64 _playerlowFlag;
@@ -24,6 +23,8 @@ public struct ComponentFlag
     public Int64 SystemLowFlag { get { return _systemLowFlag; } private set { _systemLowFlag = value; } }
 
     public Int64 SystemHighFlag { get { return _systemHighFlag; } private set { _systemHighFlag = value; } }
+
+
 
     public bool HasFlag(ComponentFlag flag)
     {
@@ -107,6 +108,7 @@ public struct ComponentFlag
             //用户低位
             PlayerLowFlag = flag ^ PlayerLowFlag;
         }
+
         return this;
     }
     public static bool operator ==(ComponentFlag cf1, ComponentFlag cf2)

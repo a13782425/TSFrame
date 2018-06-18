@@ -12,6 +12,7 @@ public class GenerateComponentEditor : Editor
 {
     private static string _codeDirectory = Application.dataPath + "/TSFrame/Core/Generate";
     private static string _codePath = _codeDirectory + "/ComponentVariable.cs";
+    private static string _codeIdsPath = _codeDirectory + "/ComponentIdsExtension.cs";
     [MenuItem("TSFrame/GenerateComponent")]
     private static void GenerateComponent()
     {
@@ -30,11 +31,12 @@ public class GenerateComponentEditor : Editor
         }
         try
         {
-            StringBuilder sb = BeginGenerate();
-            StreamWriter sw = new StreamWriter(_codePath, false, new UTF8Encoding());
-            sw.Write(sb.ToString());
-            sw.Close();
-            sw.Dispose();
+            BeginGenerate();
+            //StringBuilder sb = BeginGenerate();
+            //StreamWriter sw = new StreamWriter(_codePath, false, new UTF8Encoding());
+            //sw.Write(sb.ToString());
+            //sw.Close();
+            //sw.Dispose();
             EditorUtility.ClearProgressBar();
         }
         catch (Exception ex)
@@ -49,7 +51,7 @@ public class GenerateComponentEditor : Editor
         }
     }
 
-    private static StringBuilder BeginGenerate()
+    private static void BeginGenerate()
     {
         EditorUtility.DisplayProgressBar("processing", "statistics file count...", 0);
         Type type = typeof(IComponent);
@@ -64,18 +66,34 @@ public class GenerateComponentEditor : Editor
                 tempList.Add(types[i]);
             }
         }
+
+        FieldInfo[] idsFields = typeof(ComponentIds).GetFields(BindingFlags.Static | BindingFlags.Public);
+
         EditorUtility.DisplayProgressBar("processing", "file count " + tempList.Count, 0);
-        StringBuilder sb = new StringBuilder();
-        sb.AppendLine("//------------------------------------------------------------------------------------------------------------");
-        sb.AppendLine("//-----------------------------------generate file " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "----------------------------------------");
-        sb.AppendLine("//------------------------------------------------------------------------------------------------------------");
-        sb.AppendLine("");
+        StringBuilder codeSb = new StringBuilder();
+        StringBuilder codeIdSb = new StringBuilder();
+        codeSb.AppendLine("//------------------------------------------------------------------------------------------------------------");
+        codeSb.AppendLine("//-----------------------------------generate file " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "----------------------------------------");
+        codeSb.AppendLine("//------------------------------------------------------------------------------------------------------------");
+        codeSb.AppendLine("");
+
+        codeIdSb.AppendLine("//------------------------------------------------------------------------------------------------------------");
+        codeIdSb.AppendLine("//-----------------------------------generate file " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "----------------------------------------");
+        codeIdSb.AppendLine("//------------------------------------------------------------------------------------------------------------");
+        codeIdSb.AppendLine("using System;");
+        codeIdSb.AppendLine("");
+        codeIdSb.AppendLine("public static partial class ComponentIds");
+        codeIdSb.AppendLine("{");
+        codeIdSb.AppendLine("    public static IComponent GetComponent(Int64 componentId)");
+        codeIdSb.AppendLine("    {");
+        codeIdSb.AppendLine("        switch (componentId)");
+        codeIdSb.AppendLine("        {");
         for (int i = 0; i < tempList.Count; i++)
         {
             Type temp = tempList[i];
             EditorUtility.DisplayProgressBar("processing", "file: " + temp.Name + " " + (i + 1) + "/" + tempList.Count, i * 1.0f / (tempList.Count + 1));
-            sb.AppendLine("public class " + temp.Name + "Variable");
-            sb.AppendLine("{");
+            codeSb.AppendLine("public class " + temp.Name + "Variable");
+            codeSb.AppendLine("{");
             object obj = Activator.CreateInstance(temp);
             Int64 num = (Int64)propertyInfo.GetValue(obj, null);
             #region Property
@@ -90,7 +108,7 @@ public class GenerateComponentEditor : Editor
                     {
                         continue;
                     }
-                    sb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + property.Name + "\" };");
+                    codeSb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + property.Name + "\" };");
                 }
             }
 
@@ -108,19 +126,46 @@ public class GenerateComponentEditor : Editor
                     {
                         continue;
                     }
-                    sb.AppendLine("    public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + fieldInfo.Name + "\" };");
+                    codeSb.AppendLine("    public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + fieldInfo.Name + "\" };");
                 }
             }
 
             #endregion
 
-            sb.AppendLine("}");
-            sb.AppendLine("");
+            codeSb.AppendLine("}");
+            codeSb.AppendLine("");
             System.Threading.Thread.Sleep(100);
+
+            for (int j = 0; j < idsFields.Length; j++)
+            {
+                if (idsFields[j].FieldType == typeof(Int64))
+                {
+                    if ((Int64)idsFields[j].GetValue(null) == num)
+                    {
+                        codeIdSb.AppendLine("            case ComponentIds." + idsFields[j].Name + ":");
+                        codeIdSb.AppendLine("                return new " + temp.Name + "();");
+                    }
+                }
+            }
         }
+
+        codeIdSb.AppendLine("            default:");
+        codeIdSb.AppendLine("                return null;");
+        codeIdSb.AppendLine("        }");
+        codeIdSb.AppendLine("    }");
+        codeIdSb.AppendLine("}");
+
+
         EditorUtility.DisplayProgressBar("processing", "Success!!!", 1);
         System.Threading.Thread.Sleep(100);
-        return sb;
+        StreamWriter sw = new StreamWriter(_codePath, false, new UTF8Encoding());
+        sw.Write(codeSb.ToString());
+        sw.Close();
+        sw.Dispose();
+        sw = new StreamWriter(_codeIdsPath, false, new UTF8Encoding());
+        sw.Write(codeIdSb.ToString());
+        sw.Close();
+        sw.Dispose();
     }
 }
 

@@ -134,7 +134,7 @@ public sealed partial class Observer
     /// <summary>
     /// 触发执行的系统
     /// </summary>
-    private Dictionary<ISystem, List<Entity>> _systemReactiveDic;
+    private Dictionary<ISystem, Dictionary<int, Entity>> _systemReactiveDic;
     /// <summary>
     /// 循环执行的系统
     /// </summary>
@@ -201,7 +201,7 @@ public sealed partial class Observer
         _entityDic = new Dictionary<int, Entity>();
         _uiRootDic = new Dictionary<string, GameObject>();
         _systemInitList = new List<ISystem>();
-        _systemReactiveDic = new Dictionary<ISystem, List<Entity>>();
+        _systemReactiveDic = new Dictionary<ISystem, Dictionary<int, Entity>>();
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();

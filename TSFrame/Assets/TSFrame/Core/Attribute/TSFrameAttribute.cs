@@ -20,3 +20,17 @@ public class DontCopyAttribute : Attribute
 {
 
 }
+
+/// <summary>
+/// 不要拷贝特性
+/// </summary>
+[AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+public class DefaultValueAttribute : Attribute
+{
+    private object _value;
+    public object Value { get { return _value; } }
+    public DefaultValueAttribute(object value)
+    {
+        _value = value;
+    }
+}

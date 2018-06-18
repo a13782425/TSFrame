@@ -3,11 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using System.Diagnostics;
+using System.Linq;
 
 public class Testing : MonoBehaviour
 {
+    //Stopwatch stopwatch = new Stopwatch();
+    //Dictionary<int, int> dic = new Dictionary<int, int>();
+    //private void Start()
+    //{
+    //    for (int i = 0; i < 1000; i++)
+    //    {
+    //        dic.Add(i, i);
+    //    }
+    //}
 
-    // Use this for initialization
+    //private void Update()
+    //{
+    //    if (Input.GetKeyUp(KeyCode.B))
+    //    {
+    //        int num;
+    //        stopwatch.Reset();
+    //        stopwatch.Start();
+    //        foreach (KeyValuePair<int, int> item in dic)
+    //        {
+    //            num = item.Value;
+    //        }
+    //        stopwatch.Stop();
+    //        Debug.LogError("foreach:" + stopwatch.Elapsed);
+    //        stopwatch.Reset();
+    //        stopwatch.Start();
+    //        List<int> keys = dic.Keys.ToList();
+    //        int count = keys.Count;
+    //        for (int i = 0; i < count; i++)
+    //        {
+    //            num = dic[keys[i]];
+    //        }
+    //        stopwatch.Stop();
+    //        Debug.LogError("for:" + stopwatch.Elapsed);
+
+    //    }
+    //}
+
+
     void Start()
     {
         //初始化观察者

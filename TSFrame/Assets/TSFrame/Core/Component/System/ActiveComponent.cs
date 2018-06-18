@@ -14,6 +14,7 @@ public class ActiveComponent : IComponent, IReactiveComponent
         }
     }
     [DataDriven]
-    public bool active = false;
+    [DefaultValue(true)]
+    public bool active;
 }
 

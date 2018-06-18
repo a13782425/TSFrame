@@ -21,9 +21,9 @@ public class SharedComponent
     /// </summary>
     public Int64 CurrentId { get { return _currentComponent.CurrentId; } }
 
-    private Dictionary<Int64, Entity> _sharedEntityDic;
+    private Dictionary<Int32, Entity> _sharedEntityDic;
 
-    public Dictionary<Int64, Entity> SharedEntityDic { get { return _sharedEntityDic; } }
+    public Dictionary<Int32, Entity> SharedEntityDic { get { return _sharedEntityDic; } }
 
     public int ReferenceCount { get { return SharedEntityDic.Count; } }
 
@@ -36,6 +36,6 @@ public class SharedComponent
         }
         _currentComponent = com;
         _sharedId = shardId;
-        _sharedEntityDic = new Dictionary<Int64, Entity>();
+        _sharedEntityDic = new Dictionary<Int32, Entity>();
     }
 }

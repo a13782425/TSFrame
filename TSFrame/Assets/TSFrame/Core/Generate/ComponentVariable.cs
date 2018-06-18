@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------------------
-//-----------------------------------generate file 2018-06-18 11:09:04----------------------------------------
+//-----------------------------------generate file 2018-06-18 23:28:49----------------------------------------
 //------------------------------------------------------------------------------------------------------------
 
 public class AdditiveComponentVariable
@@ -80,7 +80,7 @@ public class PositionComponentVariable
 
 public class RoationComponentVariable
 {
-    public static ComponentValue roation = new ComponentValue() { ComponentId = 4611686018427420672, TSPropertyName = "roation" };
+    public static ComponentValue roation = new ComponentValue() { ComponentId = 4611686018427453440, TSPropertyName = "roation" };
 }
 
 public class Trigger2DComponentVariable

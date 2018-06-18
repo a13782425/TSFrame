@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-public static class ComponentIds
+public static partial class ComponentIds
 {
     #region 标签位
 
@@ -26,7 +26,6 @@ public static class ComponentIds
     public const Int64 SYSTEM_HIGH_FLAG = 3L << 62;
 
     #endregion
-
 
     /// <summary>
     /// 字符串

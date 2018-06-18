@@ -127,7 +127,7 @@ public class Entity
         ComponentDto dto = new ComponentDto();
         dto.CurrentComponent = component;
         dto.PropertyDic = ILHelper.RegisteComponent(component);
-        //SetDefaultValue(dto);
+        SetDefaultValue(dto);
         this._allComponenDtoDic.Add(component.CurrentId, dto);
         //this._componentDic.Add(componentId, component);
         this._currentFlag.SetFlag(componentId);
@@ -404,7 +404,8 @@ public class Entity
     {
         foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
         {
-            item.Value.Setter(null, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
+            item.Value.Setter(null, dto.CurrentComponent, item.Value.DefaultValue);
+            //item.Value.Setter(null, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
         }
     }
 

@@ -20,6 +20,7 @@ public class TSProperty
     public PropertySetter Setter { get; set; }
     public PropertyGetter Getter { get; set; }
     public bool DontCopy { get; set; }
+    public object DefaultValue { get; set; }
 }
 /// <summary>
 /// 生成方法，仅限ecs中component属性
@@ -33,6 +34,8 @@ public static class ILHelper
     private static Type _dataDrivenType = typeof(DataDrivenAttribute);
 
     private static Type _dontCopyType = typeof(DontCopyAttribute);
+
+    private static Type _defaultValueType = typeof(DefaultValueAttribute);
 
     private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
 
@@ -88,6 +91,15 @@ public static class ILHelper
                     }
                     TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
                     tsProperty.DontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                    objs = property.GetCustomAttributes(_defaultValueType, false);
+                    if (objs.Length > 0)
+                    {
+                        tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
+                    }
+                    else
+                    {
+                        tsProperty.DefaultValue = property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null;
+                    }
                     tempReturnDic.Add(property.Name, tsProperty);
                 }
             }
@@ -111,6 +123,15 @@ public static class ILHelper
                     }
                     TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
                     tsProperty.DontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                    objs = fieldInfo.GetCustomAttributes(_defaultValueType, false);
+                    if (objs.Length > 0)
+                    {
+                        tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
+                    }
+                    else
+                    {
+                        tsProperty.DefaultValue = fieldInfo.FieldType.IsValueType ? Activator.CreateInstance(fieldInfo.FieldType) : null;
+                    }
                     tempReturnDic.Add(fieldInfo.Name, tsProperty);
                 }
             }

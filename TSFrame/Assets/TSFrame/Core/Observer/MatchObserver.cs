@@ -92,13 +92,13 @@ public sealed partial class Observer
             sharedComponent = _sharedComponentDic[sharedId];
         }
 
-        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        foreach (KeyValuePair<ISystem, Dictionary<int, Entity>> item in _systemReactiveDic)
         {
             ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
             ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
             if (sharedId > 0)
             {
-                foreach (KeyValuePair<Int64, Entity> entityDic in sharedComponent.SharedEntityDic)
+                foreach (KeyValuePair<Int32, Entity> entityDic in sharedComponent.SharedEntityDic)
                 {
                     if (entityDic.Value.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
                     {
@@ -106,9 +106,9 @@ public sealed partial class Observer
                     }
                     if (reactiveCondition.HasFlag(com.CurrentId) && entityDic.Value.GetComponentFlag().HasFlag(reactiveCondition))
                     {
-                        if (!item.Value.Contains(entityDic.Value))
+                        if (!item.Value.ContainsKey(entityDic.Key))
                         {
-                            item.Value.Add(entityDic.Value);
+                            item.Value.Add(entityDic.Key, entityDic.Value);
                         }
                     }
                 }
@@ -121,9 +121,9 @@ public sealed partial class Observer
                 }
                 if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
                 {
-                    if (!item.Value.Contains(entity))
+                    if (!item.Value.ContainsKey(entity.GetId()))
                     {
-                        item.Value.Add(entity);
+                        item.Value.Add(entity.GetId(), entity);
                     }
                 }
             }
@@ -150,22 +150,22 @@ public sealed partial class Observer
     #endregion
     partial void DataDrivenMethod(Entity entity, Int64 componentId)
     {
-        foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
-        {
-            ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
-            ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
-            if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
-            {
-                continue;
-            }
-            if (reactiveCondition.HasFlag(componentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
-            {
-                if (!item.Value.Contains(entity))
-                {
-                    item.Value.Add(entity);
-                }
-            }
-        }
+        //foreach (KeyValuePair<ISystem, List<Entity>> item in _systemReactiveDic)
+        //{
+        //    ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
+        //    ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+        //    if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+        //    {
+        //        continue;
+        //    }
+        //    if (reactiveCondition.HasFlag(componentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+        //    {
+        //        if (!item.Value.Contains(entity))
+        //        {
+        //            item.Value.Add(entity);
+        //        }
+        //    }
+        //}
     }
     //partial void DataDrivenMethod(Entity entity, Int64 componentId)
     //{

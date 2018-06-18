@@ -28,7 +28,7 @@ public sealed partial class Observer
             parent.ChildList.Add(entity);
             entity.Parent = parent;
         }
-        entity.SetValue(ActiveComponentVariable.active, true);
+        //entity.SetValue(ActiveComponentVariable.active, true);
         return entity;
     }
     /// <summary>
@@ -66,10 +66,9 @@ public sealed partial class Observer
             parent.ChildList.Add(entity);
             entity.Parent = parent;
         }
-        entity.SetValue(ActiveComponentVariable.active, true);
         return entity;
     }
-    
+
     /// <summary>
     /// 设置一个实体是否可见
     /// </summary>

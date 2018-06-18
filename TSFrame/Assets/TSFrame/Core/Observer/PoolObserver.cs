@@ -126,7 +126,7 @@ public sealed partial class Observer
         {
             return _componentPoolDic[componentId].Dequeue();
         }
-        return Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
+        return ComponentIds.GetComponent(componentId);
     }
     /// <summary>
     /// 获取一个实体

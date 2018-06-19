@@ -17,10 +17,10 @@ public class InputSystem : IExecuteSystem, IInitSystem
 
     public void Execute()
     {
-        foreach (KeyValuePair<int, Entity> item in _currentGroup.EntityDic)
+        foreach (Entity item in _currentGroup.EntityHashSet)
         {
-            item.Value.SetValue(InputComponentVariable.x, Input.GetAxis("Horizontal"));
-            item.Value.SetValue(InputComponentVariable.y, Input.GetAxis("Vertical"));
+            item.SetValue(InputComponentVariable.x, Input.GetAxis("Horizontal"));
+            item.SetValue(InputComponentVariable.y, Input.GetAxis("Vertical"));
         }
     }
 

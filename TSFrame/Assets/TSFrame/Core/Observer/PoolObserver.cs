@@ -70,10 +70,9 @@ public sealed partial class Observer
     {
         if (string.IsNullOrEmpty(poolName) || !_entityPoolDic.ContainsKey(poolName))
         {
-            if (!_entityDefaultPool.Contains(entity))
+            if (_entityDefaultPool.Add(entity))
             {
                 entity.RemoveComponentAll();
-                _entityDefaultPool.Enqueue(entity);
                 return this;
             }
             return this;
@@ -101,7 +100,7 @@ public sealed partial class Observer
     /// <param name="component"></param>
     partial void RecoverComponent(NormalComponent component)
     {
-        if (component == null || !_componentPoolDic.ContainsKey(component.CurrentId))
+        if (component == null)
         {
             throw new Exception("回收的组件有误!!!");
         }
@@ -119,14 +118,16 @@ public sealed partial class Observer
         {
             throw new Exception("需要获取的组件不存在");
         }
+        HashSet<NormalComponent> hashSet = _componentPoolDic[componentId];
         NormalComponent component = null;
-        if (_componentPoolDic[componentId].Count > 0)
+        if (hashSet.Count > 0)
         {
-            foreach (NormalComponent item in _componentPoolDic[componentId])
+            foreach (NormalComponent item in hashSet)
             {
                 component = item;
                 break;
             }
+            hashSet.Remove(component);
             return component;
         }
         component = ComponentIds.GetComponent(componentId);
@@ -153,7 +154,13 @@ public sealed partial class Observer
         }
         else
         {
-            return _entityDefaultPool.Dequeue();
+            Entity entity = null;
+            foreach (Entity item in _entityDefaultPool)
+            {
+                entity = item;
+            }
+            _entityDefaultPool.Remove(entity);
+            return entity;
         }
     }
     /// <summary>

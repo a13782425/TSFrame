@@ -13,6 +13,13 @@ public class GenerateComponentEditor : Editor
     private static string _codeDirectory = Application.dataPath + "/TSFrame/Core/Generate";
     private static string _codePath = _codeDirectory + "/ComponentVariable.cs";
     private static string _codeIdsPath = _codeDirectory + "/ComponentIdsExtension.cs";
+
+    private static Type _interfaceType = typeof(IReactiveComponent);
+
+    private static Type _dataDrivenType = typeof(DataDrivenAttribute);
+
+    private static Type _dontCopyType = typeof(DontCopyAttribute);
+
     [MenuItem("TSFrame/GenerateComponent")]
     private static void GenerateComponent()
     {
@@ -96,6 +103,12 @@ public class GenerateComponentEditor : Editor
             codeSb.AppendLine("{");
             object obj = Activator.CreateInstance(temp);
             Int64 num = (Int64)propertyInfo.GetValue(obj, null);
+            bool isNeedReactive = false;
+            if (_interfaceType.IsAssignableFrom(temp))
+            {
+                isNeedReactive = true;
+            }
+            int count = 0;
             #region Property
 
             PropertyInfo[] props = temp.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -104,11 +117,21 @@ public class GenerateComponentEditor : Editor
                 for (int j = 0; j < props.Length; j++)
                 {
                     PropertyInfo property = props[j];
-                    if (property.Name == "CurrentId")
+                    if (property.GetSetMethod() == null || property.GetGetMethod() == null)
                     {
                         continue;
                     }
-                    codeSb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + property.Name + "\" };");
+                    bool isDataDriven = false;
+                    object[] objs = property.GetCustomAttributes(_dataDrivenType, false);
+                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+                    if (objs.Length > 0)
+                    {
+                        isDataDriven = isNeedReactive;
+                    }
+                    bool dontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                    codeSb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", PropertyId = " + count + ", TSPropertyName = \"" + property.Name + "\", DontCopy = " + (dontCopy ? "true" : "false") + ", NeedReactive = " + (isDataDriven ? "true" : "false") + " };");
+                    //codeSb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + property.Name + "\" };");
+                    count++;
                 }
             }
 
@@ -126,12 +149,29 @@ public class GenerateComponentEditor : Editor
                     {
                         continue;
                     }
-                    codeSb.AppendLine("    public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + fieldInfo.Name + "\" };");
+                    bool isDataDriven = false;
+                    object[] objs = fieldInfo.GetCustomAttributes(_dataDrivenType, false);
+                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+                    if (objs.Length > 0)
+                    {
+                        isDataDriven = isNeedReactive;
+                    }
+                    bool dontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                    codeSb.AppendLine("    public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + num + ", PropertyId = " + count + ", TSPropertyName = \"" + fieldInfo.Name + "\", DontCopy = " + (dontCopy ? "true" : "false") + ", NeedReactive = " + (isDataDriven ? "true" : "false") + " };");
+                    //codeSb.AppendLine("    public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + property.Name + "\" };");
+                    count++;
+
+                    //FieldInfo fieldInfo = fieldInfos[j];
+                    //if (fieldInfo.Name.StartsWith("<"))
+                    //{
+                    //    continue;
+                    //}
+                    //codeSb.AppendLine("    public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + num + ", TSPropertyName = \"" + fieldInfo.Name + "\" };");
                 }
             }
 
             #endregion
-
+            codeSb.AppendLine("    public static int Count { get { return " + count + "; } }");
             codeSb.AppendLine("}");
             codeSb.AppendLine("");
             System.Threading.Thread.Sleep(100);

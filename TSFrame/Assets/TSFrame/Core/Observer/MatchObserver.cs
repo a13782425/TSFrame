@@ -10,12 +10,23 @@ public sealed partial class Observer
     #region Public
     public Group MatchGetGroup(ComponentFlag flag)
     {
-        if (_matchGroupDic.ContainsKey(flag))
+        //if (_matchGroupDic.ContainsKey(flag))
+        //{
+        //    return _matchGroupDic[flag];
+        //}
+        //Group group = new Group(flag);
+        //_matchGroupDic.Add(flag, group);
+
+        foreach (Group item in _matchGroupHashSet)
         {
-            return _matchGroupDic[flag];
+            if (item.GetHashCode() == flag.GetHashCode())
+            {
+                return item;
+            }
         }
+
         Group group = new Group(flag);
-        _matchGroupDic.Add(flag, group);
+        _matchGroupHashSet.Add(group);
         return group;
     }
     public Group MatchGetGroup(params Int64[] componentIds)
@@ -196,20 +207,35 @@ public sealed partial class Observer
 
     partial void MatchEntity(Entity entity, bool isActive)
     {
-        foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+        foreach (Group item in _matchGroupHashSet)
         {
             if (isActive)
             {
-                if (entity.GetComponentFlag().HasFlag(item.Key))
+                if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
                 {
-                    item.Value.AddEntity(entity);
+                    item.AddEntity(entity);
                 }
             }
             else
             {
-                item.Value.RemoveEntity(entity);
+                item.RemoveEntity(entity);
             }
         }
+
+        //foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+        //{
+        //    if (isActive)
+        //    {
+        //        if (entity.GetComponentFlag().HasFlag(item.Key))
+        //        {
+        //            item.Value.AddEntity(entity);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        item.Value.RemoveEntity(entity);
+        //    }
+        //}
     }
 
     partial void MatchEntity(Entity entity, NormalComponent component)
@@ -224,13 +250,20 @@ public sealed partial class Observer
                     _sharedComponentDic[sharedId].SharedEntityHashSet.Remove(entity);
                 }
             }
-            foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            foreach (Group item in _matchGroupHashSet)
             {
-                if (item.Key.HasFlag(component.CurrentId))
+                if (item.ComponentFlag.HasFlag(component.CurrentId))
                 {
-                    item.Value.RemoveEntity(entity);
+                    item.RemoveEntity(entity);
                 }
             }
+            //foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            //{
+            //    if (item.Key.HasFlag(component.CurrentId))
+            //    {
+            //        item.Value.RemoveEntity(entity);
+            //    }
+            //}
             RecoverComponent(component);
         }
         else
@@ -242,13 +275,20 @@ public sealed partial class Observer
                     _sharedComponentDic[sharedId].SharedEntityHashSet.Add(entity);
                 }
             }
-            foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            foreach (Group item in _matchGroupHashSet)
             {
-                if (entity.GetComponentFlag().HasFlag(item.Key))
+                if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
                 {
-                    item.Value.AddEntity(entity);
+                    item.RemoveEntity(entity);
                 }
             }
+            //foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
+            //{
+            //    if (entity.GetComponentFlag().HasFlag(item.Key))
+            //    {
+            //        item.Value.AddEntity(entity);
+            //    }
+            //}
         }
     }
 

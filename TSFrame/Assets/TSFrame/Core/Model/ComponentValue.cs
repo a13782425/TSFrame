@@ -1,8 +1,10 @@
 ﻿
-public struct ComponentValue
+public class ComponentValue
 {
-    public long ComponentId { get; set; }
-
-    public string TSPropertyName { get; set; }
+    public long ComponentId;
+    public int PropertyId;
+    public string TSPropertyName;
+    public bool DontCopy;
+    public bool NeedReactive;
 }
 

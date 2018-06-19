@@ -75,32 +75,51 @@ public class Testing : MonoBehaviour
     //void Start()
     //{
     //    Stopwatch stopwatch = new Stopwatch();
-    //    Dictionary<int, int> dic = new Dictionary<int, int>();
+    //    Dictionary<long, int> dic = new Dictionary<long, int>();
     //    Dictionary<string, int> dicStr = new Dictionary<string, int>();
+    //    string str = "";
     //    for (int i = 0; i < 10000; i++)
     //    {
-    //        dic.Add(i, i);
-    //        dicStr.Add(System.Guid.NewGuid().ToString(), i);
+    //        dic.Add(long.MaxValue - i, i);
+    //        if (i == 999)
+    //        {
+    //            str = System.Guid.NewGuid().ToString();
+    //            dicStr.Add(str, i);
+    //        }
+    //        else
+    //            dicStr.Add(System.Guid.NewGuid().ToString(), i);
     //    }
     //    int num;
     //    stopwatch.Reset();
     //    stopwatch.Start();
 
-    //    foreach (KeyValuePair<int, int> item in dic)
+    //    for (int i = 0; i < 10000; i++)
     //    {
-    //        num = item.Value;
+    //        num = dic[long.MaxValue];
     //    }
     //    stopwatch.Stop();
     //    Debug.LogError("int:" + stopwatch.Elapsed);
     //    stopwatch.Reset();
     //    stopwatch.Start();
 
-    //    foreach (KeyValuePair<string, int> item in dicStr)
+    //    for (int i = 0; i < 10000; i++)
     //    {
-    //        num = item.Value;
+    //        num = dicStr[str];
     //    }
     //    stopwatch.Stop();
     //    Debug.LogError("string:" + stopwatch.Elapsed);
+    //}
+
+    //private void Start()
+    //{
+    //    TestA[] arr = new TestA[10];
+    //    for (int i = 0; i < 10; i++)
+    //    {
+    //        arr[i] = new TestA();
+    //    }
+    //    TestA[] arrTwo = arr;
+    //    arrTwo[0].id = 9999;
+    //    Debug.LogError(arr[0].id);
     //}
 
     void Start()
@@ -149,6 +168,7 @@ public class Testing : MonoBehaviour
             for (int i = 0; i < 1000; i++)
             {
                 monoList[i].AddComponent<TestMono>();
+                monoList[i].AddComponent<TestMono1>();
             }
             stopwatch.Stop();
             Debug.LogError("使用mono添加用时:" + stopwatch.Elapsed);
@@ -168,6 +188,7 @@ public class Testing : MonoBehaviour
             for (int i = 0; i < 1000; i++)
             {
                 DestroyImmediate(monoList[i].GetComponent<TestMono>());
+                DestroyImmediate(monoList[i].GetComponent<TestMono1>());
             }
             stopwatch.Stop();
             Debug.LogError("使用mono删除用时:" + stopwatch.Elapsed);
@@ -184,6 +205,7 @@ public class Testing : MonoBehaviour
 }
 class TestA
 {
+    public int id { get; set; }
     public override int GetHashCode()
     {
         return 1;
@@ -193,5 +215,10 @@ class TestA
 class TestMono : MonoBehaviour
 {
     public Vector3 pos;
+    //public Quaternion quta;
+}
+class TestMono1 : MonoBehaviour
+{
+    //public Vector3 pos;
     public Quaternion quta;
 }

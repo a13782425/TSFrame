@@ -32,7 +32,7 @@ public class ViewSystem : IReactiveSystem
                 GameObject instant = GameObject.Instantiate<GameObject>(obj);
                 instant.transform.SetParent(item.GetValue<Transform>(ViewComponentVariable.parent));
                 instant.hideFlags = item.GetValue<HideFlags>(ViewComponentVariable.hideFlags);
-                item.SetValue(ComponentIds.GAME_OBJECT, "value", instant);
+                item.SetValue(GameObjectComponentVariable.value, instant);
             }
             else
             {

@@ -9,22 +9,24 @@ public class Group
 
     public ComponentFlag ComponentFlag { get { return _componentFlag; } }
 
-    private Dictionary<Int32, Entity> _entityDic;
+    private HashSet<Entity> _entityHashSet;
     /// <summary>
     /// 实体字典
     /// </summary>
-    public Dictionary<Int32, Entity> EntityDic { get { return _entityDic; } }
+    public HashSet<Entity> EntityHashSet { get { return _entityHashSet; } }
     /// <summary>
     /// 实体数量
     /// </summary>
-    public int Count { get { return EntityDic.Count; } }
+    public int Count { get { return EntityHashSet.Count; } }
+
+    private int _hashCode = -1;
 
 
     public Group(ComponentFlag flag)
     {
         _componentFlag = flag;
-
-        _entityDic = new Dictionary<int, Entity>();
+        _hashCode = _componentFlag.GetHashCode();
+        _entityHashSet = new HashSet<Entity>();
     }
     public Group(params Int64[] array)
     {
@@ -36,7 +38,8 @@ public class Group
                 ComponentFlag.SetFlag(array[i]);
             }
         }
-        _entityDic = new Dictionary<int, Entity>();
+        _hashCode = _componentFlag.GetHashCode();
+        _entityHashSet = new HashSet<Entity>();
     }
     public bool HasComponent(Int32 flag)
     {
@@ -45,19 +48,16 @@ public class Group
 
     public Group AddEntity(Entity entity)
     {
-        if (this._entityDic.ContainsKey(entity.GetId()))
-        {
-            return this;
-        }
-        this._entityDic.Add(entity.GetId(), entity);
+        //if (this._entityDic.ContainsKey(entity.GetId()))
+        //{
+        //    return this;
+        //}
+        this.EntityHashSet.Add(entity);
         return this;
     }
     public Group RemoveEntity(Entity entity)
     {
-        if (this._entityDic.ContainsKey(entity.GetId()))
-        {
-            this._entityDic.Remove(entity.GetId());
-        }
+        this.EntityHashSet.Remove(entity);
         return this;
     }
 
@@ -85,6 +85,6 @@ public class Group
     }
     public override int GetHashCode()
     {
-        return this.ComponentFlag.GetHashCode();// base.GetHashCode();
+        return _hashCode;//this.ComponentFlag.GetHashCode();// base.GetHashCode();
     }
 }

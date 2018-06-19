@@ -6,7 +6,7 @@ using System.Text;
 /// <summary>
 /// 组件的标记为
 /// </summary>
-public struct ComponentFlag
+public class ComponentFlag
 {
     private static ComponentFlag _none = new ComponentFlag();
     public static ComponentFlag None { get { return _none; } }

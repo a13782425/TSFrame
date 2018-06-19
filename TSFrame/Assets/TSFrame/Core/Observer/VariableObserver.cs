@@ -6,6 +6,8 @@ using Object = UnityEngine.Object;
 
 public sealed partial class Observer
 {
+    private static bool isCreate = false;
+
     private static Observer _instance = null;
     /// <summary>
     /// 观察者单例
@@ -14,13 +16,14 @@ public sealed partial class Observer
     {
         get
         {
-            if (_instance == null)
+            if (!isCreate)
             {
                 GameObject obj = new GameObject();
                 obj.name = "Observer";
                 DontDestroyOnLoad(obj);
                 _instance = obj.AddComponent<Observer>();
                 obj.hideFlags = HideFlags.HideInHierarchy;
+                isCreate = true;
             }
             return _instance;
         }
@@ -114,10 +117,14 @@ public sealed partial class Observer
     /// 匹配游戏物体
     /// </summary>
     private GameObject _matchGameObject;
+    ///// <summary>
+    ///// 匹配组的字典
+    ///// </summary>
+    //private Dictionary<ComponentFlag, Group> _matchGroupDic;
     /// <summary>
     /// 匹配组的字典
     /// </summary>
-    private Dictionary<ComponentFlag, Group> _matchGroupDic;
+    private HashSet<Group> _matchGroupHashSet;
 
     #endregion
 
@@ -179,7 +186,7 @@ public sealed partial class Observer
     /// <summary>
     /// 默认的对象池
     /// </summary>
-    private Queue<Entity> _entityDefaultPool;
+    private HashSet<Entity> _entityDefaultPool;
     /// <summary>
     /// 共享组件管理
     /// </summary>
@@ -203,12 +210,13 @@ public sealed partial class Observer
         _systemInitList = new List<ISystem>();
         _systemReactiveDic = new Dictionary<ISystem, HashSet<Entity>>();
         _systemExecuteList = new List<ISystem>();
-        _matchGroupDic = new Dictionary<ComponentFlag, Group>();
+        //_matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
         _componentPoolDic = new Dictionary<Int64, HashSet<NormalComponent>>();
-        _entityDefaultPool = new Queue<Entity>();
+        _entityDefaultPool = new HashSet<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
+        _matchGroupHashSet = new HashSet<Group>();
         CreateComponentPool();
         _variableGameObject = new GameObject("VariableGameObject");
         _variableGameObject.transform.SetParent(this.transform);

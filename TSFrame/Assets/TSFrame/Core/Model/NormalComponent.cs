@@ -8,8 +8,8 @@ public class NormalComponent
 {
     public IComponent CurrentComponent { get; private set; }
 
-    private Dictionary<string, TSProperty> _propertyDic;
-    public Dictionary<string, TSProperty> PropertyDic { get { return _propertyDic; } set { _propertyDic = value; } }
+    private TSProperty[] _propertyArray;
+    public TSProperty[] PropertyArray { get { return _propertyArray; } set { _propertyArray = value; } }
 
     /// <summary>
     /// 实例Id
@@ -24,7 +24,11 @@ public class NormalComponent
     /// </summary>
     public int SharedId { get { return _sharedId; } set { _sharedId = value; } }
 
-    public Int64 CurrentId { get { return CurrentComponent.CurrentId; } }
+    private Int64 _currentId = 0L;
+    /// <summary>
+    /// 组件Id
+    /// </summary>
+    public Int64 CurrentId { get { return _currentId; } }
 
     public NormalComponent(IComponent component)
     {
@@ -33,6 +37,7 @@ public class NormalComponent
             throw new Exception("组件实例为Null");
         }
         CurrentComponent = component;
+        _currentId = CurrentComponent.CurrentId;
         _id = Utils.GetComponentId();
         _sharedId = -1;
     }

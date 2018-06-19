@@ -56,6 +56,7 @@ public class Entity
         ChildList = new List<Entity>();
         _changeComponentCallBack = componentCallBack;
         _getComponentFunc = getFunc;
+        _currentFlag = new ComponentFlag();
     }
 
     #endregion
@@ -103,17 +104,17 @@ public class Entity
         {
             throw new Exception("增加组件失败,组件已存在,组件类型:" + componentId.ToString());
         }
-        if (!ComponentIds.ComponentTypeDic.ContainsKey(componentId))
-        {
-            throw new Exception("增加组件失败,组件ID查询失败,组件类型:" + componentId.ToString());
-        }
         if (_getComponentFunc == null)
         {
             throw new Exception("无法获取组件!!!");
         }
         //IComponent component = Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
         NormalComponent component = _getComponentFunc(componentId);
-        component.PropertyDic = ILHelper.RegisteComponent(component.CurrentComponent);
+        if (component == null)
+        {
+            throw new Exception("增加组件失败,组件ID查询失败,组件类型:" + componentId.ToString());
+        }
+        component.PropertyArray = ILHelper.GetComponentProperty(component.CurrentId);
         SetDefaultValue(component);
         this._allComponenDtoDic.Add(component.CurrentId, component);
         //this._componentDic.Add(componentId, component);
@@ -195,43 +196,29 @@ public class Entity
     /// <returns></returns>
     public Entity SetValue(ComponentValue component, object value)
     {
-        SetValue(component.ComponentId, component.TSPropertyName, value);
-        return this;
-    }
-
-    /// <summary>
-    /// 设置组件值
-    /// </summary>
-    /// <param name="componentId"></param>
-    /// <param name="fieldName"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public Entity SetValue(Int64 componentId, string fieldName, object value)
-    {
-        //string name = fieldName.ToLower();
-        if (this._allComponenDtoDic.ContainsKey(componentId))
+        if (this._allComponenDtoDic.ContainsKey(component.ComponentId))
         {
-            NormalComponent normalComponent = this._allComponenDtoDic[componentId];
-            if (normalComponent.PropertyDic.ContainsKey(fieldName))
+            NormalComponent normalComponent = this._allComponenDtoDic[component.ComponentId];
+            if (normalComponent.PropertyArray.Length > component.PropertyId)
             {
                 try
                 {
-                    normalComponent.PropertyDic[fieldName].Setter(this, normalComponent, value);
+                    normalComponent.PropertyArray[component.PropertyId].Setter(this, normalComponent, value);
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", fieldName, ex.Message);
+                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
                     //Debug.LogError(ex.Message);
                 }
             }
             else
             {
-                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", componentId, fieldName);
+                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", component.ComponentId, component.PropertyId);
             }
         }
         else
         {
-            Debug.LogErrorFormat("组件ID:{0}不存在!!!", componentId);
+            Debug.LogErrorFormat("组件ID:{0}不存在!!!", component.ComponentId);
         }
         return this;
     }
@@ -244,38 +231,31 @@ public class Entity
     /// <returns></returns>
     public T GetValue<T>(ComponentValue component)
     {
-        return GetValue<T>(component.ComponentId, component.TSPropertyName);
-    }
-    /// <summary>
-    /// 获取值
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="componentId"></param>
-    /// <param name="fieldName"></param>
-    /// <returns></returns>
-    public T GetValue<T>(Int64 componentId, string fieldName)
-    {
-        //string name = fieldName.ToLower(); 
         T t = default(T);
+        Int64 componentId = component.ComponentId;
         if (this._allComponenDtoDic.ContainsKey(componentId))
         {
             NormalComponent normalComponent = this._allComponenDtoDic[componentId];
-            if (normalComponent.PropertyDic.ContainsKey(fieldName))
+            if (normalComponent.PropertyArray.Length > component.PropertyId)
             {
                 try
                 {
-                    object value = normalComponent.PropertyDic[fieldName].Getter(normalComponent.CurrentComponent); ;
+                    object value = normalComponent.PropertyArray[component.PropertyId].Getter(normalComponent.CurrentComponent);
                     t = (T)value;
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError(ex.Message);
+                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
                 }
             }
             else
             {
-                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", componentId, fieldName);
+                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", component.ComponentId, component.PropertyId);
             }
+        }
+        else
+        {
+            Debug.LogErrorFormat("组件ID:{0}不存在!!!", componentId);
         }
         return t;
     }
@@ -308,13 +288,12 @@ public class Entity
                 continue;
             }
             NormalComponent dto = componentPair.Value;
-            foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
+            NormalComponent thisDto = this._allComponenDtoDic[componentPair.Key];
+            for (int i = 0; i < dto.PropertyArray.Length; i++)
             {
-                if (item.Value.DontCopy)
-                {
+                if (dto.PropertyArray[i].DontCopy)
                     continue;
-                }
-                this.SetValue(componentPair.Key, item.Key, item.Value.Getter(dto.CurrentComponent));
+                thisDto.PropertyArray[i].Setter(this, thisDto, dto.PropertyArray[i].Getter(dto.CurrentComponent));
             }
         }
         return this;
@@ -344,7 +323,7 @@ public class Entity
                         throw new Exception("增加组件失败,组件已存在,组件类型:" + componentPair.Key.ToString());
                     }
                     NormalComponent normal = new NormalComponent(componentPair.Value.CurrentComponent);
-                    normal.PropertyDic = componentPair.Value.PropertyDic;
+                    normal.PropertyArray = componentPair.Value.PropertyArray;
                     normal.SharedId = sharedId;
                     this._allComponenDtoDic.Add(componentPair.Key, normal);
                     this._currentFlag.SetFlag(componentPair.Key);
@@ -365,11 +344,12 @@ public class Entity
 
     private void SetDefaultValue(NormalComponent dto)
     {
-        foreach (KeyValuePair<string, TSProperty> item in dto.PropertyDic)
+        for (int i = 0; i < dto.PropertyArray.Length; i++)
         {
-            item.Value.Setter(null, dto, item.Value.DefaultValue);
-            //item.Value.Setter(null, dto.CurrentComponent, item.Value.PropertyType.IsValueType ? Activator.CreateInstance(item.Value.PropertyType) : null);
+            TSProperty tSProperty = dto.PropertyArray[i];
+            tSProperty.Setter(null, dto, tSProperty.DefaultValue);
         }
+
     }
 
 

@@ -141,6 +141,7 @@ public static partial class ComponentIds
                 else
                 {
                     ComponentTypeDic.Add(num, types[i]);
+                    ILHelper.RegisteComponent(obj as IComponent);
                 }
             }
         }

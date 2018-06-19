@@ -15,8 +15,8 @@ public delegate object PropertyGetter(object instance);
 /// </summary>
 public class TSProperty
 {
-    public string Name { get; set; }
-    public Type PropertyType { get; set; }
+    //public string Name { get; set; }
+    //public Type PropertyType { get; set; }
     public PropertySetter Setter { get; set; }
     public PropertyGetter Getter { get; set; }
     public bool DontCopy { get; set; }
@@ -29,16 +29,16 @@ public static class ILHelper
 {
     private static string _methodName = null;
 
-    private static Type _interfaceType = typeof(IReactiveComponent);
+    //private static Type _interfaceType = typeof(IReactiveComponent);
 
-    private static Type _dataDrivenType = typeof(DataDrivenAttribute);
+    //private static Type _dataDrivenType = typeof(DataDrivenAttribute);
 
-    private static Type _dontCopyType = typeof(DontCopyAttribute);
+    //private static Type _dontCopyType = typeof(DontCopyAttribute);
 
     private static Type _defaultValueType = typeof(DefaultValueAttribute);
 
-    private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
-
+    //private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
+    private static Dictionary<Int64, TSProperty[]> _ilCache = new Dictionary<long, TSProperty[]>();
     public static void SetChangeCallBack(string methodName)
     {
         if (typeof(Observer).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public) != null)
@@ -46,22 +46,43 @@ public static class ILHelper
             _methodName = methodName;
         }
     }
-    public static Dictionary<string, TSProperty> RegisteComponent(IComponent instance)
+
+    public static TSProperty[] GetComponentProperty(Int64 componentId)
     {
         try
         {
-            if (_ilCache.ContainsKey(instance.CurrentId))
-            {
-                return _ilCache[instance.CurrentId];
-            }
-            Dictionary<string, TSProperty> tempReturnDic = new Dictionary<string, TSProperty>();
-            Type instanceType = instance.GetType();
-            bool isNeedReactive = false;
-            if (_interfaceType.IsAssignableFrom(instanceType))
-            {
-                isNeedReactive = true;
-            }
+            return _ilCache[componentId];
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 
+    public static void RegisteComponent(IComponent instance)
+    {
+        try
+        {
+
+            Type instanceType = instance.GetType();
+            Type varType = instanceType.Assembly.GetType(instanceType.Name + "Variable");
+            if (varType == null)
+            {
+                throw new Exception(instanceType.Name + "没有组件说明类,请先生成组件说明类");
+            }
+            PropertyInfo countProperty = varType.GetProperty("Count", BindingFlags.Public | BindingFlags.Static);
+            if (countProperty == null)
+            {
+                throw new Exception(instanceType.Name + "没有组件说明类,请先生成组件说明类");
+            }
+            int count = (int)countProperty.GetValue(null);
+            if (count <= 0)
+            {
+                _ilCache.Add(instance.CurrentId, null);
+                return;
+            }
+            TSProperty[] tempArray = new TSProperty[count];
+            //Dictionary<string, TSProperty> tempReturnDic = new Dictionary<string, TSProperty>();
             #region Property
 
             PropertyInfo[] props = instanceType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -69,21 +90,25 @@ public static class ILHelper
             {
                 for (int i = 0; i < props.Length; i++)
                 {
-                    bool isDataDriven = false;
+                    //bool isDataDriven = false;
                     PropertyInfo property = props[i];
                     if (property.GetSetMethod() == null || property.GetGetMethod() == null)
                     {
                         continue;
                     }
-                    object[] objs = property.GetCustomAttributes(_dataDrivenType, false);
-                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
-                    if (objs.Length > 0)
+                    FieldInfo varFieldInfo = varType.GetField(property.Name, BindingFlags.Public | BindingFlags.Static);
+                    if (varFieldInfo == null)
                     {
-                        isDataDriven = isNeedReactive;
+                        continue;
                     }
-                    TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
-                    tsProperty.DontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
-                    objs = property.GetCustomAttributes(_defaultValueType, false);
+                    ComponentValue componentValue = varFieldInfo.GetValue(null) as ComponentValue;
+                    if (componentValue == null)
+                    {
+                        continue;
+                    }
+                    TSProperty tsProperty = CreateProperty(instance, property, componentValue.NeedReactive);
+                    tsProperty.DontCopy = componentValue.DontCopy;
+                    object[] objs = property.GetCustomAttributes(_defaultValueType, false);
                     if (objs.Length > 0)
                     {
                         tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
@@ -92,7 +117,8 @@ public static class ILHelper
                     {
                         tsProperty.DefaultValue = property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null;
                     }
-                    tempReturnDic.Add(property.Name, tsProperty);
+                    tempArray[componentValue.PropertyId] = tsProperty;
+                    //tempReturnDic.Add(property.Name, tsProperty);
                 }
             }
 
@@ -105,17 +131,20 @@ public static class ILHelper
             {
                 for (int i = 0; i < fieldInfos.Length; i++)
                 {
-                    bool isDataDriven = false;
                     FieldInfo fieldInfo = fieldInfos[i];
-                    object[] objs = fieldInfo.GetCustomAttributes(_dataDrivenType, false);
-                    //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
-                    if (objs.Length > 0)
+                    FieldInfo varFieldInfo = varType.GetField(fieldInfo.Name, BindingFlags.Public | BindingFlags.Static);
+                    if (varFieldInfo == null)
                     {
-                        isDataDriven = isNeedReactive;
+                        continue;
                     }
-                    TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
-                    tsProperty.DontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
-                    objs = fieldInfo.GetCustomAttributes(_defaultValueType, false);
+                    ComponentValue componentValue = varFieldInfo.GetValue(null) as ComponentValue;
+                    if (componentValue == null)
+                    {
+                        continue;
+                    }
+                    TSProperty tsProperty = CreateProperty(instance, fieldInfo, componentValue.NeedReactive);
+                    tsProperty.DontCopy = componentValue.DontCopy;
+                    object[] objs = fieldInfo.GetCustomAttributes(_defaultValueType, false);
                     if (objs.Length > 0)
                     {
                         tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
@@ -124,25 +153,115 @@ public static class ILHelper
                     {
                         tsProperty.DefaultValue = fieldInfo.FieldType.IsValueType ? Activator.CreateInstance(fieldInfo.FieldType) : null;
                     }
-                    tempReturnDic.Add(fieldInfo.Name, tsProperty);
+                    tempArray[componentValue.PropertyId] = tsProperty;
                 }
             }
 
             #endregion
-            _ilCache.Add(instance.CurrentId, tempReturnDic);
-            return tempReturnDic;
+            _ilCache.Add(instance.CurrentId, tempArray);
         }
         catch (Exception ex)
         {
             throw ex;
         }
     }
+    //public static Dictionary<string, TSProperty> RegisteComponent(IComponent instance)
+    //{
+    //    try
+    //    {
+    //        if (_ilCache.ContainsKey(instance.CurrentId))
+    //        {
+    //            return _ilCache[instance.CurrentId];
+    //        }
+    //        Dictionary<string, TSProperty> tempReturnDic = new Dictionary<string, TSProperty>();
+    //        Type instanceType = instance.GetType();
+    //        bool isNeedReactive = false;
+    //        if (_interfaceType.IsAssignableFrom(instanceType))
+    //        {
+    //            isNeedReactive = true;
+    //        }
+
+    //        #region Property
+
+    //        PropertyInfo[] props = instanceType.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+    //        if (props != null && props.Length > 0)
+    //        {
+    //            for (int i = 0; i < props.Length; i++)
+    //            {
+    //                bool isDataDriven = false;
+    //                PropertyInfo property = props[i];
+    //                if (property.GetSetMethod() == null || property.GetGetMethod() == null)
+    //                {
+    //                    continue;
+    //                }
+    //                object[] objs = property.GetCustomAttributes(_dataDrivenType, false);
+    //                //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+    //                if (objs.Length > 0)
+    //                {
+    //                    isDataDriven = isNeedReactive;
+    //                }
+    //                TSProperty tsProperty = CreateProperty(instance, property, isDataDriven);
+    //                tsProperty.DontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
+    //                objs = property.GetCustomAttributes(_defaultValueType, false);
+    //                if (objs.Length > 0)
+    //                {
+    //                    tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
+    //                }
+    //                else
+    //                {
+    //                    tsProperty.DefaultValue = property.PropertyType.IsValueType ? Activator.CreateInstance(property.PropertyType) : null;
+    //                }
+    //                tempReturnDic.Add(property.Name, tsProperty);
+    //            }
+    //        }
+
+    //        #endregion
+
+    //        #region FieldInfo
+
+    //        FieldInfo[] fieldInfos = instanceType.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+    //        if (fieldInfos != null && fieldInfos.Length > 0)
+    //        {
+    //            for (int i = 0; i < fieldInfos.Length; i++)
+    //            {
+    //                bool isDataDriven = false;
+    //                FieldInfo fieldInfo = fieldInfos[i];
+    //                object[] objs = fieldInfo.GetCustomAttributes(_dataDrivenType, false);
+    //                //DataDrivenAttribute 特性长度大于0 则这个属性需要数据驱动，否则则不需要数据驱动
+    //                if (objs.Length > 0)
+    //                {
+    //                    isDataDriven = isNeedReactive;
+    //                }
+    //                TSProperty tsProperty = CreateProperty(instance, fieldInfo, isDataDriven);
+    //                tsProperty.DontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
+    //                objs = fieldInfo.GetCustomAttributes(_defaultValueType, false);
+    //                if (objs.Length > 0)
+    //                {
+    //                    tsProperty.DefaultValue = (objs[0] as DefaultValueAttribute).Value;
+    //                }
+    //                else
+    //                {
+    //                    tsProperty.DefaultValue = fieldInfo.FieldType.IsValueType ? Activator.CreateInstance(fieldInfo.FieldType) : null;
+    //                }
+    //                tempReturnDic.Add(fieldInfo.Name, tsProperty);
+    //            }
+    //        }
+
+    //        #endregion
+    //        _ilCache.Add(instance.CurrentId, tempReturnDic);
+    //        return tempReturnDic;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw ex;
+    //    }
+    //}
 
     private static TSProperty CreateProperty(object instance, FieldInfo fieldInfo, bool isDataDriven)
     {
         TSProperty tsProperty = new TSProperty();
-        tsProperty.Name = fieldInfo.Name;
-        tsProperty.PropertyType = fieldInfo.FieldType;
+        //tsProperty.Name = fieldInfo.Name;
+        //tsProperty.PropertyType = fieldInfo.FieldType;
         tsProperty.Setter = CreateSetter(fieldInfo, isDataDriven);
         tsProperty.Getter = CreateGetter(fieldInfo);
         return tsProperty;
@@ -158,8 +277,8 @@ public static class ILHelper
     public static TSProperty CreateProperty(object instance, PropertyInfo property, bool isDataDriven = false)
     {
         TSProperty tsProperty = new TSProperty();
-        tsProperty.Name = property.Name;
-        tsProperty.PropertyType = property.PropertyType;
+        //tsProperty.Name = property.Name;
+        //tsProperty.PropertyType = property.PropertyType;
         tsProperty.Setter = CreateSetter(property, isDataDriven);
         tsProperty.Getter = CreateGetter(property);
         return tsProperty;

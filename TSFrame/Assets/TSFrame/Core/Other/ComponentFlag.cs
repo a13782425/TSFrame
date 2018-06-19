@@ -16,6 +16,9 @@ public struct ComponentFlag
     private Int64 _playerlowFlag;
     private Int64 _playerhighFlag;
 
+    private int _hashCode;
+    private bool _isHashChange;
+
     public Int64 PlayerLowFlag { get { return _playerlowFlag; } private set { _playerlowFlag = value; } }
 
     public Int64 PlayerHighFlag { get { return _playerhighFlag; } private set { _playerhighFlag = value; } }
@@ -84,6 +87,7 @@ public struct ComponentFlag
             //用户低位
             PlayerLowFlag = flag | PlayerLowFlag;
         }
+        _isHashChange = true;
         return this;
     }
     public ComponentFlag RemoveFlag(Int64 flag)
@@ -108,7 +112,7 @@ public struct ComponentFlag
             //用户低位
             PlayerLowFlag = flag ^ PlayerLowFlag;
         }
-
+        _isHashChange = true;
         return this;
     }
     public static bool operator ==(ComponentFlag cf1, ComponentFlag cf2)
@@ -137,6 +141,10 @@ public struct ComponentFlag
     }
     public override int GetHashCode()
     {
-        return SystemLowFlag.GetHashCode() ^ SystemHighFlag.GetHashCode() ^ PlayerLowFlag.GetHashCode() ^ PlayerHighFlag.GetHashCode();
+        if (_isHashChange)
+        {
+            _hashCode = SystemLowFlag.GetHashCode() ^ SystemHighFlag.GetHashCode() ^ PlayerLowFlag.GetHashCode() ^ PlayerHighFlag.GetHashCode();
+        }
+        return _hashCode;
     }
 }

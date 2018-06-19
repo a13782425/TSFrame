@@ -105,10 +105,10 @@ public sealed partial class Observer
         {
             throw new Exception("回收的组件有误!!!");
         }
-        if (!_componentPoolDic[component.CurrentId].Contains(component))
-        {
-            _componentPoolDic[component.CurrentId].Enqueue(component);
-        }
+        //if (!_componentPoolDic[component.CurrentId].Contains(component))
+        //{
+            _componentPoolDic[component.CurrentId].Add(component);
+        //}
 
     }
     /// <summary>
@@ -118,15 +118,26 @@ public sealed partial class Observer
     /// <returns></returns>
     IComponent GetComponent(Int64 componentId)
     {
-        if (!_componentPoolDic.ContainsKey(componentId) || !ComponentIds.ComponentTypeDic.ContainsKey(componentId))
+        if (!_componentPoolDic.ContainsKey(componentId))
         {
             throw new Exception("需要获取的组件不存在");
         }
+        IComponent component = null;
         if (_componentPoolDic[componentId].Count > 0)
         {
-            return _componentPoolDic[componentId].Dequeue();
+            foreach (IComponent item in _componentPoolDic[componentId])
+            {
+                component = item;
+                break;
+            }
+            return component;
         }
-        return ComponentIds.GetComponent(componentId);
+        component = ComponentIds.GetComponent(componentId);
+        if (component != null)
+        {
+            return component;
+        }
+        throw new Exception("需要获取的组件不存在");
     }
     /// <summary>
     /// 获取一个实体

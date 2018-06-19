@@ -134,7 +134,7 @@ public sealed partial class Observer
     /// <summary>
     /// 触发执行的系统
     /// </summary>
-    private Dictionary<ISystem, Dictionary<int, Entity>> _systemReactiveDic;
+    private Dictionary<ISystem, HashSet<Entity>> _systemReactiveDic;
     /// <summary>
     /// 循环执行的系统
     /// </summary>
@@ -171,7 +171,7 @@ public sealed partial class Observer
     /// <summary>
     /// 组件对象池
     /// </summary>
-    private Dictionary<Int64, Queue<IComponent>> _componentPoolDic;
+    private Dictionary<Int64, HashSet<IComponent>> _componentPoolDic;
     /// <summary>
     /// 用户自定义实体对象池
     /// </summary>
@@ -201,11 +201,11 @@ public sealed partial class Observer
         _entityDic = new Dictionary<int, Entity>();
         _uiRootDic = new Dictionary<string, GameObject>();
         _systemInitList = new List<ISystem>();
-        _systemReactiveDic = new Dictionary<ISystem, Dictionary<int, Entity>>();
+        _systemReactiveDic = new Dictionary<ISystem, HashSet<Entity>>();
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        _componentPoolDic = new Dictionary<Int64, Queue<IComponent>>();
+        _componentPoolDic = new Dictionary<Int64, HashSet<IComponent>>();
         _entityDefaultPool = new Queue<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
@@ -218,11 +218,11 @@ public sealed partial class Observer
     {
         foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
         {
-            _componentPoolDic.Add(item.Key, new Queue<IComponent>());
+            _componentPoolDic.Add(item.Key, new HashSet<IComponent>());
             for (int i = 0; i < 10; i++)
             {
                 IComponent component = Activator.CreateInstance(item.Value) as IComponent;
-                _componentPoolDic[item.Key].Enqueue(component);
+                _componentPoolDic[item.Key].Add(component);
             }
         }
     }
@@ -346,7 +346,7 @@ public sealed partial class Observer
         private string _name;
 
         private Entity _origin = null;
-        private Queue<Entity> _entityQueue;
+        private HashSet<Entity> _entitySet;
         public EntityPoolDto(string name, Entity origin)
         {
             if (origin == null || string.IsNullOrEmpty(name))
@@ -357,27 +357,34 @@ public sealed partial class Observer
             _origin = origin;
             _origin.SetValue(ActiveComponentVariable.active, false);
             _origin.SetValue(PoolComponentVariable.poolName, _name);
-            _entityQueue = new Queue<Entity>();
+            _entitySet = new HashSet<Entity>();
         }
 
         public Entity Dequeue()
         {
-            if (_entityQueue.Count > 0)
+            Entity entity = null;
+            if (_entitySet.Count > 0)
             {
-                return _entityQueue.Dequeue();
+                foreach (Entity item in _entitySet)
+                {
+                    entity = item;
+                    break;
+                }
+                _entitySet.Remove(entity);
+                return entity;
             }
-            Entity entity = Instance.GetEntity();
+            entity = Instance.GetEntity();
             entity.CopyComponent(_origin).Parent = _origin.Parent;
             return entity;
         }
         public bool Contains(Entity entity)
         {
-            return _entityQueue.Contains(entity);
+            return _entitySet.Contains(entity);
         }
 
         public void Enqueue(Entity entity)
         {
-            _entityQueue.Enqueue(entity);
+            _entitySet.Add(entity);
         }
     }
 

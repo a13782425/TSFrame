@@ -21,11 +21,11 @@ public class SharedComponent
     /// </summary>
     public Int64 CurrentId { get { return _currentComponent.CurrentId; } }
 
-    private Dictionary<Int32, Entity> _sharedEntityDic;
+    private HashSet<Entity> _sharedEntityHashSet;
 
-    public Dictionary<Int32, Entity> SharedEntityDic { get { return _sharedEntityDic; } }
+    public HashSet<Entity> SharedEntityHashSet { get { return _sharedEntityHashSet; } }
 
-    public int ReferenceCount { get { return SharedEntityDic.Count; } }
+    public int ReferenceCount { get { return SharedEntityHashSet.Count; } }
 
 
     public SharedComponent(IComponent com, int shardId)
@@ -36,6 +36,6 @@ public class SharedComponent
         }
         _currentComponent = com;
         _sharedId = shardId;
-        _sharedEntityDic = new Dictionary<Int32, Entity>();
+        _sharedEntityHashSet = new HashSet<Entity>();
     }
 }

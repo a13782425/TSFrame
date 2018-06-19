@@ -22,7 +22,7 @@ public sealed partial class Observer
             {
                 if (!_systemReactiveDic.ContainsKey(system))
                 {
-                    _systemReactiveDic.Add(system, new Dictionary<int, Entity>());
+                    _systemReactiveDic.Add(system, new HashSet<Entity>());
                 }
             }
             if (system is IExecuteSystem)
@@ -55,7 +55,7 @@ public sealed partial class Observer
         if (initSystem != null)
             _systemInitList.Remove(initSystem);
         ISystem reactiveSystem = null;
-        foreach (KeyValuePair<ISystem, Dictionary<int, Entity>> item in _systemReactiveDic)
+        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
         {
             if (item.Key.GetType() == typeof(T))
             {
@@ -108,12 +108,12 @@ public sealed partial class Observer
                 item.Execute();
             }
         }
-        foreach (KeyValuePair<ISystem, Dictionary<int, Entity>> item in _systemReactiveDic)
+        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
         {
             if (item.Value.Count > 0)
             {
                 List<Entity> temp = new List<Entity>();
-                temp.AddRange(item.Value.Values);
+                temp.AddRange(item.Value);
                 item.Value.Clear();
                 (item.Key as IReactiveSystem).Execute(temp);
             }

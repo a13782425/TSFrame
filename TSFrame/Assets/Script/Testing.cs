@@ -7,6 +7,7 @@ using System.Linq;
 
 public class Testing : MonoBehaviour
 {
+
     //Stopwatch stopwatch = new Stopwatch();
     //Dictionary<int, int> dic = new Dictionary<int, int>();
     //private void Start()
@@ -44,6 +45,63 @@ public class Testing : MonoBehaviour
     //    }
     //}
 
+    //Stopwatch stopwatch = new Stopwatch();
+    //void Start()
+    //{
+
+    //    HashSet<int> test = new HashSet<int>();
+    //    for (int i = 0; i < 10000; i++)
+    //    {
+    //        test.Add(i);
+    //    }
+    //    stopwatch.Reset();
+    //    stopwatch.Start();
+    //    for (int i = 0; i < 10000; i++)
+    //    {
+    //        test.Add(i);
+    //    }
+    //    stopwatch.Stop();
+    //    Debug.LogError("添加一样:" + stopwatch.Elapsed);
+    //    stopwatch.Reset();
+    //    stopwatch.Start();
+    //    for (int i = 100000; i < 110000; i++)
+    //    {
+    //        test.Add(i);
+    //    }
+    //    stopwatch.Stop();
+    //    Debug.LogError("添加不一样:" + stopwatch.Elapsed);
+    //}
+
+    //void Start()
+    //{
+    //    Stopwatch stopwatch = new Stopwatch();
+    //    Dictionary<int, int> dic = new Dictionary<int, int>();
+    //    Dictionary<string, int> dicStr = new Dictionary<string, int>();
+    //    for (int i = 0; i < 10000; i++)
+    //    {
+    //        dic.Add(i, i);
+    //        dicStr.Add(System.Guid.NewGuid().ToString(), i);
+    //    }
+    //    int num;
+    //    stopwatch.Reset();
+    //    stopwatch.Start();
+
+    //    foreach (KeyValuePair<int, int> item in dic)
+    //    {
+    //        num = item.Value;
+    //    }
+    //    stopwatch.Stop();
+    //    Debug.LogError("int:" + stopwatch.Elapsed);
+    //    stopwatch.Reset();
+    //    stopwatch.Start();
+
+    //    foreach (KeyValuePair<string, int> item in dicStr)
+    //    {
+    //        num = item.Value;
+    //    }
+    //    stopwatch.Stop();
+    //    Debug.LogError("string:" + stopwatch.Elapsed);
+    //}
 
     void Start()
     {
@@ -124,7 +182,13 @@ public class Testing : MonoBehaviour
         }
     }
 }
-
+class TestA
+{
+    public override int GetHashCode()
+    {
+        return 1;
+    }
+}
 
 class TestMono : MonoBehaviour
 {

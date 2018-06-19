@@ -10,7 +10,7 @@ public class Entity
     {
         public IComponent CurrentComponent { get; set; }
 
-        private Dictionary<string, TSProperty> _propertyDic = new Dictionary<string, TSProperty>();
+        private Dictionary<string, TSProperty> _propertyDic;
         public Dictionary<string, TSProperty> PropertyDic { get { return _propertyDic; } set { _propertyDic = value; } }
     }
 

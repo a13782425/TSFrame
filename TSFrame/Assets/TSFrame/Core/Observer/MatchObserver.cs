@@ -92,24 +92,21 @@ public sealed partial class Observer
             sharedComponent = _sharedComponentDic[sharedId];
         }
 
-        foreach (KeyValuePair<ISystem, Dictionary<int, Entity>> item in _systemReactiveDic)
+        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
         {
             ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
             ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
             if (sharedId > 0)
             {
-                foreach (KeyValuePair<Int32, Entity> entityDic in sharedComponent.SharedEntityDic)
+                foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
                 {
-                    if (entityDic.Value.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                    if (setEntity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
                     {
                         continue;
                     }
-                    if (reactiveCondition.HasFlag(com.CurrentId) && entityDic.Value.GetComponentFlag().HasFlag(reactiveCondition))
+                    if (reactiveCondition.HasFlag(com.CurrentId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
                     {
-                        if (!item.Value.ContainsKey(entityDic.Key))
-                        {
-                            item.Value.Add(entityDic.Key, entityDic.Value);
-                        }
+                        item.Value.Add(setEntity);
                     }
                 }
             }
@@ -121,10 +118,7 @@ public sealed partial class Observer
                 }
                 if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
                 {
-                    if (!item.Value.ContainsKey(entity.GetId()))
-                    {
-                        item.Value.Add(entity.GetId(), entity);
-                    }
+                    item.Value.Add(entity);
                 }
             }
         }
@@ -227,10 +221,7 @@ public sealed partial class Observer
             {
                 if (_sharedComponentDic.ContainsKey(sharedId))
                 {
-                    if (_sharedComponentDic[sharedId].SharedEntityDic.ContainsKey(entity.GetId()))
-                    {
-                        _sharedComponentDic[sharedId].SharedEntityDic.Remove(entity.GetId());
-                    }
+                    _sharedComponentDic[sharedId].SharedEntityHashSet.Remove(entity);
                 }
             }
             foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)
@@ -248,10 +239,7 @@ public sealed partial class Observer
             {
                 if (_sharedComponentDic.ContainsKey(sharedId))
                 {
-                    if (!_sharedComponentDic[sharedId].SharedEntityDic.ContainsKey(entity.GetId()))
-                    {
-                        _sharedComponentDic[sharedId].SharedEntityDic.Add(entity.GetId(), entity);
-                    }
+                    _sharedComponentDic[sharedId].SharedEntityHashSet.Add(entity);
                 }
             }
             foreach (KeyValuePair<ComponentFlag, Group> item in _matchGroupDic)

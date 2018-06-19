@@ -27,7 +27,7 @@ public class TSProperty
 /// </summary>
 public static class ILHelper
 {
-    private static string _methodName = null;
+    private static string _methodName = "DataDrivenMethod";
 
     //private static Type _interfaceType = typeof(IReactiveComponent);
 
@@ -39,13 +39,6 @@ public static class ILHelper
 
     //private static Dictionary<Int64, Dictionary<string, TSProperty>> _ilCache = new Dictionary<Int64, Dictionary<string, TSProperty>>();
     private static Dictionary<Int64, TSProperty[]> _ilCache = new Dictionary<long, TSProperty[]>();
-    public static void SetChangeCallBack(string methodName)
-    {
-        if (typeof(Observer).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public) != null)
-        {
-            _methodName = methodName;
-        }
-    }
 
     public static TSProperty[] GetComponentProperty(Int64 componentId)
     {

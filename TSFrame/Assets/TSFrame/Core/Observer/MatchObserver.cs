@@ -197,7 +197,6 @@ public sealed partial class Observer
     {
         _matchGameObject = new GameObject("MatchGameObject");
         _matchGameObject.transform.SetParent(this.transform);
-        ILHelper.SetChangeCallBack("DataDrivenMethod");
     }
 
     partial void MatchUpdate()

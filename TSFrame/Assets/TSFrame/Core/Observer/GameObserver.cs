@@ -73,7 +73,6 @@ public sealed partial class Observer
     /// <returns></returns>
     public Observer GameLaunch()
     {
-        ILHelper.SetChangeCallBack("Call");
         VariableLoad();
         ResourcesLoad();
         CameraLoad();

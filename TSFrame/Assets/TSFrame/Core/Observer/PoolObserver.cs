@@ -28,36 +28,14 @@ public sealed partial class Observer
     }
 
     /// <summary>
-    /// 回收实体
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="poolName"></param>
-    public Observer RecoverEntity(Entity entity, string poolName = null)
-    {
-        if (string.IsNullOrEmpty(poolName) || !_entityPoolDic.ContainsKey(poolName))
-        {
-            if (!_entityDefaultPool.Contains(entity))
-            {
-                entity.RemoveComponentAll();
-                _entityDefaultPool.Enqueue(entity);
-                return this;
-            }
-            return this;
-        }
-        entity.SetValue(ActiveComponentVariable.active, false);
-        _entityPoolDic[poolName].Enqueue(entity);
-        return this;
-    }
-
-    /// <summary>
     /// 创建共享组件
     /// </summary>
     /// <param name="componentId"></param>Int64 componentId
     /// <returns></returns>
     public SharedComponent CreateSharedComponent(Int64 componentId)
     {
-        IComponent component = GetComponent(componentId);
-        if ((component as ISharedComponent) != null)
+        NormalComponent component = GetComponent(componentId);
+        if ((component.CurrentComponent as ISharedComponent) != null)
         {
             SharedComponent shared = new SharedComponent(component, Utils.GetSharedId());
             _sharedComponentDic.Add(shared.SharedId, shared);
@@ -83,6 +61,28 @@ public sealed partial class Observer
         return CreateSharedComponent(componentId);
     }
 
+    /// <summary>
+    /// 回收实体
+    /// </summary>
+    /// <param name="entity"></param>
+    /// <param name="poolName"></param>
+    public Observer RecoverEntity(Entity entity, string poolName = null)
+    {
+        if (string.IsNullOrEmpty(poolName) || !_entityPoolDic.ContainsKey(poolName))
+        {
+            if (!_entityDefaultPool.Contains(entity))
+            {
+                entity.RemoveComponentAll();
+                _entityDefaultPool.Enqueue(entity);
+                return this;
+            }
+            return this;
+        }
+        entity.SetValue(ActiveComponentVariable.active, false);
+        _entityPoolDic[poolName].Enqueue(entity);
+        return this;
+    }
+
 
     #region Implement Method
 
@@ -99,33 +99,30 @@ public sealed partial class Observer
     /// 回收一个组件
     /// </summary>
     /// <param name="component"></param>
-    partial void RecoverComponent(IComponent component)
+    partial void RecoverComponent(NormalComponent component)
     {
         if (component == null || !_componentPoolDic.ContainsKey(component.CurrentId))
         {
             throw new Exception("回收的组件有误!!!");
         }
-        //if (!_componentPoolDic[component.CurrentId].Contains(component))
-        //{
-            _componentPoolDic[component.CurrentId].Add(component);
-        //}
 
+        _componentPoolDic[component.CurrentId].Add(component);
     }
     /// <summary>
     /// 获取一个组件
     /// </summary>
     /// <param name="currentId"></param>
     /// <returns></returns>
-    IComponent GetComponent(Int64 componentId)
+    NormalComponent GetComponent(Int64 componentId)
     {
         if (!_componentPoolDic.ContainsKey(componentId))
         {
             throw new Exception("需要获取的组件不存在");
         }
-        IComponent component = null;
+        NormalComponent component = null;
         if (_componentPoolDic[componentId].Count > 0)
         {
-            foreach (IComponent item in _componentPoolDic[componentId])
+            foreach (NormalComponent item in _componentPoolDic[componentId])
             {
                 component = item;
                 break;

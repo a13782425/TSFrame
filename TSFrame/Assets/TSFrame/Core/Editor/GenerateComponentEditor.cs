@@ -84,7 +84,7 @@ public class GenerateComponentEditor : Editor
         codeIdSb.AppendLine("");
         codeIdSb.AppendLine("public static partial class ComponentIds");
         codeIdSb.AppendLine("{");
-        codeIdSb.AppendLine("    public static IComponent GetComponent(Int64 componentId)");
+        codeIdSb.AppendLine("    public static NormalComponent GetComponent(Int64 componentId)");
         codeIdSb.AppendLine("    {");
         codeIdSb.AppendLine("        switch (componentId)");
         codeIdSb.AppendLine("        {");
@@ -143,7 +143,7 @@ public class GenerateComponentEditor : Editor
                     if ((Int64)idsFields[j].GetValue(null) == num)
                     {
                         codeIdSb.AppendLine("            case ComponentIds." + idsFields[j].Name + ":");
-                        codeIdSb.AppendLine("                return new " + temp.Name + "();");
+                        codeIdSb.AppendLine("                return new NormalComponent(new " + temp.Name + "());");
                     }
                 }
             }

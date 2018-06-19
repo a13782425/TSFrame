@@ -11,11 +11,11 @@ public class SharedComponent
     /// </summary>
     public int SharedId { get { return _sharedId; } }
 
-    private IComponent _currentComponent = null;
+    private NormalComponent _currentComponent = null;
     /// <summary>
     /// 当前组件
     /// </summary>
-    public IComponent CurrentComponent { get { return _currentComponent; } }
+    public NormalComponent CurrentComponent { get { return _currentComponent; } }
     /// <summary>
     /// 组件Id
     /// </summary>
@@ -28,7 +28,7 @@ public class SharedComponent
     public int ReferenceCount { get { return SharedEntityHashSet.Count; } }
 
 
-    public SharedComponent(IComponent com, int shardId)
+    public SharedComponent(NormalComponent com, int shardId)
     {
         if (com == null)
         {
@@ -36,6 +36,13 @@ public class SharedComponent
         }
         _currentComponent = com;
         _sharedId = shardId;
+        _currentComponent.SharedId = shardId;
         _sharedEntityHashSet = new HashSet<Entity>();
     }
+
+    public override int GetHashCode()
+    {
+        return this.SharedId;
+    }
+
 }

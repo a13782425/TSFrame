@@ -7,7 +7,7 @@ using System.Text;
 
 
 
-public delegate void PropertySetter(Entity entity, IComponent instance, object value);
+public delegate void PropertySetter(Entity entity, NormalComponent instance, object value);
 public delegate object PropertyGetter(object instance);
 
 /// <summary>
@@ -46,14 +46,6 @@ public static class ILHelper
             _methodName = methodName;
         }
     }
-
-    public static object DeepCopyComponent(IComponent instance)
-    {
-
-
-        return null;
-    }
-
     public static Dictionary<string, TSProperty> RegisteComponent(IComponent instance)
     {
         try
@@ -202,11 +194,12 @@ public static class ILHelper
     private static PropertySetter CreateSetter(PropertyInfo property, bool isDataDriven = false)
     {
         Type type = property.DeclaringType;
-        var dm = new DynamicMethod("", null, new Type[] { typeof(Entity), typeof(IComponent), typeof(object) }, type);
+        var dm = new DynamicMethod("", null, new Type[] { typeof(Entity), typeof(NormalComponent), typeof(object) }, type);
         //2.声明il编译器
         var il = dm.GetILGenerator();
         il.Emit(OpCodes.Nop);
         il.Emit(OpCodes.Ldarg_1);
+        il.Emit(OpCodes.Callvirt, typeof(NormalComponent).GetProperty("CurrentComponent").GetGetMethod());
         il.Emit(OpCodes.Ldarg_2);
         if (property.PropertyType.IsValueType)//判断属性类型是否是值类型
         {
@@ -235,12 +228,13 @@ public static class ILHelper
     private static PropertySetter CreateSetter(FieldInfo fieldInfo, bool isDataDriven = false)
     {
         Type type = fieldInfo.DeclaringType;
-        var dm = new DynamicMethod("", null, new Type[] { typeof(Entity), typeof(IComponent), typeof(object) }, type);
+        var dm = new DynamicMethod("", null, new Type[] { typeof(Entity), typeof(NormalComponent), typeof(object) }, type);
         //2.声明il编译器
         var il = dm.GetILGenerator();
         //3.执行MyClass类的Name属性的Get方法 这句对应刚才的L_0001
         il.Emit(OpCodes.Nop);
         il.Emit(OpCodes.Ldarg_1);
+        il.Emit(OpCodes.Callvirt, typeof(NormalComponent).GetProperty("CurrentComponent").GetGetMethod());
         il.Emit(OpCodes.Ldarg_2);
         if (fieldInfo.FieldType.IsValueType)//判断属性类型是否是值类型
         {

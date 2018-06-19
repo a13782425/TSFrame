@@ -1,50 +1,50 @@
 //------------------------------------------------------------------------------------------------------------
-//-----------------------------------generate file 2018-06-19 14:34:51----------------------------------------
+//-----------------------------------generate file 2018-06-19 17:33:16----------------------------------------
 //------------------------------------------------------------------------------------------------------------
 using System;
 
 public static partial class ComponentIds
 {
-    public static IComponent GetComponent(Int64 componentId)
+    public static NormalComponent GetComponent(Int64 componentId)
     {
         switch (componentId)
         {
             case ComponentIds.ADDITIVE:
-                return new AdditiveComponent();
+                return new NormalComponent(new AdditiveComponent());
             case ComponentIds.GAME_OBJECT_NAME:
-                return new GameObjectNameComponent();
+                return new NormalComponent(new GameObjectNameComponent());
             case ComponentIds.INPUT:
-                return new InputComponent();
+                return new NormalComponent(new InputComponent());
             case ComponentIds.LINK:
-                return new LinkComponent();
+                return new NormalComponent(new LinkComponent());
             case ComponentIds.STRING:
-                return new StringComponent();
+                return new NormalComponent(new StringComponent());
             case ComponentIds.ACTIVE:
-                return new ActiveComponent();
+                return new NormalComponent(new ActiveComponent());
             case ComponentIds.COLLISION2D:
-                return new Collision2DComponent();
+                return new NormalComponent(new Collision2DComponent());
             case ComponentIds.COLLISION:
-                return new CollisionComponent();
+                return new NormalComponent(new CollisionComponent());
             case ComponentIds.GAME_OBJECT:
-                return new GameObjectComponent();
+                return new NormalComponent(new GameObjectComponent());
             case ComponentIds.HAS_PHYSICAL:
-                return new HasPhysicalComponent();
+                return new NormalComponent(new HasPhysicalComponent());
             case ComponentIds.LIFE_CYCLE:
-                return new LifeCycleComponent();
+                return new NormalComponent(new LifeCycleComponent());
             case ComponentIds.POOL:
-                return new PoolComponent();
+                return new NormalComponent(new PoolComponent());
             case ComponentIds.POSITION:
-                return new PositionComponent();
+                return new NormalComponent(new PositionComponent());
             case ComponentIds.ROATION:
-                return new RoationComponent();
+                return new NormalComponent(new RoationComponent());
             case ComponentIds.TRIGGER2D:
-                return new Trigger2DComponent();
+                return new NormalComponent(new Trigger2DComponent());
             case ComponentIds.TRIGGER:
-                return new TriggerComponent();
+                return new NormalComponent(new TriggerComponent());
             case ComponentIds.VIEW:
-                return new ViewComponent();
+                return new NormalComponent(new ViewComponent());
             case ComponentIds.TEST:
-                return new TestComponent();
+                return new NormalComponent(new TestComponent());
             default:
                 return null;
         }

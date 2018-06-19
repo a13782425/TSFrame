@@ -171,7 +171,7 @@ public sealed partial class Observer
     /// <summary>
     /// 组件对象池
     /// </summary>
-    private Dictionary<Int64, HashSet<IComponent>> _componentPoolDic;
+    private Dictionary<Int64, HashSet<NormalComponent>> _componentPoolDic;
     /// <summary>
     /// 用户自定义实体对象池
     /// </summary>
@@ -205,7 +205,7 @@ public sealed partial class Observer
         _systemExecuteList = new List<ISystem>();
         _matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        _componentPoolDic = new Dictionary<Int64, HashSet<IComponent>>();
+        _componentPoolDic = new Dictionary<Int64, HashSet<NormalComponent>>();
         _entityDefaultPool = new Queue<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
@@ -218,10 +218,11 @@ public sealed partial class Observer
     {
         foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
         {
-            _componentPoolDic.Add(item.Key, new HashSet<IComponent>());
+            _componentPoolDic.Add(item.Key, new HashSet<NormalComponent>());
             for (int i = 0; i < 10; i++)
             {
-                IComponent component = Activator.CreateInstance(item.Value) as IComponent;
+
+                NormalComponent component = ComponentIds.GetComponent(item.Key);
                 _componentPoolDic[item.Key].Add(component);
             }
         }

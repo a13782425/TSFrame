@@ -6,19 +6,31 @@ using System.Threading;
 
 public class Utils
 {
-    private static int _id = 0;
+    private static int _entityId = 0;
+
+    private static int _componentId = 0;
 
     private static int  _sharedId = 0;
 
     /// <summary>
-    /// 获取唯一Id
+    /// 获取实体Id
     /// </summary>
     /// <returns></returns>
-    public static int GetId()
+    public static int GetEntityId()
     {
-        Interlocked.Increment(ref _id);
-        return _id;
+        Interlocked.Increment(ref _entityId);
+        return _entityId;
     }
+    /// <summary>
+    /// 获取组件Id
+    /// </summary>
+    /// <returns></returns>
+    public static int GetComponentId()
+    {
+        Interlocked.Increment(ref _componentId);
+        return _componentId;
+    }
+
     /// <summary>
     /// 获取共享Id
     /// </summary>

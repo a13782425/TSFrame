@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public delegate void ComponentCallBack(Entity entity, IComponent component);
+public delegate void ComponentCallBack(Entity entity, NormalComponent component);
 
-public delegate IComponent GetComponentFunc(Int64 componentId);
+public delegate NormalComponent GetComponentFunc(Int64 componentId);
 
 public delegate void ValueChangeCallBack(Entity entity, Int64 componentId);
 

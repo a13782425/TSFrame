@@ -79,13 +79,13 @@ public sealed partial class Observer
     //    }
     //}
     [Obsolete("外界不要调用")]
-    public void DataDrivenMethod(Entity entity, IComponent com)
+    public void DataDrivenMethod(Entity entity, NormalComponent com)
     {
         if (entity == null)
         {
             return;
         }
-        int sharedId = entity.GetSharedId(com.CurrentId);
+        int sharedId = com.SharedId;
         SharedComponent sharedComponent = null;
         if (sharedId > 0)
         {
@@ -212,9 +212,9 @@ public sealed partial class Observer
         }
     }
 
-    partial void MatchEntity(Entity entity, IComponent component)
+    partial void MatchEntity(Entity entity, NormalComponent component)
     {
-        int sharedId = entity.GetSharedId(component.CurrentId);
+        int sharedId = component.SharedId;
         if (!entity.GetComponentFlag().HasFlag(component.CurrentId))
         {
             if (sharedId > 0)

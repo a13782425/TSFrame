@@ -60,7 +60,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void MatchLoad();
     partial void MatchUpdate();
-    partial void MatchEntity(Entity entity, IComponent component);
+    partial void MatchEntity(Entity entity, NormalComponent component);
     partial void MatchEntity(Entity entity, bool isActive);
 
     partial void DataDrivenMethod(Entity entity, Int64 componentId);
@@ -92,7 +92,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void PoolLoad();
     partial void PoolUpdate();
-    partial void RecoverComponent(IComponent component);
+    partial void RecoverComponent(NormalComponent component);
 
     #endregion
 

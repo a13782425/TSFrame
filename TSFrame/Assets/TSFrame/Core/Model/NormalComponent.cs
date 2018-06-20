@@ -16,6 +16,10 @@ public class NormalComponent
     /// </summary>
     private int _id;
     /// <summary>
+    /// 实例Id
+    /// </summary>
+    public int Id { get { return _id; }set { _id = value; } }
+    /// <summary>
     /// 共享Id
     /// </summary>
     private int _sharedId;
@@ -38,7 +42,6 @@ public class NormalComponent
         }
         CurrentComponent = component;
         _currentId = CurrentComponent.CurrentId;
-        _id = Utils.GetComponentId();
         _sharedId = -1;
     }
 

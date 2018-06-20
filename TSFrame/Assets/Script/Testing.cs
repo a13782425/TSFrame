@@ -32,24 +32,24 @@ public class Testing : MonoBehaviour
     {
         if (Input.GetKeyUp(KeyCode.C))
         {
-            //stopwatch.Reset();
-            //stopwatch.Start();
-            //for (int i = 0; i < Count; i++)
-            //{
-            //    GameObject obj = GameObject.Instantiate(res);
-            //    monoList.Add(obj);
-            //}
-            //stopwatch.Stop();
-            //Debug.LogError("使用mono创建" + Count + "个用时:" + stopwatch.Elapsed);
-            //stopwatch.Reset();
-            //stopwatch.Start();
-            //for (int i = 0; i < Count; i++)
-            //{
-            //    Entity entity = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
-            //    ecsList.Add(entity);
-            //}
-            //stopwatch.Stop();
-            //Debug.LogError("使用ecs创建" + Count + "个用时:" + stopwatch.Elapsed);
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < Count; i++)
+            {
+                GameObject obj = GameObject.Instantiate(res);
+                monoList.Add(obj);
+            }
+            stopwatch.Stop();
+            Debug.LogError("使用mono创建" + Count + "个用时:" + stopwatch.Elapsed);
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < Count; i++)
+            {
+                Entity entity = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
+                ecsList.Add(entity);
+            }
+            stopwatch.Stop();
+            Debug.LogError("使用ecs创建" + Count + "个用时:" + stopwatch.Elapsed);
             monoTest = GameObject.Instantiate(res);
             entityTest = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
         }

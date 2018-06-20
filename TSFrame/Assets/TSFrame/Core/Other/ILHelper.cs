@@ -68,7 +68,7 @@ public static class ILHelper
             {
                 throw new Exception(instanceType.Name + "没有组件说明类,请先生成组件说明类");
             }
-            int count = (int)countProperty.GetValue(null);
+            int count = (int)countProperty.GetValue(null, null);
             if (count <= 0)
             {
                 _ilCache.Add(instance.CurrentId, null);

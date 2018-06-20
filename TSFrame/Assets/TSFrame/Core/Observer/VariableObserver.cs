@@ -178,7 +178,7 @@ public sealed partial class Observer
     /// <summary>
     /// 组件对象池
     /// </summary>
-    private Dictionary<Int64, HashSet<NormalComponent>> _componentPoolDic;
+    private Dictionary<Int64, ComponentPoolDto> _componentPoolDic;
     /// <summary>
     /// 用户自定义实体对象池
     /// </summary>
@@ -212,7 +212,7 @@ public sealed partial class Observer
         _systemExecuteList = new List<ISystem>();
         //_matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        _componentPoolDic = new Dictionary<Int64, HashSet<NormalComponent>>();
+        _componentPoolDic = new Dictionary<Int64, ComponentPoolDto>();
         _entityDefaultPool = new HashSet<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
@@ -226,13 +226,7 @@ public sealed partial class Observer
     {
         foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
         {
-            _componentPoolDic.Add(item.Key, new HashSet<NormalComponent>());
-            for (int i = 0; i < 10; i++)
-            {
-
-                NormalComponent component = ComponentIds.GetComponent(item.Key);
-                _componentPoolDic[item.Key].Add(component);
-            }
+            _componentPoolDic.Add(item.Key, new ComponentPoolDto(item.Key));
         }
     }
 
@@ -355,7 +349,8 @@ public sealed partial class Observer
         private string _name;
 
         private Entity _origin = null;
-        private HashSet<Entity> _entitySet;
+        private List<Entity> _entityList;
+        private Queue<int> _indexQueue;
         public EntityPoolDto(string name, Entity origin)
         {
             if (origin == null || string.IsNullOrEmpty(name))
@@ -366,34 +361,110 @@ public sealed partial class Observer
             _origin = origin;
             _origin.SetValue(ActiveComponentVariable.active, false);
             _origin.SetValue(PoolComponentVariable.poolName, _name);
-            _entitySet = new HashSet<Entity>();
+            _entityList = new List<Entity>();
+            _indexQueue = new Queue<int>();
         }
 
         public Entity Dequeue()
         {
             Entity entity = null;
-            if (_entitySet.Count > 0)
+            if (_indexQueue.Count > 0)
             {
-                foreach (Entity item in _entitySet)
-                {
-                    entity = item;
-                    break;
-                }
-                _entitySet.Remove(entity);
+                int index = _indexQueue.Dequeue();
+                entity = _entityList[index];
+                _entityList[index] = null;
                 return entity;
             }
             entity = Instance.GetEntity();
             entity.CopyComponent(_origin).Parent = _origin.Parent;
+            _entityList.Add(null);
             return entity;
         }
+
         public bool Contains(Entity entity)
         {
-            return _entitySet.Contains(entity);
+            if (_entityList.Count > entity.GetId())
+            {
+                return _entityList[entity.GetId()] != null;
+            }
+            throw new Exception("该对象不属于对象池!");
         }
 
-        public void Enqueue(Entity entity)
+        public bool Enqueue(Entity entity)
         {
-            _entitySet.Add(entity);
+            int index = entity.GetId();
+            if (_entityList.Count > index)
+            {
+                if (_entityList[index] == null)
+                {
+                    _indexQueue.Enqueue(index);
+                    _entityList[index] = entity;
+                    return true;
+                }
+                return false;
+
+            }
+            return false;
+        }
+    }
+
+    class ComponentPoolDto
+    {
+        private List<NormalComponent> _componentList;
+        private Queue<int> _indexQueue;
+        private Int64 _componentId;
+
+        public ComponentPoolDto(Int64 componentId)
+        {
+            _componentId = componentId;
+            _componentList = new List<NormalComponent>();
+            _indexQueue = new Queue<int>();
+        }
+
+        public NormalComponent Dequeue()
+        {
+            NormalComponent component = null;
+            if (_indexQueue.Count > 0)
+            {
+                int index = _indexQueue.Dequeue();
+                component = _componentList[index];
+                _componentList[index] = null;
+                return component;
+            }
+            component = ComponentIds.GetComponent(_componentId);
+            if (component == null)
+            {
+                throw new Exception("需要获取的组件不存在");
+            }
+            component.Id = _componentList.Count;
+            _componentList.Add(null);
+            return component;
+        }
+
+        public bool Contains(NormalComponent component)
+        {
+            if (_componentList.Count > component.Id)
+            {
+                return _componentList[component.Id] != null;
+            }
+            throw new Exception("该对象不属于对象池!");
+        }
+
+        public bool Enqueue(NormalComponent component)
+        {
+            int index = component.Id;
+            if (_componentList.Count > index)
+            {
+                if (_componentList[index] == null)
+                {
+                    _indexQueue.Enqueue(index);
+                    _componentList[index] = component;
+                    return true;
+                }
+                return false;
+
+            }
+            return false;
         }
     }
 

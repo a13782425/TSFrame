@@ -105,7 +105,7 @@ public sealed partial class Observer
             throw new Exception("回收的组件有误!!!");
         }
 
-        _componentPoolDic[component.CurrentId].Add(component);
+        _componentPoolDic[component.CurrentId].Enqueue(component);
     }
     /// <summary>
     /// 获取一个组件
@@ -118,24 +118,7 @@ public sealed partial class Observer
         {
             throw new Exception("需要获取的组件不存在");
         }
-        HashSet<NormalComponent> hashSet = _componentPoolDic[componentId];
-        NormalComponent component = null;
-        if (hashSet.Count > 0)
-        {
-            foreach (NormalComponent item in hashSet)
-            {
-                component = item;
-                break;
-            }
-            hashSet.Remove(component);
-            return component;
-        }
-        component = ComponentIds.GetComponent(componentId);
-        if (component != null)
-        {
-            return component;
-        }
-        throw new Exception("需要获取的组件不存在");
+        return _componentPoolDic[componentId].Dequeue();
     }
     /// <summary>
     /// 获取一个实体

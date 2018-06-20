@@ -108,7 +108,6 @@ public class Entity
         {
             throw new Exception("无法获取组件!!!");
         }
-        //IComponent component = Activator.CreateInstance(ComponentIds.ComponentTypeDic[componentId]) as IComponent;
         NormalComponent component = _getComponentFunc(componentId);
         if (component == null)
         {

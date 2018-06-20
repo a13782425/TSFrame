@@ -12,25 +12,16 @@ public sealed partial class Observer
         {
             if (system is IInitSystem)
             {
-                if (!_systemInitList.Contains(system))
-                {
-                    _systemInitList.Add(system);
-                    (system as IInitSystem).Init();
-                }
+                _systemInitList.Add(system);
+                (system as IInitSystem).Init();
             }
             if (system is IReactiveSystem)
             {
-                if (!_systemReactiveDic.ContainsKey(system))
-                {
-                    _systemReactiveDic.Add(system, new HashSet<Entity>());
-                }
+                _systemReactiveDic.Add(new ReactiveSystemDto(system as IReactiveSystem));
             }
             if (system is IExecuteSystem)
             {
-                if (!_systemExecuteList.Contains(system))
-                {
-                    _systemExecuteList.Add(system);
-                }
+                _systemExecuteList.Add(system);
             }
         }
         return this;
@@ -54,17 +45,20 @@ public sealed partial class Observer
         }
         if (initSystem != null)
             _systemInitList.Remove(initSystem);
-        ISystem reactiveSystem = null;
-        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
+        //ISystem reactiveSystem = null;
+        int index = -1;
+        for (int i = 0; i < _systemReactiveDic.Count; i++)
         {
-            if (item.Key.GetType() == typeof(T))
+            if (_systemReactiveDic[i].CurrentSystem.GetType() == typeof(T))
             {
-                reactiveSystem = item.Key;
+                index = i;
                 break;
             }
         }
-        if (reactiveSystem != null)
-            _systemReactiveDic.Remove(reactiveSystem);
+        if (index > 0)
+        {
+            _systemReactiveDic.RemoveAt(index);
+        }
         IExecuteSystem executeSystem = null;
         foreach (IExecuteSystem item in _systemExecuteList)
         {
@@ -108,14 +102,14 @@ public sealed partial class Observer
                 item.Execute();
             }
         }
-        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
+        foreach (ReactiveSystemDto item in _systemReactiveDic)
         {
-            if (item.Value.Count > 0)
+            if (item.EntityHashSet.Count > 0)
             {
                 List<Entity> temp = new List<Entity>();
-                temp.AddRange(item.Value);
-                item.Value.Clear();
-                (item.Key as IReactiveSystem).Execute(temp);
+                temp.AddRange(item.EntityHashSet);
+                item.EntityHashSet.Clear();
+                item.CurrentSystem.Execute(temp);
             }
         }
     }

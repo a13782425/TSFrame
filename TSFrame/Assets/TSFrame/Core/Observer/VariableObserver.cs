@@ -141,7 +141,7 @@ public sealed partial class Observer
     /// <summary>
     /// 触发执行的系统
     /// </summary>
-    private Dictionary<ISystem, HashSet<Entity>> _systemReactiveDic;
+    private List<ReactiveSystemDto> _systemReactiveDic;
     /// <summary>
     /// 循环执行的系统
     /// </summary>
@@ -213,11 +213,9 @@ public sealed partial class Observer
         _entityDic = new Dictionary<int, Entity>();
         _uiRootDic = new Dictionary<string, GameObject>();
         _systemInitList = new List<ISystem>();
-        _systemReactiveDic = new Dictionary<ISystem, HashSet<Entity>>();
+        _systemReactiveDic = new List<ReactiveSystemDto>();
         _systemExecuteList = new List<ISystem>();
-        //_matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        //_componentPoolDic = new Dictionary<Int64, ComponentPoolDto>();
         _componentPoolArray = new ComponentPoolDto[ComponentIds.COMPONENT_MAX_COUNT];
         _entityPoolDic = new Dictionary<string, EntitySubPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
@@ -409,7 +407,6 @@ public sealed partial class Observer
         }
     }
 
-
     class EntityPoolDto
     {
         private Entity _origin = null;
@@ -548,6 +545,37 @@ public sealed partial class Observer
 
             }
             return false;
+        }
+    }
+
+    class ReactiveSystemDto
+    {
+        private IReactiveSystem _currentSystem;
+
+        public IReactiveSystem CurrentSystem { get { return _currentSystem; } }
+
+        private HashSet<Entity> _entityHashSet;
+
+        public HashSet<Entity> EntityHashSet { get { return _entityHashSet; } }
+
+        public ReactiveSystemDto(IReactiveSystem reactiveSystem)
+        {
+            if (reactiveSystem == null)
+            {
+                throw new Exception("System Is Null");
+            }
+            _currentSystem = reactiveSystem;
+            _entityHashSet = new HashSet<Entity>();
+        }
+
+        public override int GetHashCode()
+        {
+            return CurrentSystem.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
     }
 

@@ -69,10 +69,12 @@ public sealed partial class Observer
         {
             sharedComponent = _sharedComponentDic[sharedId];
         }
-        foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
+        int count = _systemReactiveDic.Count;
+        for (int i = 0; i < count; i++)
         {
-            ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
-            ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+            ReactiveSystemDto dto = _systemReactiveDic[i];
+            ComponentFlag reactiveCondition = dto.CurrentSystem.ReactiveCondition;
+            ComponentFlag reactiveIgnoreCondition = dto.CurrentSystem.ReactiveIgnoreCondition;
             if (sharedId > 0)
             {
                 foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
@@ -83,7 +85,7 @@ public sealed partial class Observer
                     }
                     if (reactiveCondition.HasFlag(com.OperatorId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
                     {
-                        item.Value.Add(setEntity);
+                        dto.EntityHashSet.Add(setEntity);
                     }
                 }
             }
@@ -95,10 +97,40 @@ public sealed partial class Observer
                 }
                 if (reactiveCondition.HasFlag(com.OperatorId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
                 {
-                    item.Value.Add(entity);
+                    dto.EntityHashSet.Add(entity);
                 }
             }
         }
+        //foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
+        //{
+        //    ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
+        //    ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
+        //    if (sharedId > 0)
+        //    {
+        //        foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
+        //        {
+        //            if (setEntity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+        //            {
+        //                continue;
+        //            }
+        //            if (reactiveCondition.HasFlag(com.OperatorId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
+        //            {
+        //                item.Value.Add(setEntity);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+        //        {
+        //            continue;
+        //        }
+        //        if (reactiveCondition.HasFlag(com.OperatorId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+        //        {
+        //            item.Value.Add(entity);
+        //        }
+        //    }
+        //}
     }
     #endregion
 

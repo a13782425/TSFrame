@@ -160,6 +160,7 @@ public class ComponentFlag
         if (_isHashChange)
         {
             _hashCode = SystemLowFlag.GetHashCode() ^ SystemHighFlag.GetHashCode() ^ PlayerLowFlag.GetHashCode() ^ PlayerHighFlag.GetHashCode();
+            _isHashChange = false;
         }
         return _hashCode;
     }

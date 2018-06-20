@@ -4,6 +4,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using System.Diagnostics;
 using System.Linq;
+using System;
 
 public class Testing : MonoBehaviour
 {
@@ -29,6 +30,53 @@ public class Testing : MonoBehaviour
     string str = "初始化";
     private bool isAdd = false;
     private bool isCreate = false;
+    //void Update()
+    //{
+    //    if (Input.GetKeyUp(KeyCode.A))
+    //    {
+    //        DateTime begin = DateTime.Now;
+    //        //stopwatch.Reset();
+    //        //stopwatch.Start();
+    //        for (int i = 0; i < Count; i++)
+    //        {
+    //            GameObject instant = GameObject.Instantiate<GameObject>(res);
+    //            monoList.Add(instant);
+    //        }
+    //        Debug.LogError("使用mono创建" + Count + "个用时:" + (DateTime.Now - begin).TotalMilliseconds);
+    //        begin = DateTime.Now;
+    //        //stopwatch.Stop();
+    //        //Debug.LogError("使用mono创建" + Count + "个用时:" + stopwatch.Elapsed);
+    //        //stopwatch.Reset();
+    //        //stopwatch.Start();
+    //        for (int i = 0; i < Count; i++)
+    //        {
+    //            Entity entity = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
+    //            ecsList.Add(entity);
+    //        }
+    //        Debug.LogError("使用ecs创建" + Count + "个用时:" + (DateTime.Now - begin).TotalMilliseconds);
+    //    }
+    //    if (Input.GetKeyUp(KeyCode.D))
+    //    {
+    //        stopwatch.Reset();
+    //        stopwatch.Start();
+    //        for (int i = 0; i < Count; i++)
+    //        {
+    //            GameObject.Destroy(monoList[i]);
+    //        }
+    //        monoList.Clear();
+    //        stopwatch.Stop();
+    //        Debug.LogError("使用mono销毁" + Count + "个用时:" + stopwatch.Elapsed);
+    //        stopwatch.Reset();
+    //        stopwatch.Start();
+    //        for (int i = 0; i < Count; i++)
+    //        {
+    //            ecsList[i].SetValue(LifeCycleComponentVariable.lifeCycle, LifeCycleEnum.Destory);
+    //        }
+    //        ecsList.Clear();
+    //        stopwatch.Stop();
+    //        Debug.LogError("使用ecs销毁" + Count + "个用时:" + stopwatch.Elapsed);
+    //    }
+    //}
     void OnGUI()
     {
         GUILayout.Label("初始化个数:" + Count);

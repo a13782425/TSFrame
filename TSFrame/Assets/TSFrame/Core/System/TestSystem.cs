@@ -6,14 +6,19 @@ using UnityEngine;
 
 public class TestSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.TEST);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.TEST);
+            }
+            return _reactiveCondition;
         }
     }
-
     public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
 
     public void Execute(List<Entity> entitys)

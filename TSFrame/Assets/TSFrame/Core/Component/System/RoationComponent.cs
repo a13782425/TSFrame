@@ -10,7 +10,7 @@ public class RoationComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.ROATION;
+            return OperatorIds.ROATION;
         }
     }
     [DataDriven]

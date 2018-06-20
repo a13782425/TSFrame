@@ -9,19 +9,15 @@
 ## API介绍
 * [中文Wiki](https://github.com/a13782425/TSFrame/wiki)
 
-## 工作进度
-1. 完成Component数据驱动
-2. System模块第一版完成
-3. 碰撞系统完成(有带测试)
-4. 修改文件结构(使其更符合插件的结构)
-5. 增加Observer暂停和一步功能
-6. 增加Observer设置帧率功能
 ## 下一步工作
 1. 增加场景切换Entity的销毁
 2. 优化System模块
 3. 更改Observer初始化流程
 5. UI系统
 6. 场景管理
+
+## 性能测试
+![性能测试](http://photo.timeslip.cn/Test.png)
 
 ## 目前使用方法
 + 文字描述

@@ -31,7 +31,7 @@ public class EntityCollisionMono : EntityMono
     public override void Init(Entity entity)
     {
         base.Init(entity);
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION) && this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION) && this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.GAME_OBJECT))
         {
             collisionList = new List<CollisionModel>();
             this.CurrentEntity.SetValue(CollisionComponentVariable.collisionList, collisionList);
@@ -48,7 +48,7 @@ public class EntityCollisionMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
         {
             if (this.CurrentEntity.GetValue<CollisionCallBack>(CollisionComponentVariable.enterCallBack) == null)
             {
@@ -78,7 +78,7 @@ public class EntityCollisionMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
         {
             if (this.CurrentEntity.GetValue<CollisionCallBack>(CollisionComponentVariable.exitCallBack) == null)
             {
@@ -103,7 +103,7 @@ public class EntityCollisionMono : EntityMono
 
     private void OnDestroy()
     {
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
         {
             this.CurrentEntity.SetValue(CollisionComponentVariable.collisionList, new List<CollisionModel>());
         }
@@ -120,7 +120,7 @@ public class EntityCollision2DMono : EntityMono
     public override void Init(Entity entity)
     {
         base.Init(entity);
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION2D) && this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D) && this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.GAME_OBJECT))
         {
             collisionList = new List<Collision2DModel>();
             this.CurrentEntity.SetValue(Collision2DComponentVariable.collisionList, collisionList);
@@ -137,7 +137,7 @@ public class EntityCollision2DMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
         {
             if (this.CurrentEntity.GetValue<Collision2DCallBack>(Collision2DComponentVariable.enterCallBack) == null)
             {
@@ -167,7 +167,7 @@ public class EntityCollision2DMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
         {
             if (this.CurrentEntity.GetValue<CollisionCallBack>(Collision2DComponentVariable.exitCallBack) == null)
             {
@@ -192,7 +192,7 @@ public class EntityCollision2DMono : EntityMono
 
     private void OnDestroy()
     {
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.COLLISION2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
         {
             this.CurrentEntity.SetValue(Collision2DComponentVariable.collisionList, new List<Collision2DModel>());
         }
@@ -209,7 +209,7 @@ public class EntityTriggerMono : EntityMono
     public override void Init(Entity entity)
     {
         base.Init(entity);
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER) && this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER) && this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.GAME_OBJECT))
         {
             triggerList = new List<TriggerModel>();
             this.CurrentEntity.SetValue(TriggerComponentVariable.triggerList, triggerList);
@@ -226,7 +226,7 @@ public class EntityTriggerMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
         {
             if (this.CurrentEntity.GetValue<TriggerCallBack>(TriggerComponentVariable.enterCallBack) == null)
             {
@@ -256,7 +256,7 @@ public class EntityTriggerMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
         {
             if (this.CurrentEntity.GetValue<TriggerCallBack>(TriggerComponentVariable.exitCallBack) == null)
             {
@@ -281,7 +281,7 @@ public class EntityTriggerMono : EntityMono
 
     private void OnDestroy()
     {
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
         {
             this.CurrentEntity.SetValue(TriggerComponentVariable.triggerList, new List<TriggerModel>());
         }
@@ -298,7 +298,7 @@ public class EntityTrigger2DMono : EntityMono
     public override void Init(Entity entity)
     {
         base.Init(entity);
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER2D) && this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D) && this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.GAME_OBJECT))
         {
             triggerList = new List<Trigger2DModel>();
             this.CurrentEntity.SetValue(Trigger2DComponentVariable.triggerList, triggerList);
@@ -315,7 +315,7 @@ public class EntityTrigger2DMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
         {
             if (this.CurrentEntity.GetValue<Trigger2DCallBack>(Trigger2DComponentVariable.enterCallBack) == null)
             {
@@ -345,7 +345,7 @@ public class EntityTrigger2DMono : EntityMono
         {
             Destroy(this);
         }
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
         {
             if (this.CurrentEntity.GetValue<TriggerCallBack>(Trigger2DComponentVariable.exitCallBack) == null)
             {
@@ -370,7 +370,7 @@ public class EntityTrigger2DMono : EntityMono
 
     private void OnDestroy()
     {
-        if (this.CurrentEntity.GetComponentFlag().HasFlag(ComponentIds.TRIGGER2D))
+        if (this.CurrentEntity.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
         {
             this.CurrentEntity.SetValue(Trigger2DComponentVariable.triggerList, new List<Trigger2DModel>());
         }

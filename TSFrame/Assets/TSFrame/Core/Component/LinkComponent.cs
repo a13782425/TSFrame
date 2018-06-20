@@ -10,7 +10,7 @@ public class LinkComponent : IComponent
     {
         get
         {
-            return ComponentIds.LINK;
+            return OperatorIds.LINK;
         }
     }
 }

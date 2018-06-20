@@ -6,11 +6,17 @@ using UnityEngine;
 
 public class GameObjectActiveSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.ACTIVE, ComponentIds.GAME_OBJECT);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE, OperatorIds.GAME_OBJECT);
+            }
+            return _reactiveCondition;
         }
     }
     public ComponentFlag ReactiveIgnoreCondition

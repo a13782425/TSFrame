@@ -10,7 +10,7 @@ public class Collision2DComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.COLLISION2D;
+            return OperatorIds.COLLISION2D;
         }
     }
     [DataDriven]

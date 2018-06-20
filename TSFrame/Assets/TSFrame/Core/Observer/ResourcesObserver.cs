@@ -97,6 +97,8 @@ public sealed partial class Observer
         {
             for (int i = 0; i < tempList.Count; i++)
             {
+                Debug.LogError(_resourcesDtoDic.Count);
+                Debug.LogError(tempList[i].PathName);
                 _resourcesDtoDic.Remove(tempList[i].PathName);
                 tempList[i].Release();
             }

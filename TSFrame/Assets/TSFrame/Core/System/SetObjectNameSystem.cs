@@ -6,18 +6,24 @@ using UnityEngine;
 
 public class SetObjectNameSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT_NAME, ComponentIds.GAME_OBJECT);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.GAME_OBJECT_NAME, OperatorIds.GAME_OBJECT);
+            }
+            return _reactiveCondition;
         }
     }
     public ComponentFlag ReactiveIgnoreCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(0);
+            return ComponentFlag.None;
         }
     }
 

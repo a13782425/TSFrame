@@ -43,17 +43,17 @@ public class ComponentFlag
         {
             return false;
         }
-        if ((flag & ComponentIds.SYSTEM_LOW_FLAG) == ComponentIds.SYSTEM_LOW_FLAG)
+        if ((flag & OperatorIds.SYSTEM_LOW_FLAG) == OperatorIds.SYSTEM_LOW_FLAG)
         {
             //系统低位
             return (flag & SystemLowFlag) == flag;
         }
-        else if ((flag & ComponentIds.SYSTEM_HIGH_FLAG) == ComponentIds.SYSTEM_HIGH_FLAG)
+        else if ((flag & OperatorIds.SYSTEM_HIGH_FLAG) == OperatorIds.SYSTEM_HIGH_FLAG)
         {
             //系统高位
             return (flag & SystemHighFlag) == flag;
         }
-        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
+        else if ((flag & OperatorIds.PLAYER_HIGH_FLAG) == OperatorIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             return (flag & PlayerHighFlag) == flag;
@@ -67,17 +67,17 @@ public class ComponentFlag
 
     public ComponentFlag SetFlag(Int64 flag)
     {
-        if ((flag & ComponentIds.SYSTEM_LOW_FLAG) == ComponentIds.SYSTEM_LOW_FLAG)
+        if ((flag & OperatorIds.SYSTEM_LOW_FLAG) == OperatorIds.SYSTEM_LOW_FLAG)
         {
             //系统低位
             SystemLowFlag = flag | SystemLowFlag;
         }
-        else if ((flag & ComponentIds.SYSTEM_HIGH_FLAG) == ComponentIds.SYSTEM_HIGH_FLAG)
+        else if ((flag & OperatorIds.SYSTEM_HIGH_FLAG) == OperatorIds.SYSTEM_HIGH_FLAG)
         {
             //系统高位
             SystemHighFlag = flag | SystemHighFlag;
         }
-        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
+        else if ((flag & OperatorIds.PLAYER_HIGH_FLAG) == OperatorIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             PlayerHighFlag = flag | PlayerHighFlag;
@@ -92,17 +92,17 @@ public class ComponentFlag
     }
     public ComponentFlag RemoveFlag(Int64 flag)
     {
-        if ((flag & ComponentIds.SYSTEM_LOW_FLAG) == ComponentIds.SYSTEM_LOW_FLAG)
+        if ((flag & OperatorIds.SYSTEM_LOW_FLAG) == OperatorIds.SYSTEM_LOW_FLAG)
         {
             //系统低位
             SystemLowFlag = flag ^ SystemLowFlag;
         }
-        else if ((flag & ComponentIds.SYSTEM_HIGH_FLAG) == ComponentIds.SYSTEM_HIGH_FLAG)
+        else if ((flag & OperatorIds.SYSTEM_HIGH_FLAG) == OperatorIds.SYSTEM_HIGH_FLAG)
         {
             //系统高位
             SystemHighFlag = flag ^ SystemHighFlag;
         }
-        else if ((flag & ComponentIds.PLAYER_HIGH_FLAG) == ComponentIds.PLAYER_HIGH_FLAG)
+        else if ((flag & OperatorIds.PLAYER_HIGH_FLAG) == OperatorIds.PLAYER_HIGH_FLAG)
         {
             //用户高位
             PlayerHighFlag = flag ^ PlayerHighFlag;
@@ -117,10 +117,26 @@ public class ComponentFlag
     }
     public static bool operator ==(ComponentFlag cf1, ComponentFlag cf2)
     {
+        object o1 = cf1;
+        object o2 = cf2;
+        if (o1 == null && o2 == null)
+        {
+            return true;
+        }
+        if (o1 == null || o2 == null)
+        {
+            return false;
+        }
         return cf1.SystemLowFlag == cf2.SystemLowFlag && cf1.SystemHighFlag == cf2.SystemHighFlag && cf1.PlayerLowFlag == cf2.PlayerLowFlag && cf1.PlayerHighFlag == cf2.PlayerHighFlag;
     }
     public static ComponentFlag operator &(ComponentFlag cf1, ComponentFlag cf2)
     {
+        object o1 = cf1;
+        object o2 = cf2;
+        if (o1 == null || o2 == null)
+        {
+            throw new Exception("Object is Null");
+        }
         ComponentFlag temp = new ComponentFlag();
         temp.SystemLowFlag = cf1.SystemLowFlag & cf2.SystemLowFlag;
         temp.SystemHighFlag = cf1.SystemHighFlag & cf2.SystemHighFlag;

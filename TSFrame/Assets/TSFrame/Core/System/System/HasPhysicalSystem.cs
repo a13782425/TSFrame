@@ -3,11 +3,18 @@ using UnityEngine;
 
 public class HasPhysicalSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.HAS_PHYSICAL, ComponentIds.GAME_OBJECT);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.HAS_PHYSICAL, OperatorIds.GAME_OBJECT);
+            }
+            return _reactiveCondition;
         }
     }
     public ComponentFlag ReactiveIgnoreCondition
@@ -28,7 +35,7 @@ public class HasPhysicalSystem : IReactiveSystem
                 item.SetValue(HasPhysicalComponentVariable.isHas, isHas);
                 continue;
             }
-            if (item.GetComponentFlag().HasFlag(ComponentIds.COLLISION))
+            if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
             {
                 EntityCollisionMono mono = obj.GetComponent<EntityCollisionMono>();
                 if (isHas)
@@ -47,7 +54,7 @@ public class HasPhysicalSystem : IReactiveSystem
                     }
                 }
             }
-            if (item.GetComponentFlag().HasFlag(ComponentIds.COLLISION2D))
+            if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
             {
                 EntityCollision2DMono mono = obj.GetComponent<EntityCollision2DMono>();
                 if (isHas)
@@ -66,7 +73,7 @@ public class HasPhysicalSystem : IReactiveSystem
                     }
                 }
             }
-            if (item.GetComponentFlag().HasFlag(ComponentIds.TRIGGER))
+            if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
             {
                 EntityTriggerMono mono = obj.GetComponent<EntityTriggerMono>();
                 if (isHas)
@@ -85,7 +92,7 @@ public class HasPhysicalSystem : IReactiveSystem
                     }
                 }
             }
-            if (item.GetComponentFlag().HasFlag(ComponentIds.TRIGGER2D))
+            if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
             {
                 EntityTrigger2DMono mono = obj.GetComponent<EntityTrigger2DMono>();
                 if (isHas)

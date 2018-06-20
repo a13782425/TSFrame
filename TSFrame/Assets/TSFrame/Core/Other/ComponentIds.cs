@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-public static partial class ComponentIds
+public static class OperatorIds
 {
     #region 标签位
 
@@ -27,10 +27,13 @@ public static partial class ComponentIds
 
     #endregion
 
+    #region 操作ID
+
     /// <summary>
     /// 字符串
     /// </summary>
     public const Int64 STRING = (1L << 0) | SYSTEM_LOW_FLAG;
+
     /// <summary>
     /// 在某个系统执行完毕添加新的组件
     /// </summary>
@@ -100,52 +103,21 @@ public static partial class ComponentIds
     /// </summary>
     public const Int64 TEST = (1L << 0) | SYSTEM_HIGH_FLAG;
 
+    #endregion
+
+}
+
+public static partial class ComponentIds
+{
+
+    private static readonly Type[] _componentTypeArray = new Type[COMPONENT_MAX_COUNT];
+    public static Type[] ComponentTypeArray { get { return _componentTypeArray; } }
+
     private static readonly Dictionary<Int64, Type> _componentTypeDic = new Dictionary<long, Type>();
-
-
 
     /// <summary>
     /// 组件字典
     /// </summary>
     public static Dictionary<Int64, Type> ComponentTypeDic { get { return _componentTypeDic; } }
 
-
-
-
-
-
-
-
-
-
-
-    #region 构造函数
-
-    static ComponentIds()
-    {
-        Type type = typeof(IComponent);
-        PropertyInfo propertyInfo = type.GetProperty("CurrentId");
-        Assembly assembly = type.Assembly;
-        Type[] types = assembly.GetTypes();
-        for (int i = 0; i < types.Length; i++)
-        {
-            if (type.IsAssignableFrom(types[i]) && !types[i].IsAbstract)
-            {
-                object obj = Activator.CreateInstance(types[i]);
-                Int64 num = (Int64)propertyInfo.GetValue(obj, null);
-                //Debug.LogError(types[i].Name);
-                if (ComponentTypeDic.ContainsKey(num))
-                {
-                    Debug.LogError("Id : " + num + ",的组件已经存在！！！Type ：" + types[i].Name);
-                }
-                else
-                {
-                    ComponentTypeDic.Add(num, types[i]);
-                    ILHelper.RegisteComponent(obj as IComponent);
-                }
-            }
-        }
-    }
-
-    #endregion
 }

@@ -14,11 +14,11 @@ public class NormalComponent
     /// <summary>
     /// 实例Id
     /// </summary>
-    private int _id;
+    private int _instanceId;
     /// <summary>
     /// 实例Id
     /// </summary>
-    public int Id { get { return _id; }set { _id = value; } }
+    public int InstanceId { get { return _instanceId; } set { _instanceId = value; } }
     /// <summary>
     /// 共享Id
     /// </summary>
@@ -28,26 +28,33 @@ public class NormalComponent
     /// </summary>
     public int SharedId { get { return _sharedId; } set { _sharedId = value; } }
 
-    private Int64 _currentId = 0L;
+    private Int64 _operatorId = 0L;
     /// <summary>
     /// 组件Id
     /// </summary>
-    public Int64 CurrentId { get { return _currentId; } }
+    public Int64 OperatorId { get { return _operatorId; } }
 
-    public NormalComponent(IComponent component)
+    private int _componentId = 0;
+    /// <summary>
+    /// 组件ID
+    /// </summary>
+    public int ComponentId { get { return _componentId; } }
+
+    public NormalComponent(IComponent component, int componentId)
     {
-        if (component == null)
+        if (component == null || componentId < 0)
         {
             throw new Exception("组件实例为Null");
         }
+        _componentId = componentId;
         CurrentComponent = component;
-        _currentId = CurrentComponent.CurrentId;
+        _operatorId = CurrentComponent.CurrentId;
         _sharedId = -1;
     }
 
     public override int GetHashCode()
     {
-        return _id;
+        return _instanceId;
     }
 }
 

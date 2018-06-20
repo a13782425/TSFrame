@@ -7,11 +7,16 @@ using UnityEngine;
 public class MoveSystem : IInitSystem, IExecuteSystem
 {
     private Group _currentGroup;
+    private ComponentFlag _executeCondition = null;
     public ComponentFlag ExecuteCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT, ComponentIds.INPUT);
+            if (_executeCondition == null)
+            {
+                _executeCondition = Observer.Instance.GetFlag(OperatorIds.GAME_OBJECT, OperatorIds.INPUT);
+            }
+            return _executeCondition;
         }
     }
 

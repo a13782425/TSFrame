@@ -7,7 +7,7 @@ using System.Text;
 
 public class TestComponent : ISharedComponent, IComponent, IReactiveComponent
 {
-    public Int64 CurrentId { get { return ComponentIds.TEST; } }
+    public Int64 CurrentId { get { return OperatorIds.TEST; } }
 
     [DataDriven]
     public string VALUE;

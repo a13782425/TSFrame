@@ -10,7 +10,7 @@ public class StringComponent : IComponent
     {
         get
         {
-            return ComponentIds.STRING;
+            return OperatorIds.STRING;
         }
     }
 

@@ -10,7 +10,7 @@ public class HasPhysicalComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.HAS_PHYSICAL;
+            return OperatorIds.HAS_PHYSICAL;
         }
     }
     [DataDriven]

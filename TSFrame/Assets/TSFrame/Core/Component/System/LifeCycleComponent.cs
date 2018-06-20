@@ -10,7 +10,7 @@ public class LifeCycleComponent : IComponent,IReactiveComponent
     {
         get
         {
-            return ComponentIds.LIFE_CYCLE;
+            return OperatorIds.LIFE_CYCLE;
         }
     }
     /// <summary>

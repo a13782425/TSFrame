@@ -6,18 +6,23 @@ using UnityEngine;
 
 public class ActiveSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.ACTIVE);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE);
+            }
+            return _reactiveCondition;
         }
     }
     public ComponentFlag ReactiveIgnoreCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(0);
+            return ComponentFlag.None;
         }
     }
     public void Execute(List<Entity> entitys)

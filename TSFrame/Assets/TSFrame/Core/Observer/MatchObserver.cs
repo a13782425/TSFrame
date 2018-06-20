@@ -69,7 +69,6 @@ public sealed partial class Observer
         {
             sharedComponent = _sharedComponentDic[sharedId];
         }
-
         foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
         {
             ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
@@ -82,7 +81,7 @@ public sealed partial class Observer
                     {
                         continue;
                     }
-                    if (reactiveCondition.HasFlag(com.CurrentId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
+                    if (reactiveCondition.HasFlag(com.OperatorId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
                     {
                         item.Value.Add(setEntity);
                     }
@@ -94,7 +93,7 @@ public sealed partial class Observer
                 {
                     continue;
                 }
-                if (reactiveCondition.HasFlag(com.CurrentId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+                if (reactiveCondition.HasFlag(com.OperatorId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
                 {
                     item.Value.Add(entity);
                 }
@@ -136,7 +135,7 @@ public sealed partial class Observer
     partial void MatchEntity(Entity entity, NormalComponent component)
     {
         int sharedId = component.SharedId;
-        if (!entity.GetComponentFlag().HasFlag(component.CurrentId))
+        if (!entity.GetComponentFlag().HasFlag(component.OperatorId))
         {
             if (sharedId > 0)
             {
@@ -147,7 +146,7 @@ public sealed partial class Observer
             }
             foreach (Group item in _matchGroupHashSet)
             {
-                if (item.ComponentFlag.HasFlag(component.CurrentId))
+                if (item.ComponentFlag.HasFlag(component.OperatorId))
                 {
                     item.RemoveEntity(entity);
                 }

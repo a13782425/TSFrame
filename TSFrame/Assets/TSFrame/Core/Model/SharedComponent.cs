@@ -17,11 +17,16 @@ public class SharedComponent
     /// </summary>
     public NormalComponent CurrentComponent { get { return _currentComponent; } }
 
-    private Int64 _currentId = 0L;
+    private Int64 _operatorId = 0L;
     /// <summary>
     /// 组件Id
     /// </summary>
-    public Int64 CurrentId { get { return _currentId; } }
+    public Int64 OperatorId { get { return _operatorId; } }
+    private int _componentId = 0;
+    /// <summary>
+    /// 组件ID
+    /// </summary>
+    public int ComponentId { get { return _componentId; } }
 
     private HashSet<Entity> _sharedEntityHashSet;
 
@@ -39,7 +44,8 @@ public class SharedComponent
         _currentComponent = com;
         _sharedId = shardId;
         _currentComponent.SharedId = shardId;
-        _currentId = _currentComponent.CurrentId;
+        _operatorId = _currentComponent.OperatorId;
+        _componentId = _currentComponent.ComponentId;
         _sharedEntityHashSet = new HashSet<Entity>();
     }
 

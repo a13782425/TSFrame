@@ -6,7 +6,7 @@ using UnityEngine;
 
 public delegate void ComponentCallBack(Entity entity, NormalComponent component);
 
-public delegate NormalComponent GetComponentFunc(Int64 componentId);
+public delegate NormalComponent GetComponentFunc(Int32 componentId);
 
 public delegate void ValueChangeCallBack(Entity entity, Int64 componentId);
 

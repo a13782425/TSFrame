@@ -11,7 +11,7 @@ public class TriggerComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.TRIGGER;
+            return OperatorIds.TRIGGER;
         }
     }
 

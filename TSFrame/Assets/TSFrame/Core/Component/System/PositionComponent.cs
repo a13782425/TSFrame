@@ -10,7 +10,7 @@ public class PositionComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.POSITION;
+            return OperatorIds.POSITION;
         }
     }
     [DataDriven]

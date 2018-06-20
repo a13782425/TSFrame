@@ -10,7 +10,7 @@ public class GameObjectComponent : IComponent
     {
         get
         {
-            return ComponentIds.GAME_OBJECT;
+            return OperatorIds.GAME_OBJECT;
         }
     }
 

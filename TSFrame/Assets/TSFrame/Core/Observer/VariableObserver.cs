@@ -178,7 +178,8 @@ public sealed partial class Observer
     /// <summary>
     /// 组件对象池
     /// </summary>
-    private Dictionary<Int64, ComponentPoolDto> _componentPoolDic;
+    private ComponentPoolDto[] _componentPoolArray;
+    //private Dictionary<Int64, ComponentPoolDto> _componentPoolDic;
     /// <summary>
     /// 用户自定义实体对象池
     /// </summary>
@@ -212,7 +213,8 @@ public sealed partial class Observer
         _systemExecuteList = new List<ISystem>();
         //_matchGroupDic = new Dictionary<ComponentFlag, Group>();
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
-        _componentPoolDic = new Dictionary<Int64, ComponentPoolDto>();
+        //_componentPoolDic = new Dictionary<Int64, ComponentPoolDto>();
+        _componentPoolArray = new ComponentPoolDto[ComponentIds.COMPONENT_MAX_COUNT];
         _entityDefaultPool = new HashSet<Entity>();
         _entityPoolDic = new Dictionary<string, EntityPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
@@ -224,10 +226,16 @@ public sealed partial class Observer
 
     partial void CreateComponentPool()
     {
-        foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
+        //int length = ComponentIds.ComponentTypeArray.Length;
+        for (int i = 0; i < ComponentIds.COMPONENT_MAX_COUNT; i++)
         {
-            _componentPoolDic.Add(item.Key, new ComponentPoolDto(item.Key));
+            _componentPoolArray[i] = new ComponentPoolDto(i);
+            _componentPoolArray[i].Init(10);
         }
+        //foreach (KeyValuePair<Int64, Type> item in ComponentIds.ComponentTypeDic)
+        //{
+        //    _componentPoolDic.Add(item.Key, new ComponentPoolDto(item.Key));
+        //}
     }
 
     partial void VariableUpdate()
@@ -272,7 +280,7 @@ public sealed partial class Observer
                 throw new Exception("Resources cache create failure");
             }
             _isAutoRecycle = isRecycle;
-            _pathName = PathName;
+            _pathName = path;
             _cacheObj = obj;
         }
 
@@ -412,13 +420,28 @@ public sealed partial class Observer
     {
         private List<NormalComponent> _componentList;
         private Queue<int> _indexQueue;
-        private Int64 _componentId;
+        private int _componentId;
 
-        public ComponentPoolDto(Int64 componentId)
+        public ComponentPoolDto(int componentId)
         {
             _componentId = componentId;
             _componentList = new List<NormalComponent>();
             _indexQueue = new Queue<int>();
+        }
+
+        public void Init(int count)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                NormalComponent component = ComponentIds.GetComponent(_componentId);
+                if (component == null)
+                {
+                    throw new Exception("需要获取的组件不存在");
+                }
+                component.InstanceId = _componentList.Count;
+                _componentList.Add(component);
+                _indexQueue.Enqueue(i);
+            }
         }
 
         public NormalComponent Dequeue()
@@ -436,23 +459,23 @@ public sealed partial class Observer
             {
                 throw new Exception("需要获取的组件不存在");
             }
-            component.Id = _componentList.Count;
+            component.InstanceId = _componentList.Count;
             _componentList.Add(null);
             return component;
         }
 
         public bool Contains(NormalComponent component)
         {
-            if (_componentList.Count > component.Id)
+            if (_componentList.Count > component.InstanceId)
             {
-                return _componentList[component.Id] != null;
+                return _componentList[component.InstanceId] != null;
             }
             throw new Exception("该对象不属于对象池!");
         }
 
         public bool Enqueue(NormalComponent component)
         {
-            int index = component.Id;
+            int index = component.InstanceId;
             if (_componentList.Count > index)
             {
                 if (_componentList[index] == null)

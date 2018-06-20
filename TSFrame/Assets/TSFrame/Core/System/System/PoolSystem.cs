@@ -6,11 +6,17 @@ using System.Text;
 
 public class PoolSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.POOL);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.POOL);
+            }
+            return _reactiveCondition;
         }
     }
 

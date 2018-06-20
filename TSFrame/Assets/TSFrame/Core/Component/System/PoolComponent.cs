@@ -10,7 +10,7 @@ public class PoolComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.POOL;
+            return OperatorIds.POOL;
         }
     }
     public string poolName;

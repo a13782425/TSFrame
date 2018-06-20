@@ -10,7 +10,7 @@ public class ViewComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.VIEW;
+            return OperatorIds.VIEW;
         }
     }
     [DataDriven]

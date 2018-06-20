@@ -7,11 +7,16 @@ using UnityEngine;
 public class InputSystem : IExecuteSystem, IInitSystem
 {
     private Group _currentGroup;
+    private ComponentFlag _executeCondition = null;
     public ComponentFlag ExecuteCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.INPUT);
+            if (_executeCondition == null)
+            {
+                _executeCondition = Observer.Instance.GetFlag(OperatorIds.INPUT);
+            }
+            return _executeCondition;
         }
     }
 

@@ -10,7 +10,7 @@ public class CollisionComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.COLLISION;
+            return OperatorIds.COLLISION;
         }
     }
 

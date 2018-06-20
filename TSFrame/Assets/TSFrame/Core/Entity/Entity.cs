@@ -8,10 +8,11 @@ public class Entity
 {
 
     #region 字段和属性
+
     /// <summary>
     /// 所有组件字典
     /// </summary>
-    private Dictionary<Int64, NormalComponent> _allComponenDtoDic = new Dictionary<Int64, NormalComponent>();
+    private NormalComponent[] _allComponenArray;
 
     /// <summary>
     /// 组件标签
@@ -54,6 +55,7 @@ public class Entity
     {
         _id = Utils.GetEntityId();
         ChildList = new List<Entity>();
+        _allComponenArray = new NormalComponent[ComponentIds.COMPONENT_MAX_COUNT];
         _changeComponentCallBack = componentCallBack;
         _getComponentFunc = getFunc;
         _currentFlag = new ComponentFlag();
@@ -81,26 +83,14 @@ public class Entity
         return _currentFlag;
     }
 
-    ///// <summary>
-    ///// 设置组件改变时候的回调
-    ///// </summary>
-    ///// <param name="callBack"></param>
-    ///// <returns></returns>
-    //public Entity SetChangeComponent(ComponentCallBack callBack)
-    //{
-    //    _changeComponentCallBack = callBack;
-    //    return this;
-    //}
-
-    /// <summary>
-    /// 增加组件，会保留最后增加的组件
-    /// </summary>
-    /// <param name="componentId"></param>
-    /// <returns></returns>
-    public Entity AddComponent(Int64 componentId)
+    public Entity AddComponent(int componentId)
     {
-        //_componentDic.ContainsKey(componentId) ||
-        if (_allComponenDtoDic.ContainsKey(componentId))
+        if (componentId > ComponentIds.COMPONENT_MAX_COUNT)
+        {
+            throw new Exception("组件Id有误" + componentId.ToString());
+        }
+        NormalComponent component = _allComponenArray[componentId];
+        if (component != null)
         {
             throw new Exception("增加组件失败,组件已存在,组件类型:" + componentId.ToString());
         }
@@ -108,16 +98,15 @@ public class Entity
         {
             throw new Exception("无法获取组件!!!");
         }
-        NormalComponent component = _getComponentFunc(componentId);
+        component = _getComponentFunc(componentId);
         if (component == null)
         {
             throw new Exception("增加组件失败,组件ID查询失败,组件类型:" + componentId.ToString());
         }
-        component.PropertyArray = ILHelper.GetComponentProperty(component.CurrentId);
+        component.PropertyArray = ILHelper.GetComponentProperty(componentId);
         SetDefaultValue(component);
-        this._allComponenDtoDic.Add(component.CurrentId, component);
-        //this._componentDic.Add(componentId, component);
-        this._currentFlag.SetFlag(componentId);
+        _allComponenArray[componentId] = component;
+        this._currentFlag.SetFlag(component.OperatorId);
         if (_changeComponentCallBack != null)
         {
             _changeComponentCallBack.Invoke(this, component);
@@ -132,16 +121,19 @@ public class Entity
     /// <returns></returns>
     public Entity AddSharedCompoennt(SharedComponent shared)
     {
-        if (_allComponenDtoDic.ContainsKey(shared.CurrentId))
+        int componentId = shared.ComponentId;
+        if (ComponentIds.COMPONENT_MAX_COUNT > componentId)
         {
-            throw new Exception("增加组件失败,组件已存在,组件类型:" + shared.CurrentId.ToString());
-        }
-        NormalComponent normal = shared.CurrentComponent;
-        this._allComponenDtoDic.Add(normal.CurrentId, normal);
-        this._currentFlag.SetFlag(shared.CurrentId);
-        if (_changeComponentCallBack != null)
-        {
-            _changeComponentCallBack.Invoke(this, shared.CurrentComponent);
+            if (_allComponenArray[componentId] != null)
+            {
+                throw new Exception("增加组件失败,组件已存在,组件类型:" + shared.OperatorId.ToString());
+            }
+            _allComponenArray[componentId] = shared.CurrentComponent;
+            this._currentFlag.SetFlag(shared.OperatorId);
+            if (_changeComponentCallBack != null)
+            {
+                _changeComponentCallBack.Invoke(this, shared.CurrentComponent);
+            }
         }
         return this;
     }
@@ -151,21 +143,25 @@ public class Entity
     /// </summary>
     /// <param name="componentId"></param>
     /// <returns></returns>
-    public Entity RemoveComponent(Int64 componentId)
+    public Entity RemoveComponent(int componentId)
     {
-        //!_componentDic.ContainsKey(componentId) || 
-        if (!_allComponenDtoDic.ContainsKey(componentId))
+        if (ComponentIds.COMPONENT_MAX_COUNT > componentId)
         {
-            throw new Exception("删除组件失败,组件不存在,组件类型:" + componentId.ToString());
+            NormalComponent normal = _allComponenArray[componentId];
+            if (normal == null)
+            {
+                goto Log;
+            }
+            _allComponenArray[componentId] = null;
+            _currentFlag.RemoveFlag(normal.OperatorId);
+            if (_changeComponentCallBack != null)
+            {
+                _changeComponentCallBack.Invoke(this, normal);
+            }
+            return this;
         }
-        NormalComponent normal = _allComponenDtoDic[componentId];
-        _allComponenDtoDic.Remove(componentId);
-        //_componentDic.Remove(componentId);
-        _currentFlag.RemoveFlag(componentId);
-        if (_changeComponentCallBack != null)
-        {
-            _changeComponentCallBack.Invoke(this, normal);
-        }
+        Log: Debug.LogError("删除组件失败,组件Id不存在,组件Id:" + componentId);
+
         return this;
     }
     /// <summary>
@@ -174,16 +170,18 @@ public class Entity
     /// <returns></returns>
     public Entity RemoveComponentAll()
     {
-        foreach (KeyValuePair<Int64, NormalComponent> dto in this._allComponenDtoDic)
+        for (int i = 0; i < _allComponenArray.Length; i++)
         {
-            //_allComponenDtoDic.Remove(dto.Key);
-            _currentFlag.RemoveFlag(dto.Key);
-            if (_changeComponentCallBack != null)
+            NormalComponent normalComponent = _allComponenArray[i];
+            if (normalComponent != null)
             {
-                _changeComponentCallBack.Invoke(this, dto.Value);
+                _currentFlag.RemoveFlag(normalComponent.OperatorId);
+                if (_changeComponentCallBack != null)
+                {
+                    _changeComponentCallBack.Invoke(this, normalComponent);
+                }
             }
         }
-        _allComponenDtoDic.Clear();
         return this;
     }
 
@@ -195,30 +193,27 @@ public class Entity
     /// <returns></returns>
     public Entity SetValue(ComponentValue component, object value)
     {
-        if (this._allComponenDtoDic.ContainsKey(component.ComponentId))
+        int componentId = component.ComponentId;
+        if (ComponentIds.COMPONENT_MAX_COUNT > componentId)
         {
-            NormalComponent normalComponent = this._allComponenDtoDic[component.ComponentId];
-            if (normalComponent.PropertyArray.Length > component.PropertyId)
+            NormalComponent normalComponent = this._allComponenArray[componentId];
+            if (normalComponent == null)
             {
-                try
-                {
-                    normalComponent.PropertyArray[component.PropertyId].Setter(this, normalComponent, value);
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
-                    //Debug.LogError(ex.Message);
-                }
+                Debug.LogError("组件不存在,组件Id:" + componentId);
+                return this;
             }
-            else
+            try
             {
-                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", component.ComponentId, component.PropertyId);
+                normalComponent.PropertyArray[component.PropertyId].Setter(this, normalComponent, value);
+                return this;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
+                return this;
             }
         }
-        else
-        {
-            Debug.LogErrorFormat("组件ID:{0}不存在!!!", component.ComponentId);
-        }
+        Debug.LogError("组件Id过大无法设置,组件Id:" + componentId);
         return this;
     }
 
@@ -231,31 +226,28 @@ public class Entity
     public T GetValue<T>(ComponentValue component)
     {
         T t = default(T);
-        Int64 componentId = component.ComponentId;
-        if (this._allComponenDtoDic.ContainsKey(componentId))
+        int componentId = component.ComponentId;
+        if (ComponentIds.COMPONENT_MAX_COUNT > componentId)
         {
-            NormalComponent normalComponent = this._allComponenDtoDic[componentId];
-            if (normalComponent.PropertyArray.Length > component.PropertyId)
+            NormalComponent normalComponent = this._allComponenArray[componentId];
+            if (normalComponent == null)
             {
-                try
-                {
-                    object value = normalComponent.PropertyArray[component.PropertyId].Getter(normalComponent.CurrentComponent);
-                    t = (T)value;
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogErrorFormat("设置属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
-                }
+                Debug.LogError("组件不存在,组件Id:" + componentId);
+                return t;
             }
-            else
+            try
             {
-                Debug.LogErrorFormat("组件ID:{0},字段名:{1},不存在!!!", component.ComponentId, component.PropertyId);
+                object o = normalComponent.PropertyArray[component.PropertyId].Getter(normalComponent.CurrentComponent);
+                t = (T)o;
+                return t;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogErrorFormat("获取属性{0},的时候出错,错误信息{1}", component.PropertyId, ex.Message);
+                return t;
             }
         }
-        else
-        {
-            Debug.LogErrorFormat("组件ID:{0}不存在!!!", componentId);
-        }
+        Debug.LogError("组件Id过大无法获取,组件Id:" + componentId);
         return t;
     }
 
@@ -265,35 +257,46 @@ public class Entity
     /// <returns></returns>
     public Entity CopyComponent(Entity entity)
     {
-        foreach (KeyValuePair<Int64, NormalComponent> componentPair in entity._allComponenDtoDic)
+        for (int i = 0; i < ComponentIds.COMPONENT_MAX_COUNT; i++)
         {
-            if (componentPair.Value.SharedId > 0)
+            NormalComponent component = entity._allComponenArray[i];
+            if (component == null)
             {
                 continue;
             }
-            if (this.GetComponentFlag().HasFlag(componentPair.Key))
+            if (component.SharedId > 0)
             {
                 continue;
             }
-            else
+            if (this._allComponenArray[i] != null)
             {
-                this.AddComponent(componentPair.Key);
+                continue;
             }
+            this.AddComponent(i);
         }
-        foreach (KeyValuePair<Int64, NormalComponent> componentPair in entity._allComponenDtoDic)
+        for (int i = 0; i < ComponentIds.COMPONENT_MAX_COUNT; i++)
         {
-            if (componentPair.Value.SharedId > 0)
+            NormalComponent component = entity._allComponenArray[i];
+            if (component == null)
             {
                 continue;
             }
-            NormalComponent dto = componentPair.Value;
-            NormalComponent thisDto = this._allComponenDtoDic[componentPair.Key];
-            for (int i = 0; i < dto.PropertyArray.Length; i++)
+            if (component.SharedId > 0)
             {
-                if (dto.PropertyArray[i].DontCopy)
-                    continue;
-                thisDto.PropertyArray[i].Setter(this, thisDto, dto.PropertyArray[i].Getter(dto.CurrentComponent));
+                continue;
             }
+            if (this._allComponenArray[i] != null)
+            {
+                continue;
+            }
+            NormalComponent thisComponent = this._allComponenArray[i];
+            for (int j = 0; j < component.PropertyArray.Length; j++)
+            {
+                if (component.PropertyArray[i].DontCopy)
+                    continue;
+                thisComponent.PropertyArray[i].Setter(this, thisComponent, component.PropertyArray[i].Getter(component.CurrentComponent));
+            }
+
         }
         return this;
     }
@@ -305,34 +308,27 @@ public class Entity
     /// <returns></returns>
     public Entity CopySharedComponent(Entity entity)
     {
-        foreach (KeyValuePair<Int64, NormalComponent> componentPair in entity._allComponenDtoDic)
+        for (int i = 0; i < ComponentIds.COMPONENT_MAX_COUNT; i++)
         {
-            //todo 拷贝共享
-            int sharedId = componentPair.Value.SharedId;
-            if (sharedId > 0)
+            NormalComponent component = entity._allComponenArray[i];
+            if (component == null)
             {
-                if (this.GetComponentFlag().HasFlag(componentPair.Key))
-                {
-                    continue;
-                }
-                else
-                {
-                    if (_allComponenDtoDic.ContainsKey(componentPair.Key))
-                    {
-                        throw new Exception("增加组件失败,组件已存在,组件类型:" + componentPair.Key.ToString());
-                    }
-                    NormalComponent normal = new NormalComponent(componentPair.Value.CurrentComponent);
-                    normal.PropertyArray = componentPair.Value.PropertyArray;
-                    normal.SharedId = sharedId;
-                    this._allComponenDtoDic.Add(componentPair.Key, normal);
-                    this._currentFlag.SetFlag(componentPair.Key);
-                    if (_changeComponentCallBack != null)
-                    {
-                        _changeComponentCallBack.Invoke(this, normal);
-                    }
-                }
+                continue;
             }
-
+            if (component.SharedId < 0)
+            {
+                continue;
+            }
+            if (this._allComponenArray[i] != null)
+            {
+                continue;
+            }
+            this._allComponenArray[i] = component;
+            this._currentFlag.SetFlag(component.OperatorId);
+            if (_changeComponentCallBack != null)
+            {
+                _changeComponentCallBack.Invoke(this, component);
+            }
         }
         return this;
     }

@@ -26,8 +26,8 @@ public class TestOther : MonoBehaviour
         test2.Add(5);
         test2.Add(30);
         test2.Add(20);
-        flag1.SetFlag(ComponentIds.ACTIVE).SetFlag(ComponentIds.ADDITIVE).SetFlag(ComponentIds.COLLISION).SetFlag(ComponentIds.COLLISION2D).SetFlag(ComponentIds.GAME_OBJECT).SetFlag(ComponentIds.GAME_OBJECT_NAME).SetFlag(ComponentIds.HAS_PHYSICAL).SetFlag(ComponentIds.INPUT);
-        flag2.SetFlag(ComponentIds.ACTIVE).SetFlag(ComponentIds.COLLISION2D).SetFlag(ComponentIds.GAME_OBJECT_NAME);
+        flag1.SetFlag(OperatorIds.ACTIVE).SetFlag(OperatorIds.ADDITIVE).SetFlag(OperatorIds.COLLISION).SetFlag(OperatorIds.COLLISION2D).SetFlag(OperatorIds.GAME_OBJECT).SetFlag(OperatorIds.GAME_OBJECT_NAME).SetFlag(OperatorIds.HAS_PHYSICAL).SetFlag(OperatorIds.INPUT);
+        flag2.SetFlag(OperatorIds.ACTIVE).SetFlag(OperatorIds.COLLISION2D).SetFlag(OperatorIds.GAME_OBJECT_NAME);
     }
     // Update is called once per frame
     void Update()

@@ -10,7 +10,7 @@ public class InputComponent : IComponent
     {
         get
         {
-            return ComponentIds.INPUT;
+            return OperatorIds.INPUT;
         }
     }
     private float x;

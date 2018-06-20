@@ -18,12 +18,17 @@ public class LifeCycleSystem : IExecuteSystem, IReactiveSystem
     private List<DelayEntity> delayList = new List<DelayEntity>();
     private List<DelayEntity> tempList = new List<DelayEntity>();
 
+    private ComponentFlag _reactiveCondition = null;
 
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.LIFE_CYCLE);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE);
+            }
+            return _reactiveCondition;
         }
     }
 
@@ -33,7 +38,7 @@ public class LifeCycleSystem : IExecuteSystem, IReactiveSystem
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.LIFE_CYCLE);
+            return Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE);
         }
     }
 
@@ -61,18 +66,18 @@ public class LifeCycleSystem : IExecuteSystem, IReactiveSystem
 
     public void Execute()
     {
-        if (delayList.Count>0)
+        if (delayList.Count > 0)
         {
             tempList.Clear();
             foreach (DelayEntity item in delayList)
             {
                 item.DelayTime -= Time.deltaTime;
-                if (item.DelayTime<=0)
+                if (item.DelayTime <= 0)
                 {
                     tempList.Add(item);
                 }
             }
-            if (tempList.Count>0)
+            if (tempList.Count > 0)
             {
                 foreach (DelayEntity item in tempList)
                 {
@@ -82,7 +87,7 @@ public class LifeCycleSystem : IExecuteSystem, IReactiveSystem
             }
             tempList.Clear();
         }
-        
+
     }
 }
 

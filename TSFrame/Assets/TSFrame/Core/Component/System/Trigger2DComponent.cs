@@ -10,7 +10,7 @@ public class Trigger2DComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.TRIGGER2D;
+            return OperatorIds.TRIGGER2D;
         }
     }
 

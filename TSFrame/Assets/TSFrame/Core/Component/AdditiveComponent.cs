@@ -10,7 +10,7 @@ public class AdditiveComponent : IComponent
     {
         get
         {
-            return ComponentIds.ADDITIVE;
+            return OperatorIds.ADDITIVE;
         }
     }
 

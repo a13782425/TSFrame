@@ -32,7 +32,7 @@ public sealed partial class Observer
     /// </summary>
     /// <param name="componentId"></param>Int64 componentId
     /// <returns></returns>
-    public SharedComponent CreateSharedComponent(Int64 componentId)
+    public SharedComponent CreateSharedComponent(int componentId)
     {
         NormalComponent component = GetComponent(componentId);
         if ((component.CurrentComponent as ISharedComponent) != null)
@@ -50,9 +50,9 @@ public sealed partial class Observer
     /// 获取或创建共享组件
     /// </summary>
     /// <param name="sharedId"></param>
-    /// <param name="componentId"></param>Int64 componentId
+    /// <param name="componentId"></param>
     /// <returns></returns>
-    public SharedComponent GetOrCreateSharedComponent(int sharedId, Int64 componentId)
+    public SharedComponent GetOrCreateSharedComponent(int sharedId, int componentId)
     {
         if (_sharedComponentDic.ContainsKey(sharedId))
         {
@@ -105,20 +105,24 @@ public sealed partial class Observer
             throw new Exception("回收的组件有误!!!");
         }
 
-        _componentPoolDic[component.CurrentId].Enqueue(component);
+        _componentPoolArray[component.ComponentId].Enqueue(component);
     }
     /// <summary>
     /// 获取一个组件
     /// </summary>
     /// <param name="currentId"></param>
     /// <returns></returns>
-    NormalComponent GetComponent(Int64 componentId)
+    NormalComponent GetComponent(Int32 componentId)
     {
-        if (!_componentPoolDic.ContainsKey(componentId))
+        if (componentId >= ComponentIds.COMPONENT_MAX_COUNT)
         {
             throw new Exception("需要获取的组件不存在");
         }
-        return _componentPoolDic[componentId].Dequeue();
+        //if (!_componentPoolDic.ContainsKey(componentId))
+        //{
+        //    throw new Exception("需要获取的组件不存在");
+        //}
+        return _componentPoolArray[componentId].Dequeue();
     }
     /// <summary>
     /// 获取一个实体

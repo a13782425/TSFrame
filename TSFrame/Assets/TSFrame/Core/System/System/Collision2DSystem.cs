@@ -3,11 +3,17 @@ using UnityEngine;
 
 public class Collision2DSystem : IReactiveSystem
 {
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.COLLISION2D, ComponentIds.GAME_OBJECT);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.COLLISION2D, OperatorIds.GAME_OBJECT);
+            }
+            return _reactiveCondition;
         }
     }
     public ComponentFlag ReactiveIgnoreCondition

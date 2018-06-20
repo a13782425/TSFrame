@@ -7,11 +7,17 @@ using UnityEngine;
 public class RoationSystem : IReactiveSystem
 {
 
+    private ComponentFlag _reactiveCondition = null;
+
     public ComponentFlag ReactiveCondition
     {
         get
         {
-            return Observer.Instance.GetFlag(ComponentIds.GAME_OBJECT, ComponentIds.ROATION);
+            if (_reactiveCondition == null)
+            {
+                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ROATION, OperatorIds.GAME_OBJECT);
+            }
+            return _reactiveCondition;
         }
     }
 

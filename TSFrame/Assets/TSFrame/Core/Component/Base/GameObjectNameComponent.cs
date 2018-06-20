@@ -10,7 +10,7 @@ public class GameObjectNameComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.GAME_OBJECT_NAME;
+            return OperatorIds.GAME_OBJECT_NAME;
         }
     }
     [DataDriven]

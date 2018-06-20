@@ -10,7 +10,7 @@ public class ActiveComponent : IComponent, IReactiveComponent
     {
         get
         {
-            return ComponentIds.ACTIVE;
+            return OperatorIds.ACTIVE;
         }
     }
     [DataDriven]

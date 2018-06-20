@@ -183,11 +183,15 @@ public sealed partial class Observer
     /// <summary>
     /// 用户自定义实体对象池
     /// </summary>
-    private Dictionary<string, EntityPoolDto> _entityPoolDic;
+    private Dictionary<string, EntitySubPoolDto> _entityPoolDic;
     /// <summary>
-    /// 默认的对象池
+    /// 默认实体对象池
     /// </summary>
-    private HashSet<Entity> _entityDefaultPool;
+    private EntitySubPoolDto _entityDefaultPool;
+    /// <summary>
+    /// 全部实体对象池
+    /// </summary>
+    private EntityPoolDto _allEntityPool;
     /// <summary>
     /// 共享组件管理
     /// </summary>
@@ -215,13 +219,23 @@ public sealed partial class Observer
         _resourcesDtoDic = new Dictionary<string, ResourcesDto>();
         //_componentPoolDic = new Dictionary<Int64, ComponentPoolDto>();
         _componentPoolArray = new ComponentPoolDto[ComponentIds.COMPONENT_MAX_COUNT];
-        _entityDefaultPool = new HashSet<Entity>();
-        _entityPoolDic = new Dictionary<string, EntityPoolDto>();
+        _entityPoolDic = new Dictionary<string, EntitySubPoolDto>();
         _sharedComponentDic = new Dictionary<int, SharedComponent>();
         _matchGroupHashSet = new HashSet<Group>();
         CreateComponentPool();
+        CreateEntityDefaultPool();
         _variableGameObject = new GameObject("VariableGameObject");
         _variableGameObject.transform.SetParent(this.transform);
+    }
+
+    private void CreateEntityDefaultPool()
+    {
+        Entity entity = new Entity(MatchEntity, GetComponent);
+        entity.AddComponent(ComponentIds.ACTIVE);
+        entity.AddComponent(ComponentIds.LIFE_CYCLE);
+        entity.AddComponent(ComponentIds.POOL);
+        _allEntityPool = new EntityPoolDto(entity);
+        _entityDefaultPool = new EntitySubPoolDto(entity);
     }
 
     partial void CreateComponentPool()
@@ -352,37 +366,84 @@ public sealed partial class Observer
 
     }
 
-    class EntityPoolDto
+    class EntitySubPoolDto
     {
-        private string _name;
-
-        private Entity _origin = null;
-        private List<Entity> _entityList;
         private Queue<int> _indexQueue;
-        public EntityPoolDto(string name, Entity origin)
+        private Entity _origin = null;
+        public EntitySubPoolDto(Entity origin)
         {
-            if (origin == null || string.IsNullOrEmpty(name))
+            if (origin == null)
             {
                 throw new Exception("实体对象池源为空");
             }
-            _name = name;
             _origin = origin;
             _origin.SetValue(ActiveComponentVariable.active, false);
-            _origin.SetValue(PoolComponentVariable.poolName, _name);
-            _entityList = new List<Entity>();
             _indexQueue = new Queue<int>();
         }
-
         public Entity Dequeue()
         {
             Entity entity = null;
+            int index = -1;
             if (_indexQueue.Count > 0)
             {
-                int index = _indexQueue.Dequeue();
+                index = _indexQueue.Dequeue();
+            }
+            entity = Instance._allEntityPool.Dequeue(index);
+            return entity;
+        }
+
+        public bool Contains(Entity entity)
+        {
+            return Instance._allEntityPool.Contains(entity);
+        }
+
+        public bool Enqueue(Entity entity)
+        {
+            int index = entity.GetId();
+            if (Instance._allEntityPool.Enqueue(entity, index))
+            {
+                _indexQueue.Enqueue(index);
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    class EntityPoolDto
+    {
+        private Entity _origin = null;
+        private List<Entity> _entityList;
+        private Queue<int> _indexQueue;
+        public EntityPoolDto(Entity origin)
+        {
+            if (origin == null)
+            {
+                throw new Exception("实体对象池源为空");
+            }
+            _origin = origin;
+            _origin.SetValue(ActiveComponentVariable.active, false);
+            _entityList = new List<Entity>();
+            _entityList.Add(origin);
+            _indexQueue = new Queue<int>();
+        }
+
+        public Entity Dequeue(int index)
+        {
+            Entity entity = null;
+            if (index > 0)
+            {
                 entity = _entityList[index];
                 _entityList[index] = null;
                 return entity;
             }
+            //if (_indexQueue.Count > 0)
+            //{
+            //    int index = _indexQueue.Dequeue();
+            //    entity = _entityList[index];
+            //    _entityList[index] = null;
+            //    return entity;
+            //}
             entity = Instance.GetEntity();
             entity.CopyComponent(_origin).Parent = _origin.Parent;
             _entityList.Add(null);
@@ -398,9 +459,8 @@ public sealed partial class Observer
             throw new Exception("该对象不属于对象池!");
         }
 
-        public bool Enqueue(Entity entity)
+        public bool Enqueue(Entity entity, int index)
         {
-            int index = entity.GetId();
             if (_entityList.Count > index)
             {
                 if (_entityList[index] == null)

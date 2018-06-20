@@ -22,7 +22,7 @@ public sealed partial class Observer
     /// <returns></returns>
     public Entity CreateEntity(Entity parent)
     {
-        Entity entity = GetEntity();
+        Entity entity = _entityDefaultPool.Dequeue();
         if (parent != null)
         {
             parent.ChildList.Add(entity);
@@ -57,6 +57,7 @@ public sealed partial class Observer
             return CreateEntity();
         }
         Entity entity = GetEntity(poolName);
+        entity.SetValue(PoolComponentVariable.poolName, poolName);
         if (parent != null)
         {
             if (entity.Parent != null)

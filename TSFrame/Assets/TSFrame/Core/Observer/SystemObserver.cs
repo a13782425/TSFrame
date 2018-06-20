@@ -86,9 +86,6 @@ public sealed partial class Observer
         _systemGameObject.transform.SetParent(this.transform);
         AddSystem(new ActiveSystem());
         AddSystem(new ViewSystem());
-        AddSystem(new LifeCycleSystem());
-        AddSystem(new GameObjectLifeCycleSystem());
-        AddSystem(new GameObjectActiveSystem());
         AddSystem(new PoolSystem());
         AddSystem(new HasPhysicalSystem());
         AddSystem(new Collision2DSystem());
@@ -97,6 +94,9 @@ public sealed partial class Observer
         AddSystem(new Trigger2DSystem());
         AddSystem(new PositionSystem());
         AddSystem(new RoationSystem());
+        AddSystem(new GameObjectActiveSystem());
+        AddSystem(new GameObjectLifeCycleSystem());
+        AddSystem(new LifeCycleSystem());
     }
 
     partial void SystemUpdate()

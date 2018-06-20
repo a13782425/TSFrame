@@ -22,7 +22,7 @@ public sealed partial class Observer
         {
             return this;
         }
-        EntityPoolDto pool = new EntityPoolDto(poolName, origin);
+        EntitySubPoolDto pool = new EntitySubPoolDto(origin);
         _entityPoolDic.Add(poolName, pool);
         return this;
     }
@@ -70,7 +70,7 @@ public sealed partial class Observer
     {
         if (string.IsNullOrEmpty(poolName) || !_entityPoolDic.ContainsKey(poolName))
         {
-            if (_entityDefaultPool.Add(entity))
+            if (_entityDefaultPool.Enqueue(entity))
             {
                 entity.RemoveComponentAll();
                 return this;
@@ -130,25 +130,7 @@ public sealed partial class Observer
     /// <returns></returns>
     Entity GetEntity()
     {
-        if (_entityDefaultPool.Count < 1)
-        {
-            Entity entity = new Entity(MatchEntity, GetComponent);
-            entity.AddComponent(ComponentIds.ACTIVE);
-            entity.AddComponent(ComponentIds.LIFE_CYCLE);
-            entity.AddComponent(ComponentIds.POOL);
-            _entityDic.Add(entity.GetId(), entity);
-            return entity;
-        }
-        else
-        {
-            Entity entity = null;
-            foreach (Entity item in _entityDefaultPool)
-            {
-                entity = item;
-            }
-            _entityDefaultPool.Remove(entity);
-            return entity;
-        }
+        return new Entity(MatchEntity, GetComponent);
     }
     /// <summary>
     /// 获取一个实体从对象池
@@ -159,7 +141,7 @@ public sealed partial class Observer
     {
         if (!_entityPoolDic.ContainsKey(poolName))
         {
-            return GetEntity();
+            return _entityDefaultPool.Dequeue();
         }
 
         return _entityPoolDic[poolName].Dequeue();

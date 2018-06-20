@@ -12,7 +12,7 @@ public class Entity
     /// <summary>
     /// 所有组件字典
     /// </summary>
-    private NormalComponent[] _allComponenArray;
+    public NormalComponent[] _allComponenArray;
 
     /// <summary>
     /// 组件标签
@@ -172,9 +172,15 @@ public class Entity
     {
         for (int i = 0; i < _allComponenArray.Length; i++)
         {
+            if (i == ComponentIds.ACTIVE || i == ComponentIds.LIFE_CYCLE || i == ComponentIds.POOL)
+            {
+                continue;
+            }
+
             NormalComponent normalComponent = _allComponenArray[i];
             if (normalComponent != null)
             {
+                _allComponenArray[i] = null;
                 _currentFlag.RemoveFlag(normalComponent.OperatorId);
                 if (_changeComponentCallBack != null)
                 {

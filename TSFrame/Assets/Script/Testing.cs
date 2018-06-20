@@ -7,16 +7,6 @@ using System.Linq;
 
 public class Testing : MonoBehaviour
 {
-
-    void Start()
-    {
-        //初始化观察者
-        Observer.Instance
-            .SetIsTest(true)//设置是否是测试版
-            .SetResourcesTime(100)
-            .GameLaunch();//启动观察者
-        res = Resources.Load<GameObject>("Test");
-    }
     private List<GameObject> monoList = new List<GameObject>();
     private List<Entity> ecsList = new List<Entity>();
 
@@ -26,106 +16,154 @@ public class Testing : MonoBehaviour
     private GameObject monoTest;
     private Entity entityTest;
     [SerializeField]
-    private int Count = 10000;
-    // Update is called once per frame
-    void Update()
+    private int Count = 1000;
+    void Start()
     {
-        if (Input.GetKeyUp(KeyCode.C))
+        //初始化观察者
+        Observer.Instance
+            .SetIsTest(true)//设置是否是测试版
+            .SetResourcesTime(100)
+            .GameLaunch();//启动观察者
+        res = Resources.Load<GameObject>("Test");
+    }
+    string str = "初始化";
+    private bool isAdd = false;
+    private bool isCreate = false;
+    void OnGUI()
+    {
+        GUILayout.Label("初始化个数:" + Count);
+        str = monoList.Count > 0 ? "复原" : "初始化";
+        if (GUILayout.Button("创建个数"))
         {
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
-            {
-                GameObject obj = GameObject.Instantiate(res);
-                monoList.Add(obj);
-            }
-            stopwatch.Stop();
-            Debug.LogError("使用mono创建" + Count + "个用时:" + stopwatch.Elapsed);
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
-            {
-                Entity entity = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
-                ecsList.Add(entity);
-            }
-            stopwatch.Stop();
-            Debug.LogError("使用ecs创建" + Count + "个用时:" + stopwatch.Elapsed);
-            monoTest = GameObject.Instantiate(res);
-            entityTest = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
+            Debug.LogError("游戏物体数量：" + GameObject.FindGameObjectsWithTag("Player").Length);
         }
-        if (Input.GetKeyUp(KeyCode.A))
+        if (GUILayout.Button(isCreate ? "复原" : "初始化"))
         {
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
+            if (isCreate)
             {
-                monoList[i].AddComponent<TestMono>();
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    GameObject.Destroy(monoList[i]);
+                }
+                monoList.Clear();
+                stopwatch.Stop();
+                Debug.LogError("使用mono销毁" + Count + "个用时:" + stopwatch.Elapsed);
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    ecsList[i].SetValue(LifeCycleComponentVariable.lifeCycle, LifeCycleEnum.Destory);
+                }
+                ecsList.Clear();
+                stopwatch.Stop();
+                Debug.LogError("使用ecs销毁" + Count + "个用时:" + stopwatch.Elapsed);
+                GameObject.Destroy(monoTest);
+                entityTest.SetValue(LifeCycleComponentVariable.lifeCycle, LifeCycleEnum.Destory);
             }
-            stopwatch.Stop();
-            Debug.LogError("使用mono添加" + Count + "个组件用时:" + stopwatch.Elapsed);
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
+            else
             {
-                ecsList[i].AddComponent(ComponentIds.POSITION);//.AddComponent(ComponentIds.ROATION);
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    GameObject instant = GameObject.Instantiate<GameObject>(res);
+                    monoList.Add(instant);
+                }
+                stopwatch.Stop();
+                Debug.LogError("使用mono创建" + Count + "个用时:" + stopwatch.Elapsed);
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    Entity entity = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
+                    ecsList.Add(entity);
+                }
+                stopwatch.Stop();
+                Debug.LogError("使用ecs创建" + Count + "个用时:" + stopwatch.Elapsed);
+
+                monoTest = GameObject.Instantiate(res);
+                entityTest = Observer.Instance.CreateEntity().AddComponent(ComponentIds.VIEW).AddComponent(ComponentIds.GAME_OBJECT).SetValue(ViewComponentVariable.prefabName, "Test");
             }
-            stopwatch.Stop();
-            Debug.LogError("使用ecs添加" + Count + "个组件用时:" + stopwatch.Elapsed);
+            isCreate = !isCreate;
         }
-        if (Input.GetKeyUp(KeyCode.D))
+        if (monoList.Count > 0)
         {
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
+            if (GUILayout.Button(isAdd ? "删除Component" : "添加Componnet"))
             {
-                DestroyImmediate(monoList[i].GetComponent<TestMono>());
+                if (isAdd)
+                {
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    for (int i = 0; i < Count; i++)
+                    {
+                        DestroyImmediate(monoList[i].GetComponent<TestMono>());
+                    }
+                    stopwatch.Stop();
+                    Debug.LogError("使用mono删除" + Count + "个组件用时:" + stopwatch.Elapsed);
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    for (int i = 0; i < Count; i++)
+                    {
+                        ecsList[i].RemoveComponent(ComponentIds.POSITION).RemoveComponent(ComponentIds.ROATION);
+                    }
+                    stopwatch.Stop();
+                    Debug.LogError("使用ecs删除" + Count + "个组件用时:" + stopwatch.Elapsed);
+                }
+                else
+                {
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    for (int i = 0; i < Count; i++)
+                    {
+                        monoList[i].AddComponent<TestMono>();
+                    }
+                    stopwatch.Stop();
+                    Debug.LogError("使用mono添加" + Count + "个组件用时:" + stopwatch.Elapsed);
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    for (int i = 0; i < Count; i++)
+                    {
+                        ecsList[i].AddComponent(ComponentIds.POSITION).AddComponent(ComponentIds.ROATION);
+                    }
+                    stopwatch.Stop();
+                    Debug.LogError("使用ecs添加" + Count + "个组件用时:" + stopwatch.Elapsed);
+                }
+                isAdd = !isAdd;
             }
-            stopwatch.Stop();
-            Debug.LogError("使用mono删除" + Count + "个组件用时:" + stopwatch.Elapsed);
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
+
+            if (GUILayout.Button("同时添加删除Component"))
             {
-                ecsList[i].RemoveComponent(ComponentIds.POSITION);//.RemoveComponent(ComponentIds.ROATION);
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    monoTest.AddComponent<TestMono>();
+                    DestroyImmediate(monoTest.GetComponent<TestMono>());
+                }
+                stopwatch.Stop();
+                Debug.LogError("使用mono添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
+                stopwatch.Reset();
+                stopwatch.Start();
+                for (int i = 0; i < Count; i++)
+                {
+                    entityTest.AddComponent(ComponentIds.POSITION).AddComponent(ComponentIds.ROATION);
+                    entityTest.RemoveComponent(ComponentIds.POSITION).RemoveComponent(ComponentIds.ROATION);
+                }
+                stopwatch.Stop();
+                Debug.LogError("使用ecs添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
             }
-            stopwatch.Stop();
-            Debug.LogError("使用ecs删除" + Count + "个组件用时:" + stopwatch.Elapsed);
         }
 
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
-            {
-                monoTest.AddComponent<TestMono>();
-                DestroyImmediate(monoTest.GetComponent<TestMono>());
-            }
-            stopwatch.Stop();
-            Debug.LogError("使用mono添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
-            stopwatch.Reset();
-            stopwatch.Start();
-            for (int i = 0; i < Count; i++)
-            {
-                entityTest.AddComponent(ComponentIds.POSITION);//.AddComponent(ComponentIds.ROATION);
-                entityTest.RemoveComponent(ComponentIds.POSITION);//.RemoveComponent(ComponentIds.ROATION);
-            }
-            stopwatch.Stop();
-            Debug.LogError("使用ecs添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
-        }
     }
+    // Update is called once per frame
+
 }
-class TestA
-{
-    public int id { get; set; }
-    public override int GetHashCode()
-    {
-        return 1;
-    }
-}
+
 
 class TestMono : MonoBehaviour
 {
     public Vector3 pos;
-    //public Quaternion quta;
+    public Quaternion quta;
 }

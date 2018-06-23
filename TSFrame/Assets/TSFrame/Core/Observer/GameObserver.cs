@@ -105,7 +105,10 @@ public sealed partial class Observer
         _gameGameObject = new GameObject("GameGameObject");
         _gameGameObject.transform.SetParent(this.transform);
         _isPlaying = true;
-        TSThread.Instance.Run();
+        if (IsUseThread)
+        {
+            TSThread.Instance.Run();
+        }
     }
 
     partial void GameUpdate()

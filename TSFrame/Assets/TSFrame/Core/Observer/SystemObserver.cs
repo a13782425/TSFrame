@@ -92,16 +92,8 @@ public sealed partial class Observer
         AddSystem(new GameObjectLifeCycleSystem());
         AddSystem(new LifeCycleSystem());
     }
-
-    partial void SystemUpdate()
+    partial void ReactiveSysyemRun()
     {
-        if (_systemExecuteList.Count > 0)
-        {
-            foreach (IExecuteSystem item in _systemExecuteList)
-            {
-                item.Execute();
-            }
-        }
         foreach (ReactiveSystemDto item in _systemReactiveDic)
         {
             if (item.EntityHashSet.Count > 0)
@@ -111,6 +103,28 @@ public sealed partial class Observer
                 item.EntityHashSet.Clear();
                 item.CurrentSystem.Execute(temp);
             }
+        }
+    }
+    partial void SystemUpdate()
+    {
+        if (_systemExecuteList.Count > 0)
+        {
+            foreach (IExecuteSystem item in _systemExecuteList)
+            {
+                item.Execute();
+            }
+        }
+        if (IsUseThread)
+        {
+            if (System.Threading.Interlocked.CompareExchange(ref TSThread.Instance.OperatorLock, 1, 0) == 0)
+            {
+                ReactiveSysyemRun();
+                System.Threading.Interlocked.Exchange(ref TSThread.Instance.OperatorLock, 0);
+            }
+        }
+        else
+        {
+            ReactiveSysyemRun();
         }
     }
 }

@@ -210,7 +210,12 @@ public class Entity
             }
             try
             {
-                normalComponent.PropertyArray[component.PropertyId].Setter(this, normalComponent, value);
+                if (Observer.IsUseThread)
+                {
+                    TSThread.Instance.SetValue(this, normalComponent, component.PropertyId, value);
+                }
+                else
+                    normalComponent.PropertyArray[component.PropertyId].Setter(this, normalComponent, value);
                 return this;
             }
             catch (Exception ex)

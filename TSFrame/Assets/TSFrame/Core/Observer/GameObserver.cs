@@ -66,6 +66,16 @@ public sealed partial class Observer
         Application.targetFrameRate = fps;
         return this;
     }
+    /// <summary>
+    /// 是否使用线程
+    /// </summary>
+    /// <param name="isUse"></param>
+    /// <returns></returns>
+    public Observer SetUseThread(bool isUse)
+    {
+        _isUseThread = isUse;
+        return this;
+    }
 
     /// <summary>
     /// 游戏启动
@@ -94,10 +104,14 @@ public sealed partial class Observer
     {
         _gameGameObject = new GameObject("GameGameObject");
         _gameGameObject.transform.SetParent(this.transform);
+        _isPlaying = true;
+        TSThread.Instance.Run();
     }
 
     partial void GameUpdate()
     {
+        _allTime = Time.time;
+        _deltaTime = Time.deltaTime;
     }
 
     partial void GameOneStep()

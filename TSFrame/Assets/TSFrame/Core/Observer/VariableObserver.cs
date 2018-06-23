@@ -42,6 +42,31 @@ public sealed partial class Observer
     /// </summary>
     private bool _isRun = false;
 
+    private static bool _isPlaying = false;
+    /// <summary>
+    /// 游戏是否在运行
+    /// </summary>
+    public static bool IsPlaying { get { return _isPlaying; } }
+
+    private static float _allTime = 0f;
+    /// <summary>
+    /// 游戏从运行开始的全部时间
+    /// </summary>
+    public static float AllTime { get { return _allTime; } }
+
+    private static float _deltaTime = 0f;
+    /// <summary>
+    /// 每一帧的时间
+    /// </summary>
+    public static float DeltaTime { get { return _deltaTime; } }
+
+    private static bool _isUseThread = false;
+    /// <summary>
+    /// 是否使用线程
+    /// </summary>
+    public static bool IsUseThread { get { return _isUseThread; } }
+
+
     #region Variable Var
 
     /// <summary>

@@ -15,6 +15,7 @@ public sealed partial class Observer : MonoBehaviour
     partial void Awake();
     partial void Start();
     partial void Update();
+    partial void OnDestroy();
 
     #endregion
 
@@ -78,6 +79,7 @@ public sealed partial class Observer : MonoBehaviour
 
     partial void SystemLoad();
     partial void SystemUpdate();
+    partial void ReactiveSysyemRun();
 
     #endregion
 
@@ -113,6 +115,11 @@ public sealed partial class Observer : MonoBehaviour
     partial void Start()
     {
 
+    }
+
+    partial void OnDestroy()
+    {
+        _isPlaying = false;
     }
 
     partial void Update()

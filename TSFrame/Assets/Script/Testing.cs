@@ -18,12 +18,15 @@ public class Testing : MonoBehaviour
     private Entity entityTest;
     [SerializeField]
     private int Count = 1000;
+    [SerializeField]
+    private bool IsUseThread = false;
     void Start()
     {
         //初始化观察者
         Observer.Instance
             .SetIsTest(true)//设置是否是测试版
             .SetResourcesTime(100)
+            .SetUseThread(IsUseThread)
             .GameLaunch();//启动观察者
         res = Resources.Load<GameObject>("Test");
     }
@@ -180,30 +183,28 @@ public class Testing : MonoBehaviour
                 }
                 isAdd = !isAdd;
             }
-
-            if (GUILayout.Button("同时添加删除Component"))
-            {
-                stopwatch.Reset();
-                stopwatch.Start();
-                for (int i = 0; i < Count; i++)
-                {
-                    monoTest.AddComponent<TestMono>();
-                    DestroyImmediate(monoTest.GetComponent<TestMono>());
-                }
-                stopwatch.Stop();
-                Debug.LogError("使用mono添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
-                stopwatch.Reset();
-                stopwatch.Start();
-                for (int i = 0; i < Count; i++)
-                {
-                    entityTest.AddComponent(ComponentIds.POSITION).AddComponent(ComponentIds.ROATION);
-                    entityTest.RemoveComponent(ComponentIds.POSITION).RemoveComponent(ComponentIds.ROATION);
-                }
-                stopwatch.Stop();
-                Debug.LogError("使用ecs添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
-            }
         }
-
+        if (GUILayout.Button("同时添加删除Component"))
+        {
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < Count; i++)
+            {
+                monoTest.AddComponent<TestMono>();
+                DestroyImmediate(monoTest.GetComponent<TestMono>());
+            }
+            stopwatch.Stop();
+            Debug.LogError("使用mono添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
+            stopwatch.Reset();
+            stopwatch.Start();
+            for (int i = 0; i < Count; i++)
+            {
+                entityTest.AddComponent(ComponentIds.POSITION).AddComponent(ComponentIds.ROATION);
+                entityTest.RemoveComponent(ComponentIds.POSITION).RemoveComponent(ComponentIds.ROATION);
+            }
+            stopwatch.Stop();
+            Debug.LogError("使用ecs添加删除" + Count + "个组件用时:" + stopwatch.Elapsed);
+        }
     }
     // Update is called once per frame
 

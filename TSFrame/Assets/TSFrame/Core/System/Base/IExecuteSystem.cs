@@ -4,6 +4,5 @@ using UnityEngine;
 
 public interface IExecuteSystem : ISystem
 {
-    ComponentFlag ExecuteCondition { get; }
     void Execute();
 }

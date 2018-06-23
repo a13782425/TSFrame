@@ -11,27 +11,27 @@ public class GameStart : MonoBehaviour
     {
         //Observer.Instance.SetIsTest(true);
     }
-    Entity entity1;
+    //Entity entity1;
     private void Start()
     {
-        //初始化观察者
-        Observer.Instance
-            .SetIsTest(true)//设置是否是测试版
-            .SetResourcesTime(100)
-            .GameLaunch();//启动观察者
+        ////初始化观察者
+        //Observer.Instance
+        //    .SetIsTest(true)//设置是否是测试版
+        //    .SetResourcesTime(100)
+        //    .GameLaunch();//启动观察者
 
-        //增加系统
-        Observer.Instance
-            .AddSystem(new MoveSystem())
-            .AddSystem(new InputSystem())
-            .AddSystem(new TestSystem());
-        entity1 = Observer.Instance
-           .CreateEntity()
-           .AddComponent(ComponentIds.INPUT)
-           .AddComponent(ComponentIds.VIEW)//增加实例化组件
-           .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
-           .AddComponent(ComponentIds.POSITION)
-           .SetValue(ViewComponentVariable.prefabName, "Test");
+        ////增加系统
+        //Observer.Instance
+        //    .AddSystem(new MoveSystem())
+        //    .AddSystem(new InputSystem())
+        //    .AddSystem(new TestSystem());
+        //entity1 = Observer.Instance
+        //   .CreateEntity()
+        //   .AddComponent(ComponentIds.INPUT)
+        //   .AddComponent(ComponentIds.VIEW)//增加实例化组件
+        //   .AddComponent(ComponentIds.GAME_OBJECT)//增加游戏物体组件
+        //   .AddComponent(ComponentIds.POSITION)
+        //   .SetValue(ViewComponentVariable.prefabName, "Test");
 
 
         //Entity entity1 = Observer.Instance
@@ -100,25 +100,25 @@ public class GameStart : MonoBehaviour
     //    time += Time.deltaTime;
     //}
 
-    float speed = 5;
-    private void Update()
-    {
-        Vector3 vec = entity1.GetValue<Vector3>(PositionComponentVariable.position);
-        vec.x += speed * Time.deltaTime;
-        entity1.SetValue(PositionComponentVariable.position, vec);
-    }
-    private void stayCallBack(Entity self, Collision target)
-    {
-        Debug.LogError("Stay");
-    }
+    //float speed = 5;
+    //private void Update()
+    //{
+    //    Vector3 vec = entity1.GetValue<Vector3>(PositionComponentVariable.position);
+    //    vec.x += speed * Time.deltaTime;
+    //    entity1.SetValue(PositionComponentVariable.position, vec);
+    //}
+    //private void stayCallBack(Entity self, Collision target)
+    //{
+    //    Debug.LogError("Stay");
+    //}
 
-    private void exitCallBack(Entity self, Collision target)
-    {
-        Debug.LogError("Exit");
-    }
+    //private void exitCallBack(Entity self, Collision target)
+    //{
+    //    Debug.LogError("Exit");
+    //}
 
-    private void enterCallBack(Entity entity, Collision collision)
-    {
-        Debug.LogError("Enter");
-    }
+    //private void enterCallBack(Entity entity, Collision collision)
+    //{
+    //    Debug.LogError("Enter");
+    //}
 }

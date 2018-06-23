@@ -34,14 +34,6 @@ public class LifeCycleSystem : IExecuteSystem, IReactiveSystem
 
     public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
 
-    public ComponentFlag ExecuteCondition
-    {
-        get
-        {
-            return Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE);
-        }
-    }
-
     public void Execute(List<Entity> entitys)
     {
         foreach (Entity item in entitys)

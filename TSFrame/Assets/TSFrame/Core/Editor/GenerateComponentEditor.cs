@@ -10,7 +10,8 @@ using UnityEngine;
 
 public class GenerateComponentEditor : Editor
 {
-    private static string _codeDirectory = Application.dataPath + "/TSFrame/Core/Generate";
+    //private static string _codeDirectory = Application.dataPath + "/TSFrame/Core/Generate";
+    private static string _codeDirectory;
     private static string _codePath = _codeDirectory + "/ComponentVariable.cs";
     private static string _codeIdsPath = _codeDirectory + "/ComponentIdsExtension.cs";
 
@@ -26,6 +27,21 @@ public class GenerateComponentEditor : Editor
         if (Application.isPlaying)
         {
             return;
+        }
+        string[] guids = AssetDatabase.FindAssets(typeof(GenerateComponentEditor).Name);
+        if (guids.Length != 1)
+        {
+            Debug.LogError("guids存在多个");
+        }
+        else
+        {
+            //Assets/ThirdPlug/TSFrame/Core/Editor/GenerateComponentEditor.cs
+            string path = AssetDatabase.GUIDToAssetPath(guids[0]);
+            path = Path.GetFullPath(path);
+            path = Path.GetDirectoryName(path);
+            _codeDirectory = Path.GetFullPath(path + "/../Generate");
+            _codePath = _codeDirectory + "/ComponentVariable.cs";
+            _codeIdsPath = _codeDirectory + "/ComponentIdsExtension.cs";
         }
         EditorApplication.LockReloadAssemblies();
         if (!Directory.Exists(_codeDirectory))
@@ -160,7 +176,6 @@ public class GenerateComponentEditor : Editor
             codeSb.AppendLine("");
             System.Threading.Thread.Sleep(100);
         }
-
         System.Threading.Thread.Sleep(100);
         StreamWriter sw = new StreamWriter(_codePath, false, new UTF8Encoding());
         sw.Write(codeSb.ToString());

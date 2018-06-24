@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 
 
-public class HasPhysicalComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class HasPhysicalComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.HAS_PHYSICAL;
+            get
+            {
+                return OperatorIds.HAS_PHYSICAL;
+            }
         }
+        [DataDriven]
+        private bool isHas;
     }
-    [DataDriven]
-    private bool isHas;
 }
-

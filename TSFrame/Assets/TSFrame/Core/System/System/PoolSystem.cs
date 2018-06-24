@@ -3,32 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
-public class PoolSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
-
-    public ComponentFlag ReactiveCondition
+    public class PoolSystem : IReactiveSystem
     {
-        get
+        private ComponentFlag _condition = null;
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.POOL);
+                if (_condition == null)
+                {
+                    _condition = Observer.Instance.GetFlag(OperatorIds.POOL);
+                }
+                return _condition;
             }
-            return _reactiveCondition;
         }
-    }
-
-    public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
-
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity entity in entitys)
+        public ComponentFlag ExecuteCondition
         {
-            if (entity.GetValue<bool>(PoolComponentVariable.recover))
+            get
             {
-                Observer.Instance.RecoverEntity(entity, entity.GetValue<string>(PoolComponentVariable.poolName));
+                if (_condition == null)
+                {
+                    _condition = Observer.Instance.GetFlag(OperatorIds.POOL);
+                }
+                return _condition;
+            }
+        }
+
+        public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
+
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity entity in entitys)
+            {
+                if (entity.GetValue<bool>(PoolComponentVariable.recover))
+                {
+                    Observer.Instance.RecoverEntity(entity, entity.GetValue<string>(PoolComponentVariable.poolName));
+                }
             }
         }
     }

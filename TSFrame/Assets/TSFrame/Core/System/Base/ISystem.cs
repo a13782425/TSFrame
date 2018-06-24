@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ISystem
+namespace TSFrame.ECS
 {
+    public interface ISystem
+    {
+    }
 }

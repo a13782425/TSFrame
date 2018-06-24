@@ -4,16 +4,18 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class RoationComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class RoationComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.ROATION;
+            get
+            {
+                return OperatorIds.ROATION;
+            }
         }
+        [DataDriven]
+        public Quaternion roation;
     }
-    [DataDriven]
-    public Quaternion roation;
 }
-

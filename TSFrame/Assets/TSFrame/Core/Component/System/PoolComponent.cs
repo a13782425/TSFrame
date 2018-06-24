@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
-public class PoolComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class PoolComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.POOL;
+            get
+            {
+                return OperatorIds.POOL;
+            }
         }
+        public string poolName;
+        [DataDriven]
+        public bool recover;
     }
-    public string poolName;
-    [DataDriven]
-    public bool recover;
 }
-    

@@ -3,48 +3,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ViewSystem : IReactiveSystem
+
+namespace TSFrame.ECS
 {
-
-    private ComponentFlag _reactiveCondition = null;
-
-    public ComponentFlag ReactiveCondition
+    public class ViewSystem : IReactiveSystem
     {
-        get
+        private ComponentFlag _reactiveCondition = null;
+
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.VIEW, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.VIEW);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
-    public ComponentFlag ReactiveIgnoreCondition
-    {
-        get
+        private ComponentFlag _executeCondition = null;
+
+        public ComponentFlag ExecuteCondition
         {
-            return ComponentFlag.None;
+            get
+            {
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.VIEW, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
+            }
         }
-    }
-
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (var item in entitys)
+        public ComponentFlag ReactiveIgnoreCondition
         {
-            string prefabName = item.GetValue<string>(ViewComponentVariable.prefabName);
-            GameObject obj = Observer.Instance.ResourcesLoad(prefabName) as GameObject;
-            if (obj != null)
+            get
             {
-                GameObject instant = GameObject.Instantiate<GameObject>(obj);
-                instant.transform.SetParent(item.GetValue<Transform>(ViewComponentVariable.parent));
-                instant.hideFlags = item.GetValue<HideFlags>(ViewComponentVariable.hideFlags);
-                item.SetValue(GameObjectComponentVariable.value, instant);
+                return ComponentFlag.None;
             }
-            else
-            {
-                Debug.LogError("实例化游戏物体失败！！！");
-            }
+        }
 
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (var item in entitys)
+            {
+                string prefabName = item.GetValue<string>(ViewComponentVariable.prefabName);
+                GameObject obj = Observer.Instance.ResourcesLoad(prefabName) as GameObject;
+                if (obj != null)
+                {
+                    GameObject instant = GameObject.Instantiate<GameObject>(obj);
+                    instant.transform.SetParent(item.GetValue<Transform>(ViewComponentVariable.parent));
+                    instant.hideFlags = item.GetValue<HideFlags>(ViewComponentVariable.hideFlags);
+                    item.SetValue(GameObjectComponentVariable.value, instant);
+                }
+                else
+                {
+                    Debug.LogError("实例化游戏物体失败！！！");
+                }
+
+            }
         }
     }
 }

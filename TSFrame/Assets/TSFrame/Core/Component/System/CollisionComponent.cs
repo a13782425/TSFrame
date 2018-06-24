@@ -4,26 +4,28 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class CollisionComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class CollisionComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.COLLISION;
+            get
+            {
+                return OperatorIds.COLLISION;
+            }
         }
+
+        [DataDriven]
+        private bool isPhysical;
+
+        private List<CollisionModel> collisionList;
+
+        private CollisionCallBack enterCallBack;
+
+        private CollisionCallBack stayCallBack;
+
+        private CollisionCallBack exitCallBack;
+
     }
-
-    [DataDriven]
-    private bool isPhysical;
-
-    private List<CollisionModel> collisionList;
-
-    private CollisionCallBack enterCallBack;
-
-    private CollisionCallBack stayCallBack;
-
-    private CollisionCallBack exitCallBack;
-
 }
-

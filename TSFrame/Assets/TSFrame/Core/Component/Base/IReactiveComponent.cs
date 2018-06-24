@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-/// <summary>
-/// 数据驱动组件
-/// </summary>
-public interface IReactiveComponent
+namespace TSFrame.ECS
 {
+    /// <summary>
+    /// 数据驱动组件
+    /// </summary>
+    public interface IReactiveComponent
+    {
+    }
 }
 

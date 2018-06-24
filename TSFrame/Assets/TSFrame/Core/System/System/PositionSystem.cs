@@ -4,36 +4,53 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class PositionSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
-
-    public ComponentFlag ReactiveCondition
+    public class PositionSystem : IReactiveSystem
     {
-        get
+        private ComponentFlag _reactiveCondition = null;
+
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.POSITION, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.POSITION);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
 
-    public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
+        private ComponentFlag _executeCondition = null;
 
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
+        public ComponentFlag ExecuteCondition
         {
-            GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            if (obj != null)
+            get
             {
-                obj.transform.position = item.GetValue<Vector3>(PositionComponentVariable.position);
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.POSITION, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
             }
-            else
+        }
+
+        public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
+
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
             {
-                item.SetValue(PositionComponentVariable.position, item.GetValue<Vector3>(PositionComponentVariable.position));
+                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                if (obj != null)
+                {
+                    obj.transform.position = item.GetValue<Vector3>(PositionComponentVariable.position);
+                }
+                else
+                {
+                    item.SetValue(PositionComponentVariable.position, item.GetValue<Vector3>(PositionComponentVariable.position));
+                }
             }
         }
     }

@@ -4,39 +4,55 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class RoationSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-
-    private ComponentFlag _reactiveCondition = null;
-
-    public ComponentFlag ReactiveCondition
+    public class RoationSystem : IReactiveSystem
     {
-        get
+
+        private ComponentFlag _reactiveCondition = null;
+
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ROATION, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ROATION);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
 
-    public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
+        private ComponentFlag _executeCondition = null;
 
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
+        public ComponentFlag ExecuteCondition
         {
-            GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            if (obj != null)
+            get
             {
-                obj.transform.rotation = item.GetValue<Quaternion>(RoationComponentVariable.roation);
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.ROATION, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
             }
-            else
+        }
+
+        public ComponentFlag ReactiveIgnoreCondition { get { return ComponentFlag.None; } }
+
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
             {
-                item.SetValue(PositionComponentVariable.position, item.GetValue<Quaternion>(RoationComponentVariable.roation));
+                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                if (obj != null)
+                {
+                    obj.transform.rotation = item.GetValue<Quaternion>(RoationComponentVariable.roation);
+                }
+                else
+                {
+                    item.SetValue(PositionComponentVariable.position, item.GetValue<Quaternion>(RoationComponentVariable.roation));
+                }
             }
         }
     }
 }
-

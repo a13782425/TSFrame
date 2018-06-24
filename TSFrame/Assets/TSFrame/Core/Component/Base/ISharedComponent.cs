@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public interface ISharedComponent
+namespace TSFrame.ECS
 {
+    public interface ISharedComponent
+    {
 
+    }
 }

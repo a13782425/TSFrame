@@ -4,41 +4,57 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class GameObjectActiveSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
+    public class GameObjectActiveSystem : IReactiveSystem
+    {
+        private ComponentFlag _reactiveCondition = null;
 
-    public ComponentFlag ReactiveCondition
-    {
-        get
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
-    public ComponentFlag ReactiveIgnoreCondition
-    {
-        get
+        private ComponentFlag _executeCondition = null;
+
+        public ComponentFlag ExecuteCondition
         {
-            return ComponentFlag.None;
-        }
-    }
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
-        {
-            bool isActive = item.GetValue<bool>(ActiveComponentVariable.active);
-            GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            if (obj != null)
+            get
             {
-                obj.SetActive(isActive);
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
             }
-            else
+        }
+        public ComponentFlag ReactiveIgnoreCondition
+        {
+            get
             {
-                item.SetValue(ActiveComponentVariable.active, isActive);
+                return ComponentFlag.None;
+            }
+        }
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
+            {
+                bool isActive = item.GetValue<bool>(ActiveComponentVariable.active);
+                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                if (obj != null)
+                {
+                    obj.SetActive(isActive);
+                }
+                else
+                {
+                    item.SetValue(ActiveComponentVariable.active, isActive);
+                }
             }
         }
     }

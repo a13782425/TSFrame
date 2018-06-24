@@ -4,20 +4,22 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ViewComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class ViewComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.VIEW;
+            get
+            {
+                return OperatorIds.VIEW;
+            }
         }
+        [DataDriven]
+        private string prefabName;
+        private Transform parent;
+        private Vector3 pos;
+        private Quaternion rot;
+        private HideFlags hideFlags;
     }
-    [DataDriven]
-    private string prefabName;
-    private Transform parent;
-    private Vector3 pos;
-    private Quaternion rot;
-    private HideFlags hideFlags;
 }
-

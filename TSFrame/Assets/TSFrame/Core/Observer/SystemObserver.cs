@@ -4,127 +4,131 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public sealed partial class Observer
+
+namespace TSFrame.ECS
 {
-    public Observer AddSystem(ISystem system)
+    public sealed partial class Observer
     {
-        if (system != null)
+        public Observer AddSystem(ISystem system)
         {
-            if (system is IInitSystem)
+            if (system != null)
             {
-                _systemInitList.Add(system);
-                (system as IInitSystem).Init();
+                if (system is IInitSystem)
+                {
+                    _systemInitList.Add(system);
+                    (system as IInitSystem).Init();
+                }
+                if (system is IReactiveSystem)
+                {
+                    _systemReactiveDic.Add(new ReactiveSystemDto(system as IReactiveSystem));
+                }
+                if (system is IExecuteSystem)
+                {
+                    _systemExecuteList.Add(system);
+                }
             }
-            if (system is IReactiveSystem)
-            {
-                _systemReactiveDic.Add(new ReactiveSystemDto(system as IReactiveSystem));
-            }
-            if (system is IExecuteSystem)
-            {
-                _systemExecuteList.Add(system);
-            }
+            return this;
         }
-        return this;
-    }
 
-    /// <summary>
-    /// 删除系统
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
-    public Observer RemoveSystem<T>()
-    {
-        IInitSystem initSystem = null;
-        foreach (IInitSystem item in _systemInitList)
+        /// <summary>
+        /// 删除系统
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public Observer RemoveSystem<T>()
         {
-            if (item.GetType() == typeof(T))
+            IInitSystem initSystem = null;
+            foreach (IInitSystem item in _systemInitList)
             {
-                initSystem = item;
-                break;
+                if (item.GetType() == typeof(T))
+                {
+                    initSystem = item;
+                    break;
+                }
             }
-        }
-        if (initSystem != null)
-            _systemInitList.Remove(initSystem);
-        //ISystem reactiveSystem = null;
-        int index = -1;
-        for (int i = 0; i < _systemReactiveDic.Count; i++)
-        {
-            if (_systemReactiveDic[i].CurrentSystem.GetType() == typeof(T))
+            if (initSystem != null)
+                _systemInitList.Remove(initSystem);
+            //ISystem reactiveSystem = null;
+            int index = -1;
+            for (int i = 0; i < _systemReactiveDic.Count; i++)
             {
-                index = i;
-                break;
+                if (_systemReactiveDic[i].CurrentSystem.GetType() == typeof(T))
+                {
+                    index = i;
+                    break;
+                }
             }
-        }
-        if (index > 0)
-        {
-            _systemReactiveDic.RemoveAt(index);
-        }
-        IExecuteSystem executeSystem = null;
-        foreach (IExecuteSystem item in _systemExecuteList)
-        {
-            if (item.GetType() == typeof(T))
+            if (index > 0)
             {
-                executeSystem = item;
-                break;
+                _systemReactiveDic.RemoveAt(index);
             }
-        }
-        if (executeSystem != null)
-            _systemExecuteList.Remove(executeSystem);
-        return this;
-    }
-
-
-    partial void SystemLoad()
-    {
-        _systemGameObject = new GameObject("SystemGameObject");
-        _systemGameObject.transform.SetParent(this.transform);
-        AddSystem(new ActiveSystem());
-        AddSystem(new ViewSystem());
-        AddSystem(new PoolSystem());
-        AddSystem(new HasPhysicalSystem());
-        AddSystem(new Collision2DSystem());
-        AddSystem(new CollisionSystem());
-        AddSystem(new TriggerSystem());
-        AddSystem(new Trigger2DSystem());
-        AddSystem(new PositionSystem());
-        AddSystem(new RoationSystem());
-        AddSystem(new GameObjectActiveSystem());
-        AddSystem(new GameObjectLifeCycleSystem());
-        AddSystem(new LifeCycleSystem());
-    }
-    partial void ReactiveSysyemRun()
-    {
-        foreach (ReactiveSystemDto item in _systemReactiveDic)
-        {
-            if (item.EntityHashSet.Count > 0)
-            {
-                List<Entity> temp = new List<Entity>();
-                temp.AddRange(item.EntityHashSet);
-                item.EntityHashSet.Clear();
-                item.CurrentSystem.Execute(temp);
-            }
-        }
-    }
-    partial void SystemUpdate()
-    {
-        if (_systemExecuteList.Count > 0)
-        {
+            IExecuteSystem executeSystem = null;
             foreach (IExecuteSystem item in _systemExecuteList)
             {
-                item.Execute();
+                if (item.GetType() == typeof(T))
+                {
+                    executeSystem = item;
+                    break;
+                }
+            }
+            if (executeSystem != null)
+                _systemExecuteList.Remove(executeSystem);
+            return this;
+        }
+
+
+        partial void SystemLoad()
+        {
+            _systemGameObject = new GameObject("SystemGameObject");
+            _systemGameObject.transform.SetParent(this.transform);
+            AddSystem(new ActiveSystem());
+            AddSystem(new ViewSystem());
+            AddSystem(new PoolSystem());
+            AddSystem(new HasPhysicalSystem());
+            AddSystem(new Collision2DSystem());
+            AddSystem(new CollisionSystem());
+            AddSystem(new TriggerSystem());
+            AddSystem(new Trigger2DSystem());
+            AddSystem(new PositionSystem());
+            AddSystem(new RoationSystem());
+            AddSystem(new GameObjectActiveSystem());
+            AddSystem(new GameObjectLifeCycleSystem());
+            AddSystem(new LifeCycleSystem());
+        }
+        partial void ReactiveSysyemRun()
+        {
+            foreach (ReactiveSystemDto item in _systemReactiveDic)
+            {
+                if (item.EntityHashSet.Count > 0)
+                {
+                    List<Entity> temp = new List<Entity>();
+                    temp.AddRange(item.EntityHashSet);
+                    item.EntityHashSet.Clear();
+                    item.CurrentSystem.Execute(temp);
+                }
             }
         }
-        if (IsUseThread)
+        partial void SystemUpdate()
         {
-            if (System.Threading.Interlocked.CompareExchange(ref TSThread.Instance.OperatorLock, 1, 0) == 0)
+            if (_systemExecuteList.Count > 0)
+            {
+                foreach (IExecuteSystem item in _systemExecuteList)
+                {
+                    item.Execute();
+                }
+            }
+            if (IsUseThread)
+            {
+                if (System.Threading.Interlocked.CompareExchange(ref TSThread.Instance.OperatorLock, 1, 0) == 0)
+                {
+                    ReactiveSysyemRun();
+                    System.Threading.Interlocked.Exchange(ref TSThread.Instance.OperatorLock, 0);
+                }
+            }
+            else
             {
                 ReactiveSysyemRun();
-                System.Threading.Interlocked.Exchange(ref TSThread.Instance.OperatorLock, 0);
             }
-        }
-        else
-        {
-            ReactiveSysyemRun();
         }
     }
 }

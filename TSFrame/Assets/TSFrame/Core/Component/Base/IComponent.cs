@@ -1,6 +1,9 @@
 ﻿using System;
 
-public interface IComponent
+namespace TSFrame.ECS
 {
-    Int64 CurrentId { get; }
+    public interface IComponent
+    {
+        Int64 CurrentId { get; }
+    }
 }

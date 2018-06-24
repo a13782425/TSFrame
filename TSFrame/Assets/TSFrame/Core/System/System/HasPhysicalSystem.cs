@@ -1,113 +1,131 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class HasPhysicalSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
+    public class HasPhysicalSystem : IReactiveSystem
+    {
+        private ComponentFlag _reactiveCondition = null;
 
 
-    public ComponentFlag ReactiveCondition
-    {
-        get
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.HAS_PHYSICAL, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.HAS_PHYSICAL);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
-    public ComponentFlag ReactiveIgnoreCondition
-    {
-        get
+
+        private ComponentFlag _executeCondition = null;
+
+
+        public ComponentFlag ExecuteCondition
         {
-            return ComponentFlag.None;
+            get
+            {
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.HAS_PHYSICAL, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
+            }
         }
-    }
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
+        public ComponentFlag ReactiveIgnoreCondition
         {
-            bool isHas = item.GetValue<bool>(HasPhysicalComponentVariable.isHas);
-            GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            if (obj == null)
+            get
             {
-                item.SetValue(HasPhysicalComponentVariable.isHas, isHas);
-                continue;
+                return ComponentFlag.None;
             }
-            if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
+        }
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
             {
-                EntityCollisionMono mono = obj.GetComponent<EntityCollisionMono>();
-                if (isHas)
+                bool isHas = item.GetValue<bool>(HasPhysicalComponentVariable.isHas);
+                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                if (obj == null)
                 {
-                    if (mono == null)
+                    item.SetValue(HasPhysicalComponentVariable.isHas, isHas);
+                    continue;
+                }
+                if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION))
+                {
+                    EntityCollisionMono mono = obj.GetComponent<EntityCollisionMono>();
+                    if (isHas)
                     {
-                        mono = obj.AddComponent<EntityCollisionMono>();
-                        mono.Init(item);
+                        if (mono == null)
+                        {
+                            mono = obj.AddComponent<EntityCollisionMono>();
+                            mono.Init(item);
+                        }
+                    }
+                    else
+                    {
+                        if (mono != null)
+                        {
+                            GameObject.Destroy(mono);
+                        }
                     }
                 }
-                else
+                if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
                 {
-                    if (mono != null)
+                    EntityCollision2DMono mono = obj.GetComponent<EntityCollision2DMono>();
+                    if (isHas)
                     {
-                        GameObject.Destroy(mono);
+                        if (mono == null)
+                        {
+                            mono = obj.AddComponent<EntityCollision2DMono>();
+                            mono.Init(item);
+                        }
+                    }
+                    else
+                    {
+                        if (mono != null)
+                        {
+                            GameObject.Destroy(mono);
+                        }
                     }
                 }
-            }
-            if (item.GetComponentFlag().HasFlag(OperatorIds.COLLISION2D))
-            {
-                EntityCollision2DMono mono = obj.GetComponent<EntityCollision2DMono>();
-                if (isHas)
+                if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
                 {
-                    if (mono == null)
+                    EntityTriggerMono mono = obj.GetComponent<EntityTriggerMono>();
+                    if (isHas)
                     {
-                        mono = obj.AddComponent<EntityCollision2DMono>();
-                        mono.Init(item);
+                        if (mono == null)
+                        {
+                            mono = obj.AddComponent<EntityTriggerMono>();
+                            mono.Init(item);
+                        }
+                    }
+                    else
+                    {
+                        if (mono != null)
+                        {
+                            GameObject.Destroy(mono);
+                        }
                     }
                 }
-                else
+                if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
                 {
-                    if (mono != null)
+                    EntityTrigger2DMono mono = obj.GetComponent<EntityTrigger2DMono>();
+                    if (isHas)
                     {
-                        GameObject.Destroy(mono);
+                        if (mono == null)
+                        {
+                            mono = obj.AddComponent<EntityTrigger2DMono>();
+                            mono.Init(item);
+                        }
                     }
-                }
-            }
-            if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER))
-            {
-                EntityTriggerMono mono = obj.GetComponent<EntityTriggerMono>();
-                if (isHas)
-                {
-                    if (mono == null)
+                    else
                     {
-                        mono = obj.AddComponent<EntityTriggerMono>();
-                        mono.Init(item);
-                    }
-                }
-                else
-                {
-                    if (mono != null)
-                    {
-                        GameObject.Destroy(mono);
-                    }
-                }
-            }
-            if (item.GetComponentFlag().HasFlag(OperatorIds.TRIGGER2D))
-            {
-                EntityTrigger2DMono mono = obj.GetComponent<EntityTrigger2DMono>();
-                if (isHas)
-                {
-                    if (mono == null)
-                    {
-                        mono = obj.AddComponent<EntityTrigger2DMono>();
-                        mono.Init(item);
-                    }
-                }
-                else
-                {
-                    if (mono != null)
-                    {
-                        GameObject.Destroy(mono);
+                        if (mono != null)
+                        {
+                            GameObject.Destroy(mono);
+                        }
                     }
                 }
             }

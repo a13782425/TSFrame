@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-
-public class ActiveComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class ActiveComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.ACTIVE;
+            get
+            {
+                return OperatorIds.ACTIVE;
+            }
         }
+        [DataDriven]
+        [DefaultValue(true)]
+        public bool active;
     }
-    [DataDriven]
-    [DefaultValue(true)]
-    public bool active;
 }
 

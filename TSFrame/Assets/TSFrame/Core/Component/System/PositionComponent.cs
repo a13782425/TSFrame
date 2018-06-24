@@ -4,16 +4,19 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class PositionComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class PositionComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.POSITION;
+            get
+            {
+                return OperatorIds.POSITION;
+            }
         }
+        [DataDriven]
+        public Vector3 position;
     }
-    [DataDriven]
-    public Vector3 position;
 }
 

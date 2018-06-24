@@ -4,42 +4,58 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class ActiveSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
-    public ComponentFlag ReactiveCondition
+    public class ActiveSystem : IReactiveSystem
     {
-        get
+        private ComponentFlag _reactiveCondition = null;
+
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
-    public ComponentFlag ReactiveIgnoreCondition
-    {
-        get
+
+        public ComponentFlag ExecuteCondition
         {
-            return ComponentFlag.None;
+            get
+            {
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.ACTIVE);
+                }
+                return _reactiveCondition;
+            }
         }
-    }
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
+        public ComponentFlag ReactiveIgnoreCondition
         {
-            bool isActive = item.GetValue<bool>(ActiveComponentVariable.active);
-            //if (item.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
-            //{
-            //    GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            //    if (obj != null)
-            //    {
-            //        obj.SetActive(isActive);
-            //    }
-            //}
-            Observer.Instance.SetActive(item, isActive);
+            get
+            {
+                return ComponentFlag.None;
+            }
+        }
+
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
+            {
+                bool isActive = item.GetValue<bool>(ActiveComponentVariable.active);
+                //if (item.GetComponentFlag().HasFlag(ComponentIds.GAME_OBJECT))
+                //{
+                //    GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                //    if (obj != null)
+                //    {
+                //        obj.SetActive(isActive);
+                //    }
+                //}
+                Observer.Instance.SetActive(item, isActive);
+            }
         }
     }
 }
-

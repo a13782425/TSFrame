@@ -4,25 +4,28 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class Collision2DComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class Collision2DComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.COLLISION2D;
+            get
+            {
+                return OperatorIds.COLLISION2D;
+            }
         }
+        [DataDriven]
+        private bool isPhysical;
+
+        private List<Collision2DModel> collisionList;
+
+        private Collision2DCallBack enterCallBack;
+
+        private Collision2DCallBack stayCallBack;
+
+        private Collision2DCallBack exitCallBack;
+
     }
-    [DataDriven]
-    private bool isPhysical;
-
-    private List<Collision2DModel> collisionList;
-
-    private Collision2DCallBack enterCallBack;
-
-    private Collision2DCallBack stayCallBack;
-
-    private Collision2DCallBack exitCallBack;
-
 }
 

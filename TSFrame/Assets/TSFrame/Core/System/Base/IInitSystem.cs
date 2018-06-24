@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IInitSystem : ISystem
+namespace TSFrame.ECS
 {
-    void Init();
+    public interface IInitSystem : ISystem
+    {
+        void Init();
+    }
 }

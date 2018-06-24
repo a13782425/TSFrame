@@ -4,24 +4,27 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class Trigger2DComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class Trigger2DComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.TRIGGER2D;
+            get
+            {
+                return OperatorIds.TRIGGER2D;
+            }
         }
+
+        [DataDriven]
+        private bool isPhysical;
+
+        private List<Trigger2DModel> triggerList;
+
+        private Trigger2DCallBack enterCallBack;
+
+        private Trigger2DCallBack stayCallBack;
+
+        private Trigger2DCallBack exitCallBack;
     }
-
-    [DataDriven]
-    private bool isPhysical;
-
-    private List<Trigger2DModel> triggerList;
-
-    private Trigger2DCallBack enterCallBack;
-
-    private Trigger2DCallBack stayCallBack;
-
-    private Trigger2DCallBack exitCallBack;
 }

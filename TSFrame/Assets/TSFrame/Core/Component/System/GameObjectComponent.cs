@@ -4,18 +4,21 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class GameObjectComponent : IComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class GameObjectComponent : IComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.GAME_OBJECT;
+            get
+            {
+                return OperatorIds.GAME_OBJECT;
+            }
         }
+
+        [DontCopy]
+        private GameObject value;
+
     }
-
-    [DontCopy]
-    private GameObject value;
-
 }
 

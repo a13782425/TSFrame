@@ -4,25 +4,27 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-
-public class TriggerComponent : IComponent, IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class TriggerComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.TRIGGER;
+            get
+            {
+                return OperatorIds.TRIGGER;
+            }
         }
+
+        [DataDriven]
+        private bool isPhysical;
+
+        private List<TriggerModel> triggerList;
+
+        private TriggerCallBack enterCallBack;
+
+        private TriggerCallBack stayCallBack;
+
+        private TriggerCallBack exitCallBack;
     }
-
-    [DataDriven]
-    private bool isPhysical;
-
-    private List<TriggerModel> triggerList;
-
-    private TriggerCallBack enterCallBack;
-
-    private TriggerCallBack stayCallBack;
-
-    private TriggerCallBack exitCallBack;
 }

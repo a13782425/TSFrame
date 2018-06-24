@@ -4,49 +4,65 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class GameObjectLifeCycleSystem : IReactiveSystem
+namespace TSFrame.ECS
 {
-    private ComponentFlag _reactiveCondition = null;
+    public class GameObjectLifeCycleSystem : IReactiveSystem
+    {
+        private ComponentFlag _reactiveCondition = null;
 
-    public ComponentFlag ReactiveCondition
-    {
-        get
+        public ComponentFlag ReactiveCondition
         {
-            if (_reactiveCondition == null)
+            get
             {
-                _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE, OperatorIds.GAME_OBJECT);
+                if (_reactiveCondition == null)
+                {
+                    _reactiveCondition = Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE);
+                }
+                return _reactiveCondition;
             }
-            return _reactiveCondition;
         }
-    }
-    public ComponentFlag ReactiveIgnoreCondition
-    {
-        get
+        private ComponentFlag _executeCondition = null;
+
+        public ComponentFlag ExecuteCondition
         {
-            return ComponentFlag.None;
-        }
-    }
-    public void Execute(List<Entity> entitys)
-    {
-        foreach (Entity item in entitys)
-        {
-            GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
-            LifeCycleEnum lifeEnum = item.GetValue<LifeCycleEnum>(LifeCycleComponentVariable.lifeCycle);
-            switch (lifeEnum)
+            get
             {
-                case LifeCycleEnum.Destory:
-                    GameObject.Destroy(obj);
-                    break;
-                case LifeCycleEnum.DelayDestory:
-                    float delayTime = item.GetValue<float>(LifeCycleComponentVariable.dealyTime);
-                    GameObject.Destroy(obj, delayTime);
-                    break;
-                case LifeCycleEnum.DontDestory:
-                    GameObject.DontDestroyOnLoad(obj);
-                    break;
-                case LifeCycleEnum.None:
-                default:
-                    break;
+                if (_executeCondition == null)
+                {
+                    _executeCondition = Observer.Instance.GetFlag(OperatorIds.LIFE_CYCLE, OperatorIds.GAME_OBJECT);
+                }
+                return _executeCondition;
+            }
+        }
+        public ComponentFlag ReactiveIgnoreCondition
+        {
+            get
+            {
+                return ComponentFlag.None;
+            }
+        }
+        public void Execute(List<Entity> entitys)
+        {
+            foreach (Entity item in entitys)
+            {
+                GameObject obj = item.GetValue<GameObject>(GameObjectComponentVariable.value);
+                LifeCycleEnum lifeEnum = item.GetValue<LifeCycleEnum>(LifeCycleComponentVariable.lifeCycle);
+                switch (lifeEnum)
+                {
+                    case LifeCycleEnum.Destory:
+                        GameObject.Destroy(obj);
+                        break;
+                    case LifeCycleEnum.DelayDestory:
+                        float delayTime = item.GetValue<float>(LifeCycleComponentVariable.dealyTime);
+                        GameObject.Destroy(obj, delayTime);
+                        break;
+                    case LifeCycleEnum.DontDestory:
+                        GameObject.DontDestroyOnLoad(obj);
+                        break;
+                    case LifeCycleEnum.None:
+                    default:
+                        break;
+                }
             }
         }
     }

@@ -4,205 +4,183 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public sealed partial class Observer
+
+namespace TSFrame.ECS
 {
-
-    #region Public
-    public Group MatchGetGroup(ComponentFlag flag)
+    public sealed partial class Observer
     {
-        foreach (Group item in _matchGroupHashSet)
-        {
-            if (item.GetHashCode() == flag.GetHashCode())
-            {
-                return item;
-            }
-        }
 
-        Group group = new Group(flag);
-        _matchGroupHashSet.Add(group);
-        return group;
-    }
-    public Group MatchGetGroup(params Int64[] componentIds)
-    {
-        if (componentIds == null)
+        #region Public
+        public Group MatchGetGroup(ComponentFlag flag)
         {
-            throw new Exception("ComponentIds is null");
-        }
-        ComponentFlag flag = new ComponentFlag();
-        for (int i = 0; i < componentIds.Length; i++)
-        {
-            if (flag.HasFlag(componentIds[i]))
+            foreach (Group item in _matchGroupHashSet)
             {
-                continue;
-            }
-            flag.SetFlag(componentIds[i]);
-        }
-        return MatchGetGroup(flag);
-    }
-
-    public ComponentFlag GetFlag(params Int64[] args)
-    {
-        ComponentFlag flag = new ComponentFlag();
-        if (args != null)
-        {
-            for (int i = 0; i < args.Length; i++)
-            {
-                if (!flag.HasFlag(args[i]))
+                if (item.GetHashCode() == flag.GetHashCode())
                 {
-                    flag.SetFlag(args[i]);
+                    return item;
                 }
             }
-        }
-        return flag;
-    }
 
-    [Obsolete("外界不要调用")]
-    public void DataDrivenMethod(Entity entity, NormalComponent com)
-    {
-        if (entity == null)
-        {
-            return;
+            Group group = new Group(flag);
+            _matchGroupHashSet.Add(group);
+            return group;
         }
-        int sharedId = com.SharedId;
-        SharedComponent sharedComponent = null;
-        if (sharedId > 0)
+        public Group MatchGetGroup(params Int64[] componentIds)
         {
-            sharedComponent = _sharedComponentDic[sharedId];
-        }
-        int count = _systemReactiveDic.Count;
-        for (int i = 0; i < count; i++)
-        {
-            ReactiveSystemDto dto = _systemReactiveDic[i];
-            ComponentFlag reactiveCondition = dto.CurrentSystem.ReactiveCondition;
-            ComponentFlag reactiveIgnoreCondition = dto.CurrentSystem.ReactiveIgnoreCondition;
-            if (sharedId > 0)
+            if (componentIds == null)
             {
-                foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
-                {
-                    if (setEntity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
-                    {
-                        continue;
-                    }
-                    if (reactiveCondition.HasFlag(com.OperatorId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
-                    {
-                        dto.EntityHashSet.Add(setEntity);
-                    }
-                }
+                throw new Exception("ComponentIds is null");
             }
-            else
+            ComponentFlag flag = new ComponentFlag();
+            for (int i = 0; i < componentIds.Length; i++)
             {
-                if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                if (flag.HasFlag(componentIds[i]))
                 {
                     continue;
                 }
-                if (reactiveCondition.HasFlag(com.OperatorId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
+                flag.SetFlag(componentIds[i]);
+            }
+            return MatchGetGroup(flag);
+        }
+
+        public ComponentFlag GetFlag(params Int64[] args)
+        {
+            ComponentFlag flag = new ComponentFlag();
+            if (args != null)
+            {
+                for (int i = 0; i < args.Length; i++)
                 {
-                    dto.EntityHashSet.Add(entity);
+                    if (!flag.HasFlag(args[i]))
+                    {
+                        flag.SetFlag(args[i]);
+                    }
                 }
             }
+            return flag;
         }
-        //foreach (KeyValuePair<ISystem, HashSet<Entity>> item in _systemReactiveDic)
-        //{
-        //    ComponentFlag reactiveCondition = (item.Key as IReactiveSystem).ReactiveCondition;
-        //    ComponentFlag reactiveIgnoreCondition = (item.Key as IReactiveSystem).ReactiveIgnoreCondition;
-        //    if (sharedId > 0)
-        //    {
-        //        foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
-        //        {
-        //            if (setEntity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
-        //            {
-        //                continue;
-        //            }
-        //            if (reactiveCondition.HasFlag(com.OperatorId) && setEntity.GetComponentFlag().HasFlag(reactiveCondition))
-        //            {
-        //                item.Value.Add(setEntity);
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
-        //        {
-        //            continue;
-        //        }
-        //        if (reactiveCondition.HasFlag(com.OperatorId) && entity.GetComponentFlag().HasFlag(reactiveCondition))
-        //        {
-        //            item.Value.Add(entity);
-        //        }
-        //    }
-        //}
-    }
-    #endregion
 
-
-    partial void MatchLoad()
-    {
-        _matchGameObject = new GameObject("MatchGameObject");
-        _matchGameObject.transform.SetParent(this.transform);
-    }
-
-    partial void MatchUpdate()
-    {
-
-    }
-
-    partial void MatchEntity(Entity entity, bool isActive)
-    {
-        foreach (Group item in _matchGroupHashSet)
+        [Obsolete("外界不要调用")]
+        public void DataDrivenMethod(Entity entity, NormalComponent com)
         {
-            if (isActive)
+            if (entity == null)
             {
-                if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
-                {
-                    item.AddEntity(entity);
-                }
+                return;
             }
-            else
-            {
-                item.RemoveEntity(entity);
-            }
-        }
-    }
-
-    partial void MatchEntity(Entity entity, NormalComponent component)
-    {
-        int sharedId = component.SharedId;
-        if (!entity.GetComponentFlag().HasFlag(component.OperatorId))
-        {
+            int sharedId = com.SharedId;
+            SharedComponent sharedComponent = null;
             if (sharedId > 0)
             {
-                if (_sharedComponentDic.ContainsKey(sharedId))
+                sharedComponent = _sharedComponentDic[sharedId];
+            }
+            int count = _systemReactiveDic.Count;
+            for (int i = 0; i < count; i++)
+            {
+                ReactiveSystemDto dto = _systemReactiveDic[i];
+                ComponentFlag executeCondition = dto.CurrentSystem.ExecuteCondition;
+                ComponentFlag reactiveCondition = dto.CurrentSystem.ExecuteCondition;
+                ComponentFlag reactiveIgnoreCondition = dto.CurrentSystem.ReactiveIgnoreCondition;
+                if (!reactiveCondition.HasFlag(com.OperatorId))
                 {
-                    _sharedComponentDic[sharedId].SharedEntityHashSet.Remove(entity);
+                    continue;
+                }
+                if (sharedId > 0)
+                {
+                    foreach (Entity setEntity in sharedComponent.SharedEntityHashSet)
+                    {
+                        if (setEntity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                        {
+                            continue;
+                        }
+                        if (setEntity.GetComponentFlag().HasFlag(executeCondition))
+                        {
+                            dto.EntityHashSet.Add(setEntity);
+                        }
+                    }
+                }
+                else
+                {
+                    if (entity.GetComponentFlag().HasFlag(reactiveIgnoreCondition))
+                    {
+                        continue;
+                    }
+                    if (entity.GetComponentFlag().HasFlag(executeCondition))
+                    {
+                        dto.EntityHashSet.Add(entity);
+                    }
                 }
             }
+        }
+        #endregion
+
+
+        partial void MatchLoad()
+        {
+            _matchGameObject = new GameObject("MatchGameObject");
+            _matchGameObject.transform.SetParent(this.transform);
+        }
+
+        partial void MatchUpdate()
+        {
+
+        }
+
+        partial void MatchEntity(Entity entity, bool isActive)
+        {
             foreach (Group item in _matchGroupHashSet)
             {
-                if (item.ComponentFlag.HasFlag(component.OperatorId))
+                if (isActive)
+                {
+                    if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
+                    {
+                        item.AddEntity(entity);
+                    }
+                }
+                else
                 {
                     item.RemoveEntity(entity);
                 }
             }
-            RecoverComponent(component);
         }
-        else
+
+        partial void MatchEntity(Entity entity, NormalComponent component)
         {
-            if (sharedId > 0)
+            int sharedId = component.SharedId;
+            if (!entity.GetComponentFlag().HasFlag(component.OperatorId))
             {
-                if (_sharedComponentDic.ContainsKey(sharedId))
+                if (sharedId > 0)
                 {
-                    _sharedComponentDic[sharedId].SharedEntityHashSet.Add(entity);
+                    if (_sharedComponentDic.ContainsKey(sharedId))
+                    {
+                        _sharedComponentDic[sharedId].SharedEntityHashSet.Remove(entity);
+                    }
                 }
-            }
-            foreach (Group item in _matchGroupHashSet)
-            {
-                if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
+                foreach (Group item in _matchGroupHashSet)
                 {
-                    item.AddEntity(entity);
+                    if (item.ComponentFlag.HasFlag(component.OperatorId))
+                    {
+                        item.RemoveEntity(entity);
+                    }
+                }
+                RecoverComponent(component);
+            }
+            else
+            {
+                if (sharedId > 0)
+                {
+                    if (_sharedComponentDic.ContainsKey(sharedId))
+                    {
+                        _sharedComponentDic[sharedId].SharedEntityHashSet.Add(entity);
+                    }
+                }
+                foreach (Group item in _matchGroupHashSet)
+                {
+                    if (entity.GetComponentFlag().HasFlag(item.ComponentFlag))
+                    {
+                        item.AddEntity(entity);
+                    }
                 }
             }
         }
     }
-
 }
 

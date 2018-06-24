@@ -4,23 +4,26 @@ using System.Linq;
 using System.Text;
 
 
-public class LifeCycleComponent : IComponent,IReactiveComponent
+namespace TSFrame.ECS
 {
-    public Int64 CurrentId
+    public class LifeCycleComponent : IComponent, IReactiveComponent
     {
-        get
+        public Int64 CurrentId
         {
-            return OperatorIds.LIFE_CYCLE;
+            get
+            {
+                return OperatorIds.LIFE_CYCLE;
+            }
         }
+        /// <summary>
+        /// 生命周期
+        /// </summary>
+        [DataDriven]
+        private LifeCycleEnum lifeCycle;
+        /// <summary>
+        /// 延时时间
+        /// </summary>
+        private float dealyTime;
     }
-    /// <summary>
-    /// 生命周期
-    /// </summary>
-    [DataDriven]
-    private LifeCycleEnum lifeCycle;
-    /// <summary>
-    /// 延时时间
-    /// </summary>
-    private float dealyTime;
 }
 

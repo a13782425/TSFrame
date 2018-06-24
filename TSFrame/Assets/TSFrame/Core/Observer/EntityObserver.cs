@@ -4,101 +4,103 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public sealed partial class Observer
+namespace TSFrame.ECS
 {
-    #region Public
-    /// <summary>
-    /// 创建一个实体
-    /// </summary>
-    /// <returns></returns>
-    public Entity CreateEntity()
+    public sealed partial class Observer
     {
-        return CreateEntity(null);
-    }
-    /// <summary>
-    /// 创建一个实体
-    /// </summary>
-    /// <param name="parent"></param>
-    /// <returns></returns>
-    public Entity CreateEntity(Entity parent)
-    {
-        Entity entity = _entityDefaultPool.Dequeue();
-        if (parent != null)
+        #region Public
+        /// <summary>
+        /// 创建一个实体
+        /// </summary>
+        /// <returns></returns>
+        public Entity CreateEntity()
         {
-            parent.ChildList.Add(entity);
-            entity.Parent = parent;
+            return CreateEntity(null);
         }
-        //entity.SetValue(ActiveComponentVariable.active, true);
-        return entity;
-    }
-    /// <summary>
-    /// 从对象池创建一个实体
-    /// </summary>
-    /// <param name="poolName"></param>
-    /// <returns></returns>
-    public Entity CreateEntityToPool(string poolName)
-    {
-        if (string.IsNullOrEmpty(poolName))
+        /// <summary>
+        /// 创建一个实体
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public Entity CreateEntity(Entity parent)
         {
-            return CreateEntity();
-        }
-        return CreateEntityToPool(poolName, null);
-    }
-    /// <summary>
-    /// 从对象池创建一个实体
-    /// </summary>
-    /// <param name="poolName"></param>
-    /// <param name="parent"></param>
-    /// <returns></returns>
-    public Entity CreateEntityToPool(string poolName, Entity parent)
-    {
-        if (string.IsNullOrEmpty(poolName))
-        {
-            return CreateEntity();
-        }
-        Entity entity = GetEntity(poolName);
-        entity.SetValue(PoolComponentVariable.poolName, poolName);
-        if (parent != null)
-        {
-            if (entity.Parent != null)
+            Entity entity = _entityDefaultPool.Dequeue();
+            if (parent != null)
             {
-                entity.Parent.ChildList.Remove(entity);
+                parent.ChildList.Add(entity);
+                entity.Parent = parent;
             }
-            parent.ChildList.Add(entity);
-            entity.Parent = parent;
+            //entity.SetValue(ActiveComponentVariable.active, true);
+            return entity;
         }
-        return entity;
-    }
-
-    /// <summary>
-    /// 设置一个实体是否可见
-    /// </summary>
-    /// <param name="entity"></param>
-    /// <param name="isActive"></param>
-    public void SetActive(Entity entity, bool isActive)
-    {
-        if (entity.ChildList.Count > 0)
+        /// <summary>
+        /// 从对象池创建一个实体
+        /// </summary>
+        /// <param name="poolName"></param>
+        /// <returns></returns>
+        public Entity CreateEntityToPool(string poolName)
         {
-            for (int i = 0; i < entity.ChildList.Count; i++)
+            if (string.IsNullOrEmpty(poolName))
             {
-                SetActive(entity.ChildList[i], isActive);
+                return CreateEntity();
             }
+            return CreateEntityToPool(poolName, null);
         }
-        MatchEntity(entity, isActive);
-    }
+        /// <summary>
+        /// 从对象池创建一个实体
+        /// </summary>
+        /// <param name="poolName"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        public Entity CreateEntityToPool(string poolName, Entity parent)
+        {
+            if (string.IsNullOrEmpty(poolName))
+            {
+                return CreateEntity();
+            }
+            Entity entity = GetEntity(poolName);
+            entity.SetValue(PoolComponentVariable.poolName, poolName);
+            if (parent != null)
+            {
+                if (entity.Parent != null)
+                {
+                    entity.Parent.ChildList.Remove(entity);
+                }
+                parent.ChildList.Add(entity);
+                entity.Parent = parent;
+            }
+            return entity;
+        }
+
+        /// <summary>
+        /// 设置一个实体是否可见
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <param name="isActive"></param>
+        public void SetActive(Entity entity, bool isActive)
+        {
+            if (entity.ChildList.Count > 0)
+            {
+                for (int i = 0; i < entity.ChildList.Count; i++)
+                {
+                    SetActive(entity.ChildList[i], isActive);
+                }
+            }
+            MatchEntity(entity, isActive);
+        }
 
 
-    #endregion
+        #endregion
 
-    partial void EntityLoad()
-    {
-        _entityGameObject = new GameObject("EntityGameObject");
-        _entityGameObject.transform.SetParent(this.transform);
-    }
+        partial void EntityLoad()
+        {
+            _entityGameObject = new GameObject("EntityGameObject");
+            _entityGameObject.transform.SetParent(this.transform);
+        }
 
-    partial void EntityUpdate()
-    {
+        partial void EntityUpdate()
+        {
 
+        }
     }
 }
-

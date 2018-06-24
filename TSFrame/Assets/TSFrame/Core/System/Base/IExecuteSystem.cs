@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IExecuteSystem : ISystem
+namespace TSFrame.ECS
 {
-    void Execute();
+    public interface IExecuteSystem : ISystem
+    {
+        void Execute();
+    }
 }

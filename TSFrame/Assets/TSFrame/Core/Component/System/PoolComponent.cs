@@ -7,7 +7,7 @@ namespace TSFrame.ECS
 {
     public class PoolComponent : IComponent, IReactiveComponent
     {
-        public Int64 CurrentId
+        public Int64 OperatorId
         {
             get
             {

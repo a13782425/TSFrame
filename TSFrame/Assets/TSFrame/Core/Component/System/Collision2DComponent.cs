@@ -8,7 +8,7 @@ namespace TSFrame.ECS
 {
     public class Collision2DComponent : IComponent, IReactiveComponent
     {
-        public Int64 CurrentId
+        public Int64 OperatorId
         {
             get
             {

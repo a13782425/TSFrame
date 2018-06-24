@@ -49,7 +49,7 @@ namespace TSFrame.ECS
             }
             _componentId = componentId;
             CurrentComponent = component;
-            _operatorId = CurrentComponent.CurrentId;
+            _operatorId = CurrentComponent.OperatorId;
             _sharedId = -1;
         }
 

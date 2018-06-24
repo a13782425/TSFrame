@@ -183,7 +183,7 @@ namespace TSFrame.ECS
                 int count = (int)countProperty.GetValue(null, null);
                 if (count <= 0)
                 {
-                    _ilCache.Add(instance.CurrentId, null);
+                    _ilCache.Add(instance.OperatorId, null);
                     return;
                 }
                 TSProperty[] tempArray = new TSProperty[count];
@@ -263,7 +263,7 @@ namespace TSFrame.ECS
                 }
 
                 #endregion
-                _ilCache.Add(instance.CurrentId, tempArray);
+                _ilCache.Add(instance.OperatorId, tempArray);
             }
             catch (Exception ex)
             {

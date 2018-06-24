@@ -4,6 +4,6 @@ namespace TSFrame.ECS
 {
     public interface IComponent
     {
-        Int64 CurrentId { get; }
+        Int64 OperatorId { get; }
     }
 }

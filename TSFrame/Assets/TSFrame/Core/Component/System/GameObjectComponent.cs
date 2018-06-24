@@ -8,7 +8,7 @@ namespace TSFrame.ECS
 {
     public class GameObjectComponent : IComponent
     {
-        public Int64 CurrentId
+        public Int64 OperatorId
         {
             get
             {

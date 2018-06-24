@@ -81,7 +81,7 @@ namespace TSFrame.ECS
         {
             EditorUtility.DisplayProgressBar("processing", "statistics file count...", 0);
             Type type = typeof(IComponent);
-            idPropertyInfo = type.GetProperty("CurrentId");
+            idPropertyInfo = type.GetProperty("OperatorId");
             Assembly assembly = type.Assembly;
             Type[] types = assembly.GetTypes();
             _componentTypeList.Clear();

@@ -8,7 +8,7 @@ namespace TSFrame.ECS
 {
     public class LifeCycleComponent : IComponent, IReactiveComponent
     {
-        public Int64 CurrentId
+        public Int64 OperatorId
         {
             get
             {

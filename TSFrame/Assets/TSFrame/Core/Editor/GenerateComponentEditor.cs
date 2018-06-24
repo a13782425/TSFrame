@@ -143,6 +143,9 @@ namespace TSFrame.ECS
                             isDataDriven = isNeedReactive;
                         }
                         bool dontCopy = property.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                        codeSb.AppendLine("        /// <summary>");
+                        codeSb.AppendLine("        /// Type : " + property.PropertyType.Name);
+                        codeSb.AppendLine("        /// </summary>");
                         codeSb.AppendLine("        public static ComponentValue " + property.Name + " = new ComponentValue() { ComponentId = " + i + ", PropertyId = " + count + ", OperatorId = " + num + ", DontCopy = " + (dontCopy ? "true" : "false") + ", NeedReactive = " + (isDataDriven ? "true" : "false") + " };");
                         count++;
                     }
@@ -170,6 +173,9 @@ namespace TSFrame.ECS
                             isDataDriven = isNeedReactive;
                         }
                         bool dontCopy = fieldInfo.GetCustomAttributes(_dontCopyType, false).Length > 0;
+                        codeSb.AppendLine("        /// <summary>");
+                        codeSb.AppendLine("        /// Type : " + fieldInfo.FieldType.Name);
+                        codeSb.AppendLine("        /// </summary>");
                         codeSb.AppendLine("        public static ComponentValue " + fieldInfo.Name + " = new ComponentValue() { ComponentId = " + i + ", PropertyId = " + count + ", OperatorId = " + num + ", DontCopy = " + (dontCopy ? "true" : "false") + ", NeedReactive = " + (isDataDriven ? "true" : "false") + " };");
                         count++;
                     }

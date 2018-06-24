@@ -77,7 +77,7 @@ namespace TSFrame.ECS
             {
                 ReactiveSystemDto dto = _systemReactiveDic[i];
                 ComponentFlag executeCondition = dto.CurrentSystem.ExecuteCondition;
-                ComponentFlag reactiveCondition = dto.CurrentSystem.ExecuteCondition;
+                ComponentFlag reactiveCondition = dto.CurrentSystem.ReactiveCondition;
                 ComponentFlag reactiveIgnoreCondition = dto.CurrentSystem.ReactiveIgnoreCondition;
                 if (!reactiveCondition.HasFlag(com.OperatorId))
                 {

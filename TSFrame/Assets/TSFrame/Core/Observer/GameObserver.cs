@@ -85,15 +85,11 @@ public sealed partial class Observer
     {
         VariableLoad();
         ResourcesLoad();
-        CameraLoad();
         MatchLoad();
         GameLoad();
-        UILoad();
-        NetLoad();
         SystemLoad();
         EntityLoad();
         PoolLoad();
-        SceneLoad();
         _isRun = true;
         return this;
     }
@@ -121,14 +117,10 @@ public sealed partial class Observer
     {
         VariableUpdate();
         ResourcesUpdate();
-        CameraUpdate();
         MatchUpdate();
         GameUpdate();
-        UIUpdate();
-        NetUpdate();
         SystemUpdate();
         EntityUpdate();
         PoolUpdate();
-        SceneUpdate();
     }
 }

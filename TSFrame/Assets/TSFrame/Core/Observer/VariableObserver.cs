@@ -76,31 +76,6 @@ public sealed partial class Observer
 
     #endregion
 
-    #region UI Var
-
-    /// <summary>
-    /// ui游戏物体
-    /// </summary>
-    private GameObject _uiGameObject;
-    /// <summary>
-    /// ui根目录默认名字
-    /// </summary>
-    private string _uiRootDefaultName = "";
-    /// <summary>
-    /// ui根目录
-    /// </summary>
-    private GameObject _uiCacheRoot;
-    /// <summary>
-    /// ui根目录集合
-    /// key:名称 value:对象
-    /// </summary>
-    private Dictionary<string, GameObject> _uiRootDic;
-    /// <summary>
-    /// UI根目录默认常量名称
-    /// </summary>
-    private const string UI_ROOT_DEFAULT_NAME = "CommonUI";
-    #endregion
-
     #region Game Var
 
     /// <summary>
@@ -111,28 +86,6 @@ public sealed partial class Observer
     /// 暂停
     /// </summary>
     private bool _pause = false;
-
-    #endregion
-
-    #region Camare Var
-
-    /// <summary>
-    /// 相机游戏物体
-    /// </summary>
-    private GameObject _camareGameObject;
-    /// <summary>
-    /// 游戏相机
-    /// </summary>
-    private Camera _camare;
-
-    #endregion
-
-    #region Net Var
-
-    /// <summary>
-    /// 网络游戏物体
-    /// </summary>
-    private GameObject _netGameObject;
 
     #endregion
 
@@ -223,20 +176,11 @@ public sealed partial class Observer
     private Dictionary<int, SharedComponent> _sharedComponentDic;
     #endregion
 
-    #region Scene Var
-    /// <summary>
-    /// 对象池实体
-    /// </summary>
-    private GameObject _sceneGameObject;
-
-    #endregion
-
     #region Implement Method
 
     partial void VariableLoad()
     {
         _entityDic = new Dictionary<int, Entity>();
-        _uiRootDic = new Dictionary<string, GameObject>();
         _systemInitList = new List<ISystem>();
         _systemReactiveDic = new List<ReactiveSystemDto>();
         _systemExecuteList = new List<ISystem>();

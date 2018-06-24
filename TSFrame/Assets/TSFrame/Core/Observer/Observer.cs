@@ -19,41 +19,11 @@ public sealed partial class Observer : MonoBehaviour
 
     #endregion
 
-    #region GameObserver Method
-
-    partial void GameLoad();
-    partial void GameUpdate();
-
-    partial void GameOneStep();
-
-    #endregion
-
-    #region UIObserver Method
-
-    partial void UILoad();
-    partial void UIUpdate();
-
-    #endregion
-
     #region VariableObserver Method
 
     partial void VariableLoad();
     partial void VariableUpdate();
     partial void CreateComponentPool();
-
-    #endregion
-
-    #region NetObserver Method
-
-    partial void NetLoad();
-    partial void NetUpdate();
-
-    #endregion
-
-    #region CameraObserver Method
-
-    partial void CameraLoad();
-    partial void CameraUpdate();
 
     #endregion
 
@@ -98,11 +68,13 @@ public sealed partial class Observer : MonoBehaviour
 
     #endregion
 
-    #region SceneObserver Method
+    #region GameObserver Method
 
-    partial void SceneLoad();
+    partial void GameLoad();
 
-    partial void SceneUpdate();
+    partial void GameUpdate();
+
+    partial void GameOneStep();
 
     #endregion
 
